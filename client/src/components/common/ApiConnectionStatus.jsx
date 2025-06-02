@@ -13,7 +13,7 @@ function ApiConnectionStatus() {
   // Generic API caller function
   const callApi = async (endpoint, method = 'GET', body = null) => {
     setApiState(prev => ({ ...prev, loading: true, error: null }));
-    
+    console.log(method)
     try {
       const options = {
         method,
@@ -34,7 +34,7 @@ function ApiConnectionStatus() {
         ...prev,
         loading: false,
         message: method === 'GET' ? data.message || data : null,
-        postResponse: method === 'POST' ? data : null
+        postResponse: method === 'POST' ? data.message : null
       }));
       
       return data;
@@ -50,29 +50,28 @@ function ApiConnectionStatus() {
     }
   };
 
-  // Specific API actions
-  const fetchLuna = () => callApi('/luna');
-  const fetchRomeo = () => callApi('/romeo');
+  const login = () => callApi('/login');
+  const register = () => callApi('/register', 'POST', { action: 'submit'});
 
   return (
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>API Connection Tester</h1>
+      <h1>Growth Landing Page</h1>
       
       <div style={{ marginBottom: '20px' }}>
         <button 
-          onClick={fetchLuna}
+          onClick={login}
           disabled={apiState.loading}
           style={buttonStyle}
         >
-          Luna
+          Login
         </button>
         
         <button 
-          onClick={fetchRomeo}
+          onClick={register}
           disabled={apiState.loading}
           style={buttonStyle}
         >
-          Romeo
+          Register
         </button>
   
       </div>
@@ -91,7 +90,6 @@ function ApiConnectionStatus() {
           <pre>{JSON.stringify(apiState.message, null, 2)}</pre>
         </div>
       )}
-      
       {apiState.postResponse && (
         <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
           <h3>POST Response:</h3>
