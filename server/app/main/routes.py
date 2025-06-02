@@ -11,17 +11,16 @@ def login():
         data = request.get_json()
 
         email = data.get('email')
-        password = data.get('password')  # Password checking later
+        password = data.get('password')
 
-        # Lookup user
         user = User.query.filter_by(email=email).first()
         if not user:
             return jsonify(error="User not found"), 404
 
-        # (Add real password check here if stored)
         return jsonify(message=f"Welcome back, {user.username}")
     except Exception as e:
-        abort(500, description=str(e))
+        print("Error saving user:", e)
+        return jsonify(error=str(e)), 500
 
 
 @bp.route('/api/register', methods=['POST'])
@@ -37,7 +36,7 @@ def register():
             return jsonify(error="User already exists"), 400
 
         user = User(username=name, email=email)
-        user.set_password(password)  # <-- hash & set the password_hash here
+        user.set_password(password)
 
         db.session.add(user)
         db.session.commit()
