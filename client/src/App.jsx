@@ -58,7 +58,6 @@ function App() {
               : <Navigate to="/login" replace />
           }
         />
-
         <Route
           path="/"
           element={
