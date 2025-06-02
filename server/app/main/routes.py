@@ -2,6 +2,7 @@ from app.main import bp
 from flask import request, jsonify, abort
 from app.models.user import User
 from app.database import db
+from flask_jwt_extended import create_access_token
 
 from app.main import bp
 
@@ -16,8 +17,8 @@ def login():
         user = User.query.filter_by(email=email).first()
         if not user:
             return jsonify(error="User not found"), 404
-
-        return jsonify(message=f"Welcome back, {user.username}")
+        access_token = create_access_token(identity=user.id)
+        return jsonify(access_token=access_token)
     except Exception as e:
         print("Error saving user:", e)
         return jsonify(error=str(e)), 500
