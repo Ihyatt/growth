@@ -7,16 +7,34 @@ const LoginPage = ({ onLogin }) => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(''); // Clear previous errors
+        setError('');
 
-        // Mock authentication: replace with actual API call
-        if (username === 'user' && password === 'password') {
-            onLogin(); // Call the onLogin function from App.jsx
-            navigate('/dashboard'); // Redirect to dashboard
+        if (username && password) {
+            try {
+                const API_BASE_URL = import.meta.env.VITE_API_URL;
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Authentication failed');
+                }
+
+                // Store token if needed
+                localStorage.setItem('token', data.token);
+                onLogin(); // Notify parent
+                navigate('/dashboard');
+            } catch (error) {
+                setError(error.message);
+            }
         } else {
-            setError('Invalid username or password');
+            setError('Please fill in all fields.');
         }
     };
 
@@ -56,7 +74,6 @@ const LoginPage = ({ onLogin }) => {
     );
 };
 
-// Basic inline styles (move to a CSS file for production)
 const styles = {
     container: {
         display: 'flex',

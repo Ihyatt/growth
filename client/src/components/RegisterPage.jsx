@@ -31,7 +31,6 @@ const RegisterPage = ({ onRegister }) => {
             console.log(`Attempting to register: Username: ${username}, UserType: ${userType}`);
             try {
             const API_BASE_URL = import.meta.env.VITE_API_URL;
-            const endpoint = '/register'
             const body = {
                 name: username,
                 email: email,
@@ -39,7 +38,7 @@ const RegisterPage = ({ onRegister }) => {
                 userType: userType
               };
             console.log(API_BASE_URL)
-            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+            const response = await fetch(`${API_BASE_URL}/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)

@@ -12,20 +12,20 @@ def login():
     try:
         data = request.get_json()
         print(data)
-        name = data.get('name')
-        email = data.get('email')
-        password = data.get('password')
-        user = User.query.filter_by(email=email).first()
-
+        username = data.get('username').strip()
+        password = data.get('password').strip()
+        user = User.query.filter_by(username=username).first()
 
         if not user:
+            print("User not found")
             return jsonify(error="User not found"), 404
 
         if user and not user.check_password(password):
+            print("Invalid password")
             return jsonify(error="Invalid password"), 404
 
         access_token = create_access_token(identity=user.id)
-        return jsonify(message=f"welcome back, {name}", access_token=access_token)
+        return jsonify(message=f"welcome back, {username}", access_token=access_token)
     except Exception as e:
         print("Invalid login", e)
         return jsonify(error=str(e)), 500
@@ -35,16 +35,17 @@ def login():
 def register():
     try:
         data = request.get_json()
-        name = data.get('name')
-        email = data.get('email')
-        password = data.get('password')
-        user_type = data.get('userType')
+        name = data.get('name').strip()
+        email = data.get('email').strip()
+        password = data.get('password').strip()
+        user_type = data.get('userType').strip()
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return jsonify(error="User already exists"), 400
 
         user = User(username=name, email=email)
+        print('error in login', user)
         user.set_password(password)
         
         if user_type == 'patient':
