@@ -1,0 +1,41 @@
+/* src/components/Dashboard/Dashboard.css */
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #e6f7ff; /* Specific background for Dashboard */
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box; /* Ensure padding is included in element's total width/height */
+    width: 100%; /* Take full width */
+}
+
+.dashboard-heading {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.dashboard-paragraph {
+    color: #34495e;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.dashboard-logout-button {
+    padding: 10px 20px;
+    background-color: #dc3545; /* Red for logout */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-logout-button:hover {
+    background-color: #c82333; /* Darker red on hover */
+}

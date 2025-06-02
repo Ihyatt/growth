@@ -1,9 +1,9 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage';
-import Dashboard from './components/Dashboard';
+import LoginPage from './components/LoginPage/LoginPage';
+import RegisterPage from './components/RegisterPage/RegisterPage';
+import Dashboard from './components/Dashboard/Dashboard';
 
 function App() {
     // Initialize isAuthenticated from localStorage, or false if not found
