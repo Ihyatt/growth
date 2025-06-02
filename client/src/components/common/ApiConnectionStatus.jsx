@@ -1,117 +1,226 @@
 import React, { useState } from 'react';
 
-function ApiConnectionStatus() {
-  const [apiState, setApiState] = useState({
-    message: '',
+function AuthForm() {
+  const [authState, setAuthState] = useState({
+    email: '',
+    password: '',
+    name: '', // For registration
     error: null,
     loading: false,
-    postResponse: null
+    successMessage: null
   });
-  
+
+  const [isLogin, setIsLogin] = useState(true); // Toggle between login/register
+
   const API_BASE_URL = 'http://localhost:5000/api';
 
-  // Generic API caller function
-  const callApi = async (endpoint, method = 'GET', body = null) => {
-    setApiState(prev => ({ ...prev, loading: true, error: null }));
-    
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAuthState(prev => ({
+      ...prev,
+      [name]: value,
+      error: null // Clear error when user types
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAuthState(prev => ({ ...prev, loading: true, error: null }));
+
     try {
-      const options = {
-        method,
+      const endpoint = isLogin ? '/login' : '/register';
+      const body = isLogin 
+        ? { email: authState.email, password: authState.password }
+        : { name: authState.name, email: authState.email, password: authState.password };
+      
+
+      
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-      };
-      
-      if (body) options.body = JSON.stringify(body);
-      
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-      
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-      
+        body: JSON.stringify(body)
+      });
+
+
       const data = await response.json();
-      
-      setApiState(prev => ({
+
+      console.log(data.message)
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Authentication failed');
+      }
+
+      setAuthState(prev => ({
         ...prev,
         loading: false,
-        message: method === 'GET' ? data.message || data : null,
-        postResponse: method === 'POST' ? data : null
+        successMessage: data.message,
+        password: '' // Clear password after successful auth
       }));
-      
-      return data;
-      
+
     } catch (error) {
-      console.error(`${method} request failed:`, error);
-      setApiState(prev => ({
+      setAuthState(prev => ({
         ...prev,
         loading: false,
         error: error.message
       }));
-      throw error;
     }
   };
 
-  // Specific API actions
-  const fetchLuna = () => callApi('/luna');
-  const fetchRomeo = () => callApi('/romeo');
-
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>API Connection Tester</h1>
+    <div style={containerStyle}>
+      <h1 style={headerStyle}>{isLogin ? 'Login' : 'Register'}</h1>
       
-      <div style={{ marginBottom: '20px' }}>
+      <form onSubmit={handleSubmit} style={formStyle}>
+        {!isLogin && (
+          <div style={inputGroupStyle}>
+            <label htmlFor="name" style={labelStyle}>Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={authState.name}
+              onChange={handleChange}
+              style={inputStyle}
+              required
+            />
+          </div>
+        )}
+
+        <div style={inputGroupStyle}>
+          <label htmlFor="email" style={labelStyle}>Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={authState.email}
+            onChange={handleChange}
+            style={inputStyle}
+            required
+          />
+        </div>
+
+        <div style={inputGroupStyle}>
+          <label htmlFor="password" style={labelStyle}>Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={authState.password}
+            onChange={handleChange}
+            style={inputStyle}
+            minLength="6"
+            required
+          />
+        </div>
+
         <button 
-          onClick={fetchLuna}
-          disabled={apiState.loading}
+          type="submit" 
+          disabled={authState.loading}
           style={buttonStyle}
         >
-          Luna
+          {authState.loading ? 'Processing...' : isLogin ? 'Login' : 'Register'}
         </button>
-        
+
         <button 
-          onClick={fetchRomeo}
-          disabled={apiState.loading}
-          style={buttonStyle}
+          type="button"
+          onClick={() => setIsLogin(!isLogin)}
+          style={toggleButtonStyle}
         >
-          Romeo
+          {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}
         </button>
-  
-      </div>
-      
-      {apiState.loading && <p style={{ color: '#2196F3' }}>Loading...</p>}
-      
-      {apiState.error && (
-        <div style={{ color: '#f44336', padding: '10px', border: '1px solid #f44336', borderRadius: '4px' }}>
-          Error: {apiState.error}
+      </form>
+
+      {authState.error && (
+        <div style={errorStyle}>
+          {authState.error}
         </div>
       )}
-      
-      {apiState.message && (
-        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#e8f5e9', borderRadius: '4px' }}>
-          <h3>GET Response:</h3>
-          <pre>{JSON.stringify(apiState.message, null, 2)}</pre>
-        </div>
-      )}
-      
-      {apiState.postResponse && (
-        <div style={{ marginTop: '20px', padding: '10px', backgroundColor: '#e3f2fd', borderRadius: '4px' }}>
-          <h3>POST Response:</h3>
-          <pre>{JSON.stringify(apiState.postResponse, null, 2)}</pre>
+
+      {authState.successMessage && (
+        <div style={successStyle}>
+          {authState.successMessage}
         </div>
       )}
     </div>
   );
 }
 
-// Style object
+// Styles
+const containerStyle = {
+  maxWidth: '400px',
+  margin: '2rem auto',
+  padding: '2rem',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+};
+
+const headerStyle = {
+  textAlign: 'center',
+  color: '#333',
+  marginBottom: '1.5rem'
+};
+
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem'
+};
+
+const inputGroupStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '0.5rem'
+};
+
+const labelStyle = {
+  fontSize: '0.9rem',
+  color: '#555'
+};
+
+const inputStyle = {
+  padding: '0.8rem',
+  border: '1px solid #ddd',
+  borderRadius: '4px',
+  fontSize: '1rem'
+};
+
 const buttonStyle = {
-  padding: '10px 15px',
-  margin: '0 10px 10px 0',
+  padding: '0.8rem',
   backgroundColor: '#2196F3',
   color: 'white',
   border: 'none',
   borderRadius: '4px',
   cursor: 'pointer',
-  fontSize: '14px'
+  fontSize: '1rem',
+  marginTop: '1rem',
+  transition: 'background-color 0.3s',
+  ':hover': {
+    backgroundColor: '#0b7dda'
+  }
 };
 
-export default ApiConnectionStatus;
+const toggleButtonStyle = {
+  ...buttonStyle,
+  backgroundColor: 'transparent',
+  color: '#2196F3',
+  border: '1px solid #2196F3',
+  marginTop: '0.5rem'
+};
+
+const errorStyle = {
+  color: '#f44336',
+  padding: '1rem',
+  marginTop: '1rem',
+  backgroundColor: '#ffebee',
+  borderRadius: '4px'
+};
+
+const successStyle = {
+  color: '#4CAF50',
+  padding: '1rem',
+  marginTop: '1rem',
+  backgroundColor: '#e8f5e9',
+  borderRadius: '4px'
+};
+
+export default AuthForm;
