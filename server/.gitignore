@@ -1,3 +1,9 @@
+
+# System Files (Top of file)
+.DS_Store
+*.DS_Store
+**/.DS_Store
+
 # Python
 __pycache__/
 *.py[cod]
