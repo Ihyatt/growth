@@ -1,8 +1,8 @@
-import ApiConnectionStatus from "./components/common/ApiConnectionStatus"
+import AuthForm from "./components/common/AuthForm"
 function App() {
 
   return (
-    <ApiConnectionStatus/>
+    <AuthForm/>
   )
 }
 
