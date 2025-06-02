@@ -5,6 +5,7 @@ function AuthForm() {
     email: '',
     password: '',
     name: '', // For registration
+    userType: 'patient', // 'patient' or 'practitioner'
     error: null,
     loading: false,
     successMessage: null
@@ -23,6 +24,14 @@ function AuthForm() {
     }));
   };
 
+  const handleUserTypeChange = (type) => {
+    setAuthState(prev => ({
+      ...prev,
+      userType: type,
+      error: null
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setAuthState(prev => ({ ...prev, loading: true, error: null }));
@@ -31,9 +40,12 @@ function AuthForm() {
       const endpoint = isLogin ? '/login' : '/register';
       const body = isLogin 
         ? { email: authState.email, password: authState.password }
-        : { name: authState.name, email: authState.email, password: authState.password };
-      
-
+        : { 
+            name: authState.name, 
+            email: authState.email, 
+            password: authState.password,
+            userType: authState.userType
+          };
       
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
@@ -41,10 +53,7 @@ function AuthForm() {
         body: JSON.stringify(body)
       });
 
-
       const data = await response.json();
-
-      console.log(data.message)
 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed');
@@ -72,18 +81,48 @@ function AuthForm() {
       
       <form onSubmit={handleSubmit} style={formStyle}>
         {!isLogin && (
-          <div style={inputGroupStyle}>
-            <label htmlFor="name" style={labelStyle}>Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={authState.name}
-              onChange={handleChange}
-              style={inputStyle}
-              required
-            />
-          </div>
+          <>
+            <div style={inputGroupStyle}>
+              <label htmlFor="name" style={labelStyle}>Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={authState.name}
+                onChange={handleChange}
+                style={inputStyle}
+                required
+              />
+            </div>
+
+            <div style={inputGroupStyle}>
+              <label style={labelStyle}>I am a:</label>
+              <div style={userTypeContainer}>
+                <button
+                  type="button"
+                  style={{
+                    ...userTypeButton,
+                    backgroundColor: authState.userType === 'patient' ? '#2196F3' : '#f0f0f0',
+                    color: authState.userType === 'patient' ? 'white' : '#333'
+                  }}
+                  onClick={() => handleUserTypeChange('patient')}
+                >
+                  Patient
+                </button>
+                <button
+                  type="button"
+                  style={{
+                    ...userTypeButton,
+                    backgroundColor: authState.userType === 'practitioner' ? '#2196F3' : '#f0f0f0',
+                    color: authState.userType === 'practitioner' ? 'white' : '#333'
+                  }}
+                  onClick={() => handleUserTypeChange('practitioner')}
+                >
+                  Medical Practitioner
+                </button>
+              </div>
+            </div>
+          </>
         )}
 
         <div style={inputGroupStyle}>
@@ -221,6 +260,22 @@ const successStyle = {
   marginTop: '1rem',
   backgroundColor: '#e8f5e9',
   borderRadius: '4px'
+};
+
+const userTypeContainer = {
+  display: 'flex',
+  gap: '0.5rem',
+  marginTop: '0.5rem'
+};
+
+const userTypeButton = {
+  flex: 1,
+  padding: '0.6rem',
+  border: '1px solid #ddd',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontSize: '0.9rem',
+  transition: 'all 0.3s'
 };
 
 export default AuthForm;
