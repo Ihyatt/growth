@@ -3,7 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from app import database
 from app.main.routes import bp
-# from flask_migrate import Migrate
+from flask_migrate import Migrate
 
 from app.config import Config
 
@@ -17,7 +17,7 @@ def create_app():
     CORS(app)
         
     database.init_app(app)
-    # Migrate(app, database)
+    Migrate(app, database.db)
 
     from app.models.user import User
     
