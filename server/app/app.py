@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from app.config import Config
+from flask import Blueprint
 
 app = Flask(__name__)
 
