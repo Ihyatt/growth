@@ -1,15 +1,69 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/Dashboard';
+// src/App.jsx
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
+import Dashboard from './components/Dashboard';
 
-export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </Router>
-  );
+function App() {
+    // Initialize isAuthenticated from localStorage, or false if not found
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        const storedAuth = localStorage.getItem('isAuthenticated');
+        return storedAuth === 'true'; // localStorage stores strings, convert to boolean
+    });
+
+    // Effect to update localStorage whenever isAuthenticated changes
+    useEffect(() => {
+        localStorage.setItem('isAuthenticated', isAuthenticated);
+    }, [isAuthenticated]);
+
+    const handleLogin = () => {
+        setIsAuthenticated(true);
+        // In a real app, you'd store a token from your backend here
+        // localStorage.setItem('authToken', 'your-jwt-token');
+    };
+
+    const handleRegister = () => {
+        // For our mock, registration doesn't immediately log in.
+        // It just means an account "exists," so we redirect to login.
+        // If your backend auto-logs in after registration, you'd call handleLogin here.
+        console.log("User registered (mock). Redirecting to login.");
+    };
+
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        // Clear any stored tokens or user data
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('authToken'); // If you were storing a token
+    };
+
+    return (
+        <Router>
+            <Routes>
+                {/* Public Routes */}
+                <Route
+                    path="/login"
+                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage onLogin={handleLogin} />}
+                />
+                <Route
+                    path="/register"
+                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage onRegister={handleRegister} />}
+                />
+
+                {/* Protected Route */}
+                <Route
+                    path="/dashboard"
+                    element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />}
+                />
+
+                {/* Default Route: Redirect to dashboard if authenticated, otherwise to login */}
+                <Route
+                    path="/"
+                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+                />
+            </Routes>
+        </Router>
+    );
 }
+
+export default App;

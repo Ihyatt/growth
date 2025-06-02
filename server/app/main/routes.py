@@ -11,10 +11,12 @@ from app.main import bp
 def login():
     try:
         data = request.get_json()
+        print(data)
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
         user = User.query.filter_by(email=email).first()
+
 
         if not user:
             return jsonify(error="User not found"), 404
@@ -33,7 +35,6 @@ def login():
 def register():
     try:
         data = request.get_json()
-        print(data)
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
