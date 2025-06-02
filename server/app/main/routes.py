@@ -25,7 +25,8 @@ def login():
             return jsonify(error="Invalid password"), 404
 
         jwt_token = create_access_token(identity=user.id)
-        return jsonify(message=f"welcome back, {username}", jwt_token=jwt_token)
+        return jsonify(message=f"welcome back, {username}", jwtToken=jwt_token, permission=user.permission)
+    
     except Exception as e:
         print("Invalid login", e)
         return jsonify(error=str(e)), 500

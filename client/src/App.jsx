@@ -20,7 +20,7 @@ function App() {
     const handleLogin = () => {
         setIsAuthenticated(true);
         // In a real app, you'd store a token from your backend here
-        // localStorage.setItem('authToken', 'your-jwt-token');
+        // localStorage.setItem('jwtToken', 'your-jwt-token');
     };
 
     const handleRegister = () => {
@@ -34,7 +34,7 @@ function App() {
         setIsAuthenticated(false);
         // Clear any stored tokens or user data
         localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('authToken'); // If you were storing a token
+        localStorage.removeItem('jwtToken'); // If you were storing a token
     };
 
     return (

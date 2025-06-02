@@ -28,8 +28,11 @@ const LoginPage = ({ onLogin }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
+            
 
             const data = await response.json();
+            localStorage.setItem("jwtToken", data.jwtToken);
+            localStorage.setItem("permission", data.permission);
             if (!response.ok) {
                 // If response is not OK, throw an error with the message from the backend
                 throw new Error(data.message || 'Login failed');

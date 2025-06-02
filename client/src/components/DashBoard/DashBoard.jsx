@@ -10,7 +10,7 @@ const Dashboard = ({ onLogout }) => {
         onLogout(); // Call the onLogout function passed from App.jsx
         navigate('/login'); // Redirect to login page
     };
-
+    
     return (
         <div className="dashboard-container">
             <h2 className="dashboard-heading">Welcome to the Dashboard!</h2>
