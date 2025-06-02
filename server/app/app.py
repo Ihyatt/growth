@@ -8,4 +8,4 @@ app.config.from_object(Config)
 
 CORS(app)
 
-from app.routes import main
+from app.main import routes

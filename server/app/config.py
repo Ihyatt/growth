@@ -1,8 +1,15 @@
+import os
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 class Config:
-    HOST = "localhost"
-    PORT = 5000
-    DEBUG = True
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'romeoluna')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    HOST = os.environ.get('HOST', 'localhost')
+    PORT = int(os.environ.get('PORT', 5000))
+    DEBUG = os.environ.get('DEBUG', 'True').lower() in ['true', '1', 'yes']
