@@ -35,7 +35,7 @@ def login():
 def register():
     try:
         data = request.get_json()
-        name = data.get('name').strip()
+        username = data.get('username').strip()
         email = data.get('email').strip()
         password = data.get('password').strip()
         user_type = data.get('userType').strip()
@@ -44,7 +44,7 @@ def register():
         if existing_user:
             return jsonify(error="User already exists"), 400
 
-        user = User(username=name, email=email)
+        user = User(username=username, email=email)
         print('error in login', user)
         user.set_password(password)
         
@@ -58,7 +58,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        return jsonify(message=f"User {name} registered successfully")
+        return jsonify(message=f"User {username} registered successfully")
     except Exception as e:
         db.session.rollback()
         print("Error saving user:", e)

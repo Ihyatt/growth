@@ -32,7 +32,7 @@ const RegisterPage = ({ onRegister }) => {
             try {
             const API_BASE_URL = import.meta.env.VITE_API_URL;
             const body = {
-                name: username,
+                username: username,
                 email: email,
                 password: password,
                 userType: userType
@@ -83,7 +83,6 @@ const RegisterPage = ({ onRegister }) => {
                 <input
                     type="email"
                     id="email"
-                    name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     style={styles.input}
