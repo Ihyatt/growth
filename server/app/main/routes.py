@@ -3,6 +3,7 @@ from flask import request, jsonify, abort
 from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token
+from app.models.model_enums import PermissionLevel
 
 from app.main import bp
 
@@ -32,9 +33,11 @@ def login():
 def register():
     try:
         data = request.get_json()
+        print(data)
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
+        user_type = data.get('userType')
 
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
@@ -42,6 +45,13 @@ def register():
 
         user = User(username=name, email=email)
         user.set_password(password)
+        
+        if user_type == 'patient':
+            user.permission = PermissionLevel.PATIENT
+        
+        if user_type == 'practitioner':
+            user.permission = PermissionLevel.PRACTITIONER
+
 
         db.session.add(user)
         db.session.commit()

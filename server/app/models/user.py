@@ -1,13 +1,9 @@
-import enum
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import db
 from sqlalchemy import Enum 
+from app.models.model_enums import PermissionLevel
 
-class PermissionLevel(str, enum.Enum):
-    ADMIN = "admin"
-    PRACTITIONER = "practitioner"
-    PATIENT = "patient"
 
 class User(db.Model):
     __tablename__ = 'users'
