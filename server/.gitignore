@@ -5,7 +5,10 @@
 **/.DS_Store
 
 # Python
-__pycache__/
+server/__pycache__
+server/app/__pycache__
+server/app/main/__pycache__
+server/app/models/__pycache__
 *.py[cod]
 *.pyc
 *.pyo
@@ -13,7 +16,7 @@ __pycache__/
 .python-version
 
 # Database
-migrations/
+server/migrations/
 *.sqlite
 *.db
 
