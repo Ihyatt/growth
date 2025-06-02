@@ -9,17 +9,43 @@ const LoginPage = ({ onLogin }) => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError(''); // Clear previous errors
 
-        // Mock authentication: replace with actual API call
-        if (username === 'user' && password === 'password') {
+
+        if (username && password) {
+        try {
+            const API_BASE_URL = import.meta.env.VITE_API_URL;
+            const body = {
+                username: username,
+                password: password,
+            };
+            console.log(API_BASE_URL); // Log to ensure VITE_API_URL is correctly loaded
+
+            const response = await fetch(`${API_BASE_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                // If response is not OK, throw an error with the message from the backend
+                throw new Error(data.message || 'Login failed');
+            }
+
+
             onLogin(); // Call the onLogin function from App.jsx
             navigate('/dashboard'); // Redirect to dashboard
-        } else {
-            setError('Invalid username or password');
+
+        } catch (err) {
+            // Catch any network errors or errors thrown from the response
+            setError(err.message || 'An unexpected error occurred during login.');
         }
+    } else {
+        setError('Please fill in all fields and select your user type.');
+    }
     };
 
     return (
