@@ -1,7 +1,7 @@
-from app.main import main_bp
+from app.main import bp
 from flask import jsonify, abort
 
-from app.main import main_bp
+from app.main import bp
 
 @bp.route('/api/luna')
 def luna():

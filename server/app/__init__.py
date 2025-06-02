@@ -7,8 +7,8 @@ def create_app():
     app.config.from_object(Config)
     CORS(app)
 
-    from app.main.routes import main_bp
+    from app.main.routes import bp
 
-    app.register_blueprint(main_bp)
+    app.register_blueprint(bp)
 
     return app
