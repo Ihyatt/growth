@@ -1,63 +1,75 @@
-// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage/LoginPage';
 import RegisterPage from './components/RegisterPage/RegisterPage';
 import Dashboard from './components/Dashboard/Dashboard';
 
+const AUTH_KEY = 'isAuthenticated';
+const TOKEN_KEY = 'jwtToken';
+const PERMISSION_KEY = 'permission';
+
 function App() {
-    // Initialize isAuthenticated from localStorage, or false if not found
-    const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        const storedAuth = localStorage.getItem('isAuthenticated');
-        return storedAuth === 'true'; // localStorage stores strings, convert to boolean
-    });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem(AUTH_KEY) === 'true';
+  });
 
-    // Effect to update localStorage whenever isAuthenticated changes
-    useEffect(() => {
-        localStorage.setItem('isAuthenticated', isAuthenticated);
-    }, [isAuthenticated]);
-   
-    const handleLogin = (jwtToken, permission) => {
-        setIsAuthenticated(true);
-        localStorage.setItem("jwtToken", jwtToken);
-        localStorage.setItem("permission", permission);
-    };
+  useEffect(() => {
+    localStorage.setItem(AUTH_KEY, isAuthenticated);
+  }, [isAuthenticated]);
 
+  const handleLogin = (jwtToken, permission) => {
+    setIsAuthenticated(true);
+    localStorage.setItem(TOKEN_KEY, jwtToken);
+    localStorage.setItem(PERMISSION_KEY, permission);
+  };
 
-    const handleLogout = () => {
-        setIsAuthenticated(false);
-        // Clear any stored tokens or user data
-        localStorage.removeItem('isAuthenticated');
-        localStorage.removeItem('jwtToken'); // If you were storing a token
-    };
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(PERMISSION_KEY);
+  };
 
-    return (
-        <Router>
-            <Routes>
-                {/* Public Routes */}
-                <Route
-                    path="/login"
-                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage onLogin={handleLogin} />}
-                />
-                <Route
-                    path="/register"
-                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
-                />
+  return (
+    <Router>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? <Navigate to="/dashboard" replace />
+              : <LoginPage onLogin={handleLogin} />
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            isAuthenticated
+              ? <Navigate to="/dashboard" replace />
+              : <RegisterPage />
+          }
+        />
 
-                {/* Protected Route */}
-                <Route
-                    path="/dashboard"
-                    element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />}
-                />
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated
+              ? <Dashboard onLogout={handleLogout} />
+              : <Navigate to="/login" replace />
+          }
+        />
 
-                {/* Default Route: Redirect to dashboard if authenticated, otherwise to login */}
-                <Route
-                    path="/"
-                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
-                />
-            </Routes>
-        </Router>
-    );
+        <Route
+          path="/"
+          element={
+            isAuthenticated
+              ? <Navigate to="/dashboard" replace />
+              : <Navigate to="/login" replace />
+          }
+        />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
