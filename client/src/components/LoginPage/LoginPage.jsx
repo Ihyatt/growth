@@ -31,15 +31,12 @@ const LoginPage = ({ onLogin }) => {
             
 
             const data = await response.json();
-            localStorage.setItem("jwtToken", data.jwtToken);
-            localStorage.setItem("permission", data.permission);
             if (!response.ok) {
                 // If response is not OK, throw an error with the message from the backend
                 throw new Error(data.message || 'Login failed');
             }
 
-
-            onLogin(); // Call the onLogin function from App.jsx
+            onLogin(data.jwtToken, data.permission); // Call the onLogin function from App.jsx
             navigate('/dashboard'); // Redirect to dashboard
 
         } catch (err) {

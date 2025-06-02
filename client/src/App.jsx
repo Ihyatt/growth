@@ -16,19 +16,13 @@ function App() {
     useEffect(() => {
         localStorage.setItem('isAuthenticated', isAuthenticated);
     }, [isAuthenticated]);
-
-    const handleLogin = () => {
+   
+    const handleLogin = (jwtToken, permission) => {
         setIsAuthenticated(true);
-        // In a real app, you'd store a token from your backend here
-        // localStorage.setItem('jwtToken', 'your-jwt-token');
+        localStorage.setItem("jwtToken", jwtToken);
+        localStorage.setItem("permission", permission);
     };
 
-    const handleRegister = () => {
-        // For our mock, registration doesn't immediately log in.
-        // It just means an account "exists," so we redirect to login.
-        // If your backend auto-logs in after registration, you'd call handleLogin here.
-        console.log("User registered (mock). Redirecting to login.");
-    };
 
     const handleLogout = () => {
         setIsAuthenticated(false);
@@ -47,7 +41,7 @@ function App() {
                 />
                 <Route
                     path="/register"
-                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage onRegister={handleRegister} />}
+                    element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
                 />
 
                 {/* Protected Route */}
