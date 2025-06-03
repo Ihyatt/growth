@@ -12,7 +12,6 @@ export default function AdminDashboardPage() {
   const [pagination, setPagination] = useState({
     nextCursor: null,
     prevCursor: null,
-    hasMore: false
   });
   const [queryParams, setQueryParams] = useState({
     status: USER_STATUS.PENDING,
@@ -26,13 +25,12 @@ export default function AdminDashboardPage() {
     
     try {
       const params = { ...queryParams, cursor };
-      const { data, pagination: paginationData } = await fetchUsers(params);
+      const data = await fetchUsers(params);
 
-      setUsers(data);
+      setUsers(data.users);
       setPagination({
-        nextCursor: paginationData.next_cursor,
-        prevCursor: paginationData.prev_cursor,
-        hasMore: paginationData.has_more
+        nextCursor: data.has_next,
+        prevCursor: data.has_prev,
       });
     } catch (err) {
       setError(err.message);
