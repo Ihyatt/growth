@@ -26,9 +26,8 @@ export default function AdminDashboardPage() {
     
     try {
       const params = { ...queryParams, cursor };
-      console.log(queryParams)
       const { data, pagination: paginationData } = await fetchUsers(params);
-      
+
       setUsers(data);
       setPagination({
         nextCursor: paginationData.next_cursor,

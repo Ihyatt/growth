@@ -41,7 +41,6 @@ function App() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(PERMISSION);
   };
-  console.log(isAuthenticated, userPermission, USER_ROLES)
   return (
     <Router>
       <Routes>

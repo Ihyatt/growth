@@ -34,6 +34,7 @@ export const fetchUsers = async (params = {}) => {
         }
 
         const data = await response.json();
+        console.log(data)
         return data; // Assuming your backend returns { data: [...], pagination: {...} }
     } catch (error) {
         console.error('Error fetching users:', error);

@@ -34,3 +34,16 @@ class User(db.Model):
     @property
     def is_practitioner(self):
         return self.permission == PermissionLevel.PRACTITIONER
+
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "permission": self.permission.value if self.permission else None,
+            "is_validated": self.is_validated.value if self.is_validated else None,
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }

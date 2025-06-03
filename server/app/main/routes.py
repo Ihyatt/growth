@@ -3,8 +3,7 @@ from app.main import bp
 from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token
-from app.models.model_enums import PermissionLevel
-
+from app.models.model_enums import PermissionLevel,ValidationLevel
 
 @bp.route('/api/login', methods=['POST'])
 def login():
@@ -71,17 +70,17 @@ def register():
 def get_admin_users():
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
-    status = request.args.get('status')  # e.g., "pending", "approved"
+    status = request.args.get('status')
 
     query = User.query
 
-    if status == 'PENDING':
-        query = query.filter_by(is_validated='PENDING')
-    elif status == 'APPROVED':
-        query = query.filter_by(is_validated='APPROVED')
+    if status == 'pending':
+        query = query.filter_by(permission=PermissionLevel.PRACTITIONER,is_validated=ValidationLevel.PENDING)
+    elif status == 'approved':
+        query = query.filter_by(permission=PermissionLevel.PRACTITIONER,is_validated=ValidationLevel.APPROVED)
 
     users = query.paginate(page=page, per_page=limit, error_out=False)
-
+    
     return jsonify({
         "users": [user.to_dict() for user in users.items],
         "total": users.total,
@@ -90,3 +89,4 @@ def get_admin_users():
         "has_next": users.has_next,
         "has_prev": users.has_prev
     })
+
