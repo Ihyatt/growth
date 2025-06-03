@@ -65,3 +65,28 @@ def register():
     except Exception as e:
         db.session.rollback()
         return jsonify(error="Registration failed: " + str(e)), 500
+
+
+@bp.route('/api/admin/users', methods=['GET'])
+def get_admin_users():
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=20, type=int)
+    status = request.args.get('status')  # e.g., "pending", "approved"
+
+    query = User.query
+
+    if status == 'PENDING':
+        query = query.filter_by(is_validated='PENDING')
+    elif status == 'APPROVED':
+        query = query.filter_by(is_validated='APPROVED')
+
+    users = query.paginate(page=page, per_page=limit, error_out=False)
+
+    return jsonify({
+        "users": [user.to_dict() for user in users.items],
+        "total": users.total,
+        "page": users.page,
+        "pages": users.pages,
+        "has_next": users.has_next,
+        "has_prev": users.has_prev
+    })

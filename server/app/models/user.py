@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import db
 from sqlalchemy import Enum 
-from app.models.model_enums import PermissionLevel
+from app.models.model_enums import PermissionLevel, ValidationLevel
 
 
 class User(db.Model):
@@ -12,8 +12,8 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(512), nullable=False)
-    permission = db.Column(Enum(PermissionLevel), nullable=False, default="patient")
-    is_validated = db.Column(db.Boolean, default=False)
+    permission = db.Column(Enum(PermissionLevel), nullable=False, default=PermissionLevel.PATIENT)
+    is_validated = db.Column(Enum(ValidationLevel), nullable=False, default=ValidationLevel.PENDING)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, 

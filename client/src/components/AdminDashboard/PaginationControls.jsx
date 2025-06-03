@@ -1,4 +1,5 @@
 import React from 'react';
+import './AdminDashBoard.css';
 
 
 export default function PaginationControls({ pagination, onNext, onPrev }) {

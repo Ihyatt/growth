@@ -3,6 +3,7 @@ import UserTable from '../components/AdminDashboard/UserTable';
 import PaginationControls from '../components/AdminDashboard/PaginationControls';
 import { fetchUsers } from '../services/adminService';
 import { USER_STATUS, USER_ROLES } from '../constants/enums';
+import './AdminDashBoardPage.css';
 
 export default function AdminDashboardPage() {
   const [users, setUsers] = useState([]);
@@ -25,6 +26,7 @@ export default function AdminDashboardPage() {
     
     try {
       const params = { ...queryParams, cursor };
+      console.log(queryParams)
       const { data, pagination: paginationData } = await fetchUsers(params);
       
       setUsers(data);

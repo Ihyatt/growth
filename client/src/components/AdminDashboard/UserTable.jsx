@@ -1,4 +1,6 @@
 import { USER_STATUS } from '../../constants/enums';
+import './AdminDashBoard.css';
+
 
 export default function UserTable({ users=[], onRefresh }) {
   const handleAction = async (userId, action) => {
