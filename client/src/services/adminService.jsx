@@ -1,34 +1,24 @@
-// src/services/adminService.js
-
-// IMPORTANT: Get your API base URL from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-// Helper to get JWT token from localStorage
 const getAuthToken = () => {
-    // Assuming your token key is 'authToken' or 'jwtToken' as per your App.jsx
     return localStorage.getItem('jwtToken');
 };
 
-// --- API Call for Fetching Users ---
 export const fetchUsers = async (params = {}) => {
-    // Build query parameters
     const queryString = new URLSearchParams(params).toString();
     const url = `${API_BASE_URL}/admin/users?${queryString}`;
 
 
     try {
         const response = await fetch(url, {
-            method: 'GET', // Method for getting data
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                // Include Authorization header for protected routes
                 'Authorization': `Bearer ${getAuthToken()}`
             }
         });
 
-        // Check if the response was successful (status code 2xx)
         if (!response.ok) {
-            // If not successful, try to read the error message from the response body
             const errorData = await response.json(); // Assuming backend sends JSON errors
             throw new Error(errorData.message || 'Failed to fetch users.');
         }

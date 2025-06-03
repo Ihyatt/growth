@@ -68,6 +68,7 @@ def register():
 
 @bp.route('/api/admin/users', methods=['GET'])
 def get_admin_users():
+    # set up jwt token validator
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
     status = request.args.get('status')
@@ -89,4 +90,30 @@ def get_admin_users():
         "has_next": users.has_next,
         "has_prev": users.has_prev
     })
+
+
+@bp.route('/users/<int:user_id>/approve', methods=['POST'])
+def approve_user(user_id):
+    # 1. Find the user
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({"message": f"User with ID {user_id} not found."}), 404
+
+    if user.is_validated == ValidationLevel.APPROVED:
+        return jsonify({"message": f"User {user_id} is already approved."}), 200 # Or 409 Conflict
+
+    user.is_validated = ValidationLevel.APPROVED
+
+    try:
+        # 4. Save changes to the database
+        db.session.commit()
+        return jsonify({
+            "message": f"User {user_id} approved successfully.",
+            "user": user.to_dict() # Return updated user data
+        }), 200
+    except Exception as e:
+        db.session.rollback() # Rollback changes if an error occurs during commit
+        return jsonify({"message": f"Failed to approve user {user_id}: {str(e)}"}), 500
+
 
