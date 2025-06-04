@@ -3,7 +3,7 @@ from app.main import bp
 from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
-from app.models.model_enums import PermissionLevel,ValidationLevel
+from app.models.constants.enums import PermissionLevel,ValidationLevel
 
 @bp.route('/api/login', methods=['POST'])
 def login():

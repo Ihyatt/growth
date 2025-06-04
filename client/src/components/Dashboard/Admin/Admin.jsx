@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { fetchUsers, approveUser, rejectUser } from '../../../services/admin';
 import useAuthStore from '../../../stores/auth';
 

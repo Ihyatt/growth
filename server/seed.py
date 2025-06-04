@@ -1,15 +1,12 @@
 from app import create_app
 from app.database import db
 from app.models.user import User
-from app.models.model_enums import PermissionLevel, ValidationLevel
+from app.models.constants.enums import PermissionLevel, ValidationLevel
 
 def seed_users():
     app = create_app()
     with app.app_context():
-        # Optional: Clear existing users
         db.session.query(User).delete()
-
-
         users = [
             # Admins
             {
