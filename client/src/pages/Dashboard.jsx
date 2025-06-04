@@ -28,7 +28,6 @@ function Dashboard() {
     content = <Patient />;
   }
 
-  console.log('hello i am isAuthenticad',isAuthenticated)
 
   return (
     <div>

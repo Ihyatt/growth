@@ -25,6 +25,7 @@ const Admin = () => {
     try {
       const params = { ...queryParams, cursor };
       const data = await fetchUsers(params);
+      console.log(data)
 
       setUsers(data.users);
       setPagination({
@@ -36,6 +37,8 @@ const Admin = () => {
     } finally {
       setLoading(false);
     }
+
+    console.log(users)
   };
 
   useEffect(() => {
