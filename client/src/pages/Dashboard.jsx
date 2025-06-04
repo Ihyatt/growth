@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 import {USER_ROLES} from '../utils/constants'
 import useAuthStore from '../stores/auth';
-import Practitioner from '../components/Dashboard/Practitioner';
+import Practitioner from '../components/Dashboard/Practitioner/Practitioner';
 import Admin from '../components/Dashboard/Admin/Admin';
-import Patient from '../components/Dashboard/Patient';
+import Patient from '../components/Dashboard/Patient/Patient';
 
 
 function Dashboard() {

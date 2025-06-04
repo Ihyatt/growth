@@ -1,8 +1,9 @@
+
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import db
 from sqlalchemy import Enum 
-from app.models.constants.enums import Responses
+from app.models.constants.enums import PermissionLevel, ValidationLevel
 
 
 class PractitionerForm(db.Model):
