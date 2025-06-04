@@ -23,8 +23,7 @@ export const fetchUsers = async (params = {}) => {
             throw new Error(errorData.message || 'Failed to fetch users.');
         }
 
-        const data = await response.json();
-        return data; // Assuming your backend returns { data: [...], pagination: {...} }
+        return response
     } catch (error) {
         console.error('Error fetching users:', error);
         throw error; // Re-throw to be caught by the component

@@ -43,7 +43,7 @@ class User(db.Model):
             "email": self.email,
             "permission": self.permission.value if self.permission else None,
             "is_validated": self.is_validated.value if self.is_validated else None,
-            "is_active": self.is_active,
+            "is_active": 'ACTIVE' if self.is_active else 'INACTIVE',
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }

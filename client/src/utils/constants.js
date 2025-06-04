@@ -3,6 +3,12 @@ export const USER_STATUS = {
     APPROVED: 'approved',
     REJECTED: 'rejected'
   };
+
+
+  export const USER_ACTIVE = {
+    ACTIVE: 'active',
+    INACTIVE: 'Inactive',
+  };
   
   export const USER_ROLES = {
     ADMIN: 'ADMIN',

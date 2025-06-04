@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchUsers } from '../../../services/admin';
-import { USER_STATUS, USER_ROLES } from '../../../utils/constants';
+import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../../utils/constants';
 import User from './AdminContent/User';
 import Pagination from './AdminContent/Pagination';
 
@@ -9,9 +9,11 @@ const Admin = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState({
-    role: USER_ROLES.PRACTITIONER,
     status: USER_STATUS.PENDING,
-    search: ''
+    role: USER_ROLES.PRACTITIONER,
+    active: USER_ACTIVE.ACTIVE,
+    email: '',
+    limit: 10
   });
   const [pagination, setPagination] = useState({
     page: 1,
@@ -19,13 +21,7 @@ const Admin = () => {
     hasMore: true
   });
 
-  const [queryParams, setQueryParams] = useState({
-    status: USER_STATUS.PENDING,
-    role: USER_ROLES.PRACTITIONER,
-    limit: 10
-  });
-
-  const fetchUsers = async (reset = false) => {
+  const getUsers = async (reset = false) => {
     setLoading(true);
     try {
       const params = {
@@ -33,15 +29,17 @@ const Admin = () => {
         page: reset ? 1 : pagination.page,
         limit: pagination.limit
       };
-      
-      const response = await axios.get('/api/users', { params });
-      const newUsers = response.data.users;
+      console.log(query)
+      const response = await fetchUsers(params);
+      const data = await response.json(); 
+      const newUsers = data.users;
+      console.log(users)
       
       setUsers(prev => reset ? newUsers : [...prev, ...newUsers]);
       setPagination(prev => ({
         ...prev,
         page: reset ? 2 : prev.page + 1,
-        hasMore: response.data.hasMore
+        hasMore: data.hasMore
       }));
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -52,11 +50,11 @@ const Admin = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetchUsers(true); // Reset pagination on new query
+    getUsers(true); // Reset pagination on new query
   };
 
   const handleLoadMore = () => {
-    fetchUsers();
+    getUsers();
   };
 
   return (
@@ -64,25 +62,32 @@ const Admin = () => {
       <form onSubmit={handleSubmit}>
 
      
-        <select name="status" value={queryParams.status} >
+        <select name="status" value={query.status} >
           {Object.values(USER_STATUS).map(status => (
             <option key={status} value={status}>
-              {status.charAt(0).toUpperCase() + status.slice(1)}
+              {status}
             </option>
           ))}
         </select>
-        
-        <select name="role" value={queryParams.role} >
+
+        <select name="active" value={query.active} >
+        {Object.values(USER_ACTIVE).map(active => (
+          <option key={active} value={active}>
+            {active}
+          </option>
+        ))}
+      </select>        
+        <select name="role" value={query.role} >
           {Object.values(USER_ROLES).map(role => (
             <option key={role} value={role}>
-              {role.charAt(0).toUpperCase() + role.slice(1)}
+              {role}
             </option>
           ))}
         </select>
 
         <input
           type="text"
-          placeholder="Search by name"
+          placeholder="Search by email"
           value={query.search}
           onChange={(e) => setQuery({...query, search: e.target.value})}
         />
@@ -95,9 +100,10 @@ const Admin = () => {
       <div className="user-list">
         {users.map(user => (
           <div key={user.id} className="user-card">
-            <h3>{user.name}</h3>
-            <p>Role: {user.role}</p>
-            <p>Status: {user.status}</p>
+            <p>email: {user.email}</p>
+            <p>Role: {user.permission}</p>
+            <p>Validation Status: {user.is_validated}</p>
+            <p>Activity Status: {user.is_active}</p>
           </div>
         ))}
       </div>

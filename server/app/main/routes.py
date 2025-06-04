@@ -75,16 +75,44 @@ def get_admin_users():
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
     status = request.args.get('status')
+    active = request.args.get('active')
+    email = request.args.get('email')
+    active = True if active == 'active' else False
+    print('hello',active)
 
     query = User.query
 
+
     if status == 'pending':
-        query = query.filter_by(permission=PermissionLevel.PRACTITIONER,is_validated=ValidationLevel.PENDING)
+        if email:
+            query = query.filter_by(
+                permission=PermissionLevel.PRACTITIONER,
+                is_validated=ValidationLevel.PENDING,
+                email=email
+            )
+        else:
+            query = query.filter_by(
+                permission=PermissionLevel.PRACTITIONER,
+                is_validated=ValidationLevel.PENDING, 
+                is_active=active
+            )
     elif status == 'approved':
-        query = query.filter_by(permission=PermissionLevel.PRACTITIONER,is_validated=ValidationLevel.APPROVED)
+        if email:
+            query = query.filter_by(
+                permission=PermissionLevel.PRACTITIONER,
+                is_validated=ValidationLevel.PENDING,
+                email=email
+            )
+        else:
+            query = query.filter_by(
+                permission=PermissionLevel.PRACTITIONER,
+                is_validated=ValidationLevel.APPROVED, 
+                is_active=active
+            )
 
     users = query.paginate(page=page, per_page=limit, error_out=False)
     
+
     return jsonify({
         "users": [user.to_dict() for user in users.items],
         "total": users.total,
