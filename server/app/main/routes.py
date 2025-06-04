@@ -82,38 +82,35 @@ def register():
 
 
 @bp.route('/api/admin/users', methods=['GET'])
-@jwt_required_with_role()
+# @jwt_required_with_role()
 def get_admin_users():
     try:
         validation_map = {
             'pending': ValidationLevel.PENDING,
-            'approved': ValidationLevel.VALIDATED 
+            'approved': ValidationLevel.APPROVED 
         }
-
+        print(0)
         page = request.args.get('page', default=1, type=int)
         limit = request.args.get('limit', default=20, type=int)
         status_param = request.args.get('status')
         active_param = request.args.get('active')
         email_param = request.args.get('email')
-        active = True if active == 'ACTIVE' else False
-
+        active = True if active_param == 'ACTIVE' else False
         query = User.query
-        validation_map = {
-            'pending': ValidationLevel.PENDING,
-            'approved': ValidationLevel.APPROVED
-        }
 
+        print(2)
         query = query.filter_by(
             permission=PermissionLevel.PRACTITIONER,
-            is_validated=validation_map[status],
+            is_validated=validation_map[status_param],
             is_active=active,
         )
-
+        print(3)
         if email_param:
             query = query.filter(User.email.ilike(f'%{email_param}%'))
-
+        print(4)
         users_pagination = query.paginate(page=page, per_page=limit, error_out=False)
 
+        print(5)
         return jsonify({
             "users": [user.to_dict() for user in users_pagination.items],
             "total": users_pagination.total,
