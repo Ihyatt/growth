@@ -20,13 +20,15 @@ function Dashboard() {
 
   let content;
 
-  if (isAuthenticated === USER_ROLES.ADMIN) {
+  if (isAuthenticated &&  permission === USER_ROLES.ADMIN) {
     content = <Admin />;
-  } else if (isAuthenticated === USER_ROLES.PRACTITIONER) {
+  } else if (isAuthenticated &&  permission=== USER_ROLES.PRACTITIONER) {
     content = <Practitioner />;
   } else {
     content = <Patient />;
   }
+
+  console.log('hello i am isAuthenticad',isAuthenticated)
 
   return (
     <div>
