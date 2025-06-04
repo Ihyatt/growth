@@ -1,19 +1,20 @@
 import json
-
+from flask import g, current_app # Import current_app for logging
+from app.database import db
 from app.models.audit_log import AuditLog
+from app.models.constants.enums import AuditActionType # Ensure this is imported
 
-
-def log_audit(audited_user_id, action_type, details, model):
+def log_admin_action(target_user_id: int, action_type: AuditActionType, details: dict = None):
+    admin_id = getattr(g, 'user_id', None)
     try:
-        AuditLog(
-            admin_id=g.user_id,
-            audited_user_id = audited_user_id,
-            details = json.dumps(details), 
-            action_type = action_type,
-            audited_model = model
+        new_log = AuditLog(
+            admin_id=admin_id,
+            target_user_id=target_user_id,
+            action_type=action_type,
+            details=details
         )
+        db.session.add(new_log)
         db.session.commit()
-        # log success
-    except:
-        # log failure
-        pass
+        return True
+    except Exception as e:
+        db.session.rollback() 
