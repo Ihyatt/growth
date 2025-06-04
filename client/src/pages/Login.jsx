@@ -16,7 +16,8 @@ const Login = () => {
     console.log(username, password)
     try {
       const response = await userLogin(username, password);
-      login(response.data.jwtToken, response.data.permission);
+      const data = await response.json();
+      login(data.jwtToken, data.permission);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
