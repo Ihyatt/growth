@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchUsers } from '../../../services/admin';
 import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../../utils/constants';
-import User from './AdminContent/User';
-import Pagination from './AdminContent/Pagination';
 
 
 const Admin = () => {
@@ -62,7 +60,11 @@ const Admin = () => {
       <form onSubmit={handleSubmit}>
 
      
-        <select name="status" value={query.status} >
+        <select 
+        name="status" 
+        value={query.status} 
+        onChange={(e) => setQuery({...query, status: e.target.value})}
+        >
           {Object.values(USER_STATUS).map(status => (
             <option key={status} value={status}>
               {status}
@@ -70,14 +72,22 @@ const Admin = () => {
           ))}
         </select>
 
-        <select name="active" value={query.active} >
+        <select 
+        name="active" 
+        value={query.active} 
+        onChange={(e) => setQuery({...query, active: e.target.value})}
+        >
         {Object.values(USER_ACTIVE).map(active => (
           <option key={active} value={active}>
             {active}
           </option>
         ))}
       </select>        
-        <select name="role" value={query.role} >
+        <select 
+        name="role" 
+        value={query.role} 
+        onChange={(e) => setQuery({...query, role: e.target.value})}
+        >
           {Object.values(USER_ROLES).map(role => (
             <option key={role} value={role}>
               {role}
