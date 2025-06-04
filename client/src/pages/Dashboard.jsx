@@ -1,9 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+import {USER_ROLES} from '../utils/constants'
 import useAuthStore from '../stores/auth';
+import Practitioner from '../components/Dashboard/Practitioner';
+import Admin from '../components/Dashboard/Admin';
+import Patient from '../components/Dashboard/Patient';
+
 
 function Dashboard() {
-  const { logout, permission } = useAuthStore();
+  const { logout, permission, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -11,12 +18,24 @@ function Dashboard() {
     navigate('/login');
   };
 
+  let content;
+
+  if (isAuthenticated === USER_ROLES.ADMIN) {
+    content = <Admin />;
+  } else if (isAuthenticated === USER_ROLES.PRACTITIONER) {
+    content = <Practitioner />;
+  } else {
+    content = <Patient />;
+  }
+
   return (
     <div>
       <h1>Dashboard ({permission})</h1>
       <button onClick={handleLogout}>Logout</button>
+      {content}
     </div>
   );
+
 }
 
 export default Dashboard;

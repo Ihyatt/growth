@@ -33,7 +33,7 @@ const useAuthStore = create(
       partialize: (state) => ({ 
         jwtToken: state.jwtToken,
         permission: state.permission,
-        isAuthenticated: state.jwtToken !== null // Add this line
+        isAuthenticated: state.jwtToken !== null
       })
     }
   )
