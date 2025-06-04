@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import {USER_ROLES} from '../utils/constants'
 import useAuthStore from '../stores/auth';

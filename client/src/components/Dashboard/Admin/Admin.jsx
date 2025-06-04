@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { fetchUsers } from '../../../services/admin';
+import useAuthStore from '../../../stores/auth';
+
 import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../../utils/constants';
 
 
 const Admin = () => {
+  const { jwtToken } = useAuthStore();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState({
@@ -25,10 +28,10 @@ const Admin = () => {
       const params = {
         ...query,
         page: reset ? 1 : pagination.page,
-        limit: pagination.limit
+        limit: pagination.limit,
       };
       console.log(query)
-      const response = await fetchUsers(params);
+      const response = await fetchUsers(params,jwtToken);
       const data = await response.json(); 
       const newUsers = data.users;
       console.log(users)

@@ -1,20 +1,23 @@
+import React from 'react';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-const getAuthToken = () => {
-    return localStorage.getItem('jwtToken');
-};
 
-export const fetchUsers = async (params = {}) => {
+
+
+export const fetchUsers = async (params = {}, token) => {
+
+
     const queryString = new URLSearchParams(params).toString();
     const url = `${API_BASE_URL}/admin/users?${queryString}`;
-
-
+    console.log(token)
     try {
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getAuthToken()}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+                
             }
         });
 
@@ -39,7 +42,7 @@ export const approveUser = async (userId) => {
             method: 'POST', // Method for actions/updates
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getAuthToken()}`
+                // 'Authorization': `Bearer ${jwtToken}`
             },
             // You might send a body if needed, e.g., { approvedBy: 'adminId' }
             // body: JSON.stringify({})
@@ -68,7 +71,7 @@ export const rejectUser = async (userId, reason = '') => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getAuthToken()}`
+                'Authorization': `Bearer ${jwtToken}`
             },
             body: JSON.stringify({ reason }) 
         });

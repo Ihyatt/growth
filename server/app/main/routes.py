@@ -2,7 +2,7 @@ from flask import request, jsonify
 from app.main import bp
 from app.models.user import User
 from app.database import db
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
 from app.models.model_enums import PermissionLevel,ValidationLevel
 
 @bp.route('/api/login', methods=['POST'])
@@ -20,7 +20,7 @@ def login():
         if not user or not user.check_password(password):
             return jsonify(error="Invalid username or password."), 401
 
-        jwt_token = create_access_token(identity=user.id)
+        jwt_token = create_access_token(identity=str(user.id))
         return jsonify(
             message=f"Welcome back, {username}",
             jwtToken=jwt_token,
@@ -70,7 +70,10 @@ def register():
 
 
 @bp.route('/api/admin/users', methods=['GET'])
+@jwt_required()
 def get_admin_users():
+    print('heelllloooo')
+    # current_user = get_jwt_identity()
     # set up jwt token validator
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
@@ -78,7 +81,7 @@ def get_admin_users():
     active = request.args.get('active')
     email = request.args.get('email')
     active = True if active == 'active' else False
-    print('hello',active)
+    print("Authorization Header:", request.headers.get('Authorization'))
 
     query = User.query
 
@@ -124,6 +127,7 @@ def get_admin_users():
 
 
 @bp.route('/users/<int:user_id>/approve', methods=['POST'])
+@jwt_required()
 def approve_user(user_id):
     # 1. Find the user
     user = User.query.get(user_id)
