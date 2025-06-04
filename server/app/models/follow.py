@@ -2,6 +2,8 @@
 
 from datetime import datetime, timezone
 from app.database import db
+from sqlalchemy.orm import relationship
+
 
 
 class Follow(db.Model):

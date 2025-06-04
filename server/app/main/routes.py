@@ -4,7 +4,8 @@ from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
 from app.models.constants.enums import PermissionLevel,ValidationLevel
-from app.utils.auth_decorators import jwt_required_with_role # Your custom decorator
+from app.utils.auth_decorators import jwt_required_with_role
+from app.utils.audit_log import log_audit
 
 
 @bp.route('/api/login', methods=['POST'])
@@ -135,18 +136,28 @@ def approve_user():
     data = request.get_json()
     user_id = data.get('userId')
     user = User.query.filter_by(id=user_id).first()
+    details = {
+        'before': user.is_validated,
+        'after': ValidationLevel.APPROVED
+    }
     user.is_validated = ValidationLevel.APPROVED
-
+    
     try:
-        # # 4. Save changes to the database
+
+        log_audit(
+            user_id,
+            'approve',
+            details,
+            'user'
+        )
         db.session.commit()
         return jsonify({
             "message": f"User  approved successfully.",
-            "user": user.to_dict() # Return updated user data
+            "user": user.to_dict()
         }), 200
    
     except Exception as e:
-        db.session.rollback() # Rollback changes if an error occurs during commit
+        db.session.rollback()
         return jsonify({"message": f"Failed to approve user : {str(e)}"}), 500
 
 
@@ -154,22 +165,29 @@ def approve_user():
 @jwt_required_with_role()
 def reject_user():
     current_user = get_jwt_identity()
-    print('HELLOOO')
-    print(request)
-
     data = request.get_json()
     user_id = data.get('userId')
     user = User.query.filter_by(id=user_id).first()
+    details = {
+        'before': user.is_validated,
+        'after': ValidationLevel.REJECTED
+    }
     user.is_validated = ValidationLevel.REJECTED
 
     try:
-        # # 4. Save changes to the database
+        
+        log_audit(
+            user_id,
+            'reject',
+            details,
+            'user'
+        )
         db.session.commit()
         return jsonify({
             "message": f"User  reject successfully.",
-            "user": user.to_dict() # Return updated user data
+            "user": user.to_dict()
         }), 200
    
     except Exception as e:
-        db.session.rollback() # Rollback changes if an error occurs during commit
+        db.session.rollback() 
         return jsonify({"message": f"Failed to reject user : {str(e)}"}), 500

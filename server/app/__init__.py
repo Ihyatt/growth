@@ -24,7 +24,6 @@ def create_app():
     Migrate(app, database.db)
     
     app.config["JWT_SECRET_KEY"] = "romeoluna" 
-    # app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
     jwt.init_app(app)
 
 
