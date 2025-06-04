@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import PaginationControls from './Admin/AdminContent/Pagination';
-import { fetchUsers } from '../services/adminService';
-import { USER_STATUS, USER_ROLES } from '../constants/enums';
-
+import { fetchUsers } from '../../../services/admin';
+import { USER_STATUS, USER_ROLES } from '../../../utils/constants';
+import User from './AdminContent/User';
+import Pagination from './AdminContent/Pagination';
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -72,9 +72,9 @@ const Admin = () => {
       {loading && <div className="loading">Loading...</div>}
       {error && <div className="error">{error}</div>}
 
-      <UserTable users={users} onRefresh={loadUsers} />
+      <User users={users} onRefresh={loadUsers} />
       
-      <PaginationControls 
+      <Pagination 
         pagination={pagination}
         onNext={() => loadUsers(pagination.nextCursor)}
         onPrev={() => loadUsers(pagination.prevCursor)}

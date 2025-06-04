@@ -19,25 +19,23 @@ export const fetchUsers = async (params = {}) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json(); // Assuming backend sends JSON errors
+            const errorData = await response.json(); 
             throw new Error(errorData.message || 'Failed to fetch users.');
         }
 
         const data = await response.json();
-        return data; // Assuming your backend returns { data: [...], pagination: {...} }
+        return data; 
     } catch (error) {
         console.error('Error fetching users:', error);
-        throw error; // Re-throw to be caught by the component
+        throw error; 
     }
 };
 
-// --- API Call for Approving a User ---
 export const approveUser = async (userId) => {
-    const url = `${API_BASE_URL}/admin/users/${userId}/approve`; // Example endpoint
-
+    const url = `${API_BASE_URL}/admin/users/${userId}/approve`; 
     try {
         const response = await fetch(url, {
-            method: 'POST', // Method for actions/updates
+            method: 'POST', 
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
@@ -51,8 +49,8 @@ export const approveUser = async (userId) => {
             throw new Error(errorData.message || `Failed to approve user ${userId}.`);
         }
 
-        // If your backend sends a confirmation message, return it
-        const data = await response.json(); // Or just return response.status if no body
+  
+        const data = await response.json(); 
         return data;
     } catch (error) {
         console.error(`Error approving user ${userId}:`, error);
@@ -60,18 +58,18 @@ export const approveUser = async (userId) => {
     }
 };
 
-// --- API Call for Rejecting a User ---
+
 export const rejectUser = async (userId, reason = '') => {
-    const url = `${API_BASE_URL}/admin/users/${userId}/reject`; // Example endpoint
+    const url = `${API_BASE_URL}/admin/users/${userId}/reject`; 
 
     try {
         const response = await fetch(url, {
-            method: 'POST', // Or PUT, PATCH depending on your backend
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
             },
-            body: JSON.stringify({ reason }) // Example: sending a reason for rejection
+            body: JSON.stringify({ reason }) 
         });
 
         if (!response.ok) {
@@ -87,4 +85,3 @@ export const rejectUser = async (userId, reason = '') => {
     }
 };
 
-// --- Add other API calls here (e.g., blockUser, deleteUser, etc.) ---

@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import {USER_ROLES} from '../utils/constants'
 import useAuthStore from '../stores/auth';
 import Practitioner from '../components/Dashboard/Practitioner';
-import Admin from '../components/Dashboard/Admin';
+import Admin from '../components/Dashboard/Admin/Admin';
 import Patient from '../components/Dashboard/Patient';
 
 
