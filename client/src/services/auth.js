@@ -10,11 +10,8 @@ export const userLogin = async (username,password) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
         });
-        if (!response.ok) {
-        throw new Error(data?.message || 'Login failed.');
-        }
-        const data = await response.json();
-        return data
+
+        return response
     } catch (error) {
         console.error('Error failed to login:', error);
         throw error;
@@ -36,10 +33,8 @@ export const userRegistration = async (username,email,password,userType) => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
         });
-        const data = await response.json();
-        console.log(data)
+        return response
 
-        return data
     }catch (error) {
             console.error('Error failed to register:', error);
             throw error;

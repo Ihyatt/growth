@@ -36,14 +36,14 @@ const Register = () => {
                 throw new Error(data?.message || 'Registration failed.');
               }
               setSuccess('Registration successful! Redirecting to login...');
+              navigate('/login')
+              console.log('hy not redirect?')
               setTimeout(() => {
                 navigate('/login');
               }, 1500);
             } catch (err) {
               setError(err.message || 'An unexpected error occurred during registration.');
             }
-    
-
       };
 
   return (
