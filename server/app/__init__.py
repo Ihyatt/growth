@@ -14,8 +14,10 @@ load_dotenv()
 
 jwt = JWTManager()
 
+app = Flask(__name__)
+
 def create_app():
-    app = Flask(__name__)
+    
     app.config.from_object(Config)
 
     CORS(app)
@@ -27,7 +29,7 @@ def create_app():
     jwt.init_app(app)
 
 
-    from app.models.user import User
+    # from app.models.user import User
     
     app.register_blueprint(bp)
 

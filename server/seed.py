@@ -1,4 +1,4 @@
-from app import create_app
+from app import app
 from app.database import db
 from app.models.user import User
 from app.models.constants.enums import PermissionLevel, ValidationLevel

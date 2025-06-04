@@ -4,10 +4,12 @@ from app.models.constants.enums import AuditActionType, PermissionLevel
 from datetime import datetime, timezone
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
+from flask_continuum import VersioningMixin
+
 
 from app.database import db
 
-class AuditLog(db.Model):
+class AuditLog(db.Model, VersioningMixin):
     __tablename__ = 'audit_logs'
 
     id = db.Column(db.Integer, primary_key=True)

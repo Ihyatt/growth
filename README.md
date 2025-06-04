@@ -58,7 +58,4 @@ graph TD
     C --> D[Medication System]
     D --> E[Automation Features]
     E --> F[Admin Security]
-
-
-Notes:
-include this once MVP is set up
+    
