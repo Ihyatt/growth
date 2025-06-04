@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import useAuthStore from '../stores/authStore';
+import useAuthStore from '../stores/auth';
 import { userLogin } from '../services/auth';
 
 const Login = () => {

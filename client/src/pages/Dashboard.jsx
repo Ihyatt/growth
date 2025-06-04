@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../stores/authStore';
+import useAuthStore from '../stores/auth';
 
 function Dashboard() {
   const { logout, permission } = useAuthStore();

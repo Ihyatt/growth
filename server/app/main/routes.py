@@ -34,7 +34,9 @@ def login():
 @bp.route('/api/register', methods=['POST'])
 def register():
     try:
+
         data = request.get_json()
+        print(data)
         username = data.get('username', '').strip()
         email = data.get('email', '').strip()
         password = data.get('password', '').strip()
@@ -49,6 +51,7 @@ def register():
         if User.query.filter_by(email=email).first():
             return jsonify(error="User already exists."), 400
 
+        print('passed all conditionals')
         user = User(username=username, email=email)
         user.set_password(password)
         user.permission = (
