@@ -1,11 +1,21 @@
 import json
-from flask import g, current_app # Import current_app for logging
+from flask import g
 from app.database import db
 from app.models.audit_log import AuditLog
-from app.models.constants.enums import AuditActionType # Ensure this is imported
+from app.models.constants.enums import AuditActionType 
 
-def log_audit(target_user_id: int, action_type: AuditActionType, details: dict = None):
+def log_audit(
+    target_user_id: int,
+    action_type: AuditActionType.APPROVED,
+    details: dict = None
+    ):
+    print('HELLLOOOOO')
     admin_id = getattr(g, 'user_id', None)
+
+
+
+
+    print('log_audit', admin_id)
     try:
         new_log = AuditLog(
             admin_id=admin_id,

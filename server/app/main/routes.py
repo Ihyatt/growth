@@ -4,7 +4,7 @@ from app.main import bp
 from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
-from app.models.constants.enums import PermissionLevel,ValidationLevel
+from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
 from app.utils.auth_decorators import jwt_required_with_role
 from app.utils.audit_log import log_audit
 
@@ -15,22 +15,14 @@ def login():
 
     try:
         data = request.get_json()
-        print(1)
         username = data.get('username', '').strip()
         password = data.get('password', '') 
-        print(2)
         if not username or not password:
             return jsonify(error="Email and password are required."), 400
-        print(3)
         user = User.query.filter_by(username=username).first()
-        print(4)
-        print(user.id, password)
-        print(user.check_password(password))
         if not user or not user.check_password(password):
             return jsonify(error="Invalid username or password."),
-        print(5)
         jwt_token = create_access_token(identity=str(user.id))
-        print('HELLLOOOO')
         return jsonify(
             message=f"Welcome back, {user.username}",
             jwtToken=jwt_token,
@@ -89,7 +81,6 @@ def get_admin_users():
             'pending': ValidationLevel.PENDING,
             'approved': ValidationLevel.APPROVED 
         }
-        print(0)
         page = request.args.get('page', default=1, type=int)
         limit = request.args.get('limit', default=20, type=int)
         status_param = request.args.get('status')
@@ -98,19 +89,15 @@ def get_admin_users():
         active = True if active_param == 'ACTIVE' else False
         query = User.query
 
-        print(2)
         query = query.filter_by(
             permission=PermissionLevel.PRACTITIONER,
             is_validated=validation_map[status_param],
             is_active=active,
         )
-        print(3)
         if email_param:
             query = query.filter(User.email.ilike(f'%{email_param}%'))
-        print(4)
         users_pagination = query.paginate(page=page, per_page=limit, error_out=False)
 
-        print(5)
         return jsonify({
             "users": [user.to_dict() for user in users_pagination.items],
             "total": users_pagination.total,
@@ -141,21 +128,21 @@ def approve_user():
             return jsonify({"message": "User not found."}), 404
 
 
-        if user.is_validated == ValidationLevel.VALIDATED:
+        if user.is_validated == ValidationLevel.APPROVED:
             return jsonify({"message": f"User {user.email} is already approved."}),
         
         old_validation_level = user.is_validated
 
-        user.is_validated = ValidationLevel.VALIDATED
+        user.is_validated = ValidationLevel.APPROVED
 
         audit_details = {
             'old_validation_level': old_validation_level,
             'new_validation_level': user.is_validated
         }
-
-        log_admin_action(
+        print(data)
+        log_audit(
             target_user_id=user.id,
-            action_type=AuditActionType.PRACTITIONER_APPROVED,
+            action_type=AuditActionType.APPROVED,
             details=audit_details
         )
         db.session.commit()
@@ -188,17 +175,17 @@ def reject_user():
         if user.is_validated == ValidationLevel.REJECTED:
             return jsonify({"message": f"User {user.email} is already rejected."}), 200
 
-        old_validation_level = user.validation_level
-        user.validation_level = ValidationLevel.REJECTED
+        old_validation_level = user.is_validated
+        user.is_validated = ValidationLevel.REJECTED
 
         audit_details = {
             'old_validation_level': old_validation_level,
             'new_validation_level': user.is_validated
         }
 
-        log_admin_action(
+        log_audit(
             target_user_id=user.id,
-            action_type=AuditActionType.PRACTITIONER_REJECTED,
+            action_type=AuditActionType.REJECTED,
             details=audit_details
         )
         db.session.commit()

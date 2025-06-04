@@ -11,10 +11,15 @@ def jwt_required_with_role():
         @wraps(fn)
         def wrapper(*args, **kwargs):
             try:
+                print('heeellloooo')
+                print(args)
+                print(kwargs)
                 verify_jwt_in_request()
+                print(1)
                 user_id = get_jwt_identity()
+                print(2)
                 user = User.query.get(user_id)
-
+                print(3)
                 if not user:
                     return jsonify({"msg": "User not found"}), 404
 
