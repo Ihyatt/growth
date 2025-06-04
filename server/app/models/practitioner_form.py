@@ -14,4 +14,3 @@ class PractitionerForm(db.Model):
     responses = db.Column(db.Text)
     practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # FK to User (practitioner)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    practitioner = relationship("User", backref="practitioner_forms", foreign_keys=[practitioner_id])

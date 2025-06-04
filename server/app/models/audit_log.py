@@ -13,12 +13,12 @@ class AuditLog(db.Model):
     target_user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
 
     action_type = db.Column(Enum(AuditActionType), nullable=False)
-    description = db.Column(db.String(256))
 
-    timestamp = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, 
+                         default=datetime.now(timezone.utc),
+                         onupdate=datetime.now(timezone.utc))
 
-    admin = relationship("User", foreign_keys=[admin_id], backref="admin_logs")
-    target_user = relationship("User", foreign_keys=[target_user_id], backref="user_logs")
 
     def to_dict(self):
         return {
@@ -28,6 +28,5 @@ class AuditLog(db.Model):
             "target_user_id": self.target_user_id,
             "target_user_email": self.target_user.email if self.target_user else None,
             "action_type": self.action_type.value,
-            "description": self.description,
             "timestamp": self.timestamp.isoformat()
         }
