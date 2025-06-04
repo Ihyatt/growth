@@ -1,15 +1,17 @@
 
+
 from sqlalchemy import Enum, ForeignKey
 from app.models.constants.enums import AuditActionType, PermissionLevel
 from datetime import datetime, timezone
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
-from flask_continuum import VersioningMixin
-
-
+from sqlalchemy_continuum import make_versioned
 from app.database import db
 
-class AuditLog(db.Model, VersioningMixin):
+
+make_versioned(user_cls=None)
+class AuditLog(db.Model):
+    __versioned__ = {}
     __tablename__ = 'audit_logs'
 
     id = db.Column(db.Integer, primary_key=True)

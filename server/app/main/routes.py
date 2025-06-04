@@ -25,6 +25,7 @@ def login():
             return jsonify(error="Invalid username or password."), 401
 
         jwt_token = create_access_token(identity=str(user.id))
+
         return jsonify(
             message=f"Welcome back, {username}",
             jwtToken=jwt_token,
@@ -35,160 +36,149 @@ def login():
         return jsonify(error="Login failed: " + str(e)), 500
 
 
-@bp.route('/api/register', methods=['POST'])
-def register():
-    try:
+# @bp.route('/api/register', methods=['POST'])
+# def register():
+#     try:
+#         data = request.get_json()
+#         username = data.get('username', '').strip()
+#         email = data.get('email', '').strip()
+#         password = data.get('password', '').strip()
+#         user_type = data.get('userType', '').strip()
 
-        data = request.get_json()
-        print(data)
-        username = data.get('username', '').strip()
-        email = data.get('email', '').strip()
-        password = data.get('password', '').strip()
-        user_type = data.get('userType', '').strip()
+#         if not all([username, email, password, user_type]):
+#             return jsonify(error="All fields are required."), 400
 
-        if not all([username, email, password, user_type]):
-            return jsonify(error="All fields are required."), 400
+#         if user_type not in ['patient', 'practitioner']:
+#             return jsonify(error="Invalid user type."), 400
 
-        if user_type not in ['patient', 'practitioner']:
-            return jsonify(error="Invalid user type."), 400
+#         if User.query.filter_by(email=email).first():
+#             return jsonify(error="Email already exists."), 400
 
-        if User.query.filter_by(email=email).first():
-            return jsonify(error="User already exists."), 400
+#         if User.query.filter_by(username=username).first():
+#             return jsonify(error="Username already exists."), 400
 
-        print('passed all conditionals')
-        user = User(username=username, email=email)
-        user.set_password(password)
-        user.permission = (
-            PermissionLevel.PATIENT if user_type == 'patient'
-            else PermissionLevel.PRACTITIONER
-        )
+#         user = User(username=username, email=email)
+#         user.set_password(password)
+#         user.permission = (
+#             PermissionLevel.PATIENT if user_type == 'patient'
+#             else PermissionLevel.PRACTITIONER
+#         )
 
-        db.session.add(user)
-        db.session.commit()
+#         db.session.add(user)
+#         db.session.commit()
 
-        return jsonify(message=f"User {username} registered successfully")
+#         return jsonify(message=f"User {username} registered successfully")
 
-    except Exception as e:
-        db.session.rollback()
-        return jsonify(error="Registration failed: " + str(e)), 500
-
-
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify(error="Registration failed: " + str(e)), 500
 
 
-@bp.route('/api/admin/users', methods=['GET'])
-@jwt_required()
-def get_admin_users():
-    current_user = get_jwt_identity()
-    page = request.args.get('page', default=1, type=int)
-    limit = request.args.get('limit', default=20, type=int)
-    status = request.args.get('status')
-    active = request.args.get('active')
-    email = request.args.get('email')
-    active = True if active == 'active' else False
-    print("Authorization Header:", request.headers.get('Authorization'))
 
-    query = User.query
+# @bp.route('/api/admin/users', methods=['GET'])
+# @jwt_required_with_role()
+# def get_admin_users():
+#     try:
+#         validation_map = {
+#             'pending': ValidationLevel.PENDING,
+#             'approved': ValidationLevel.APPROVED
+#         }
 
+#         page = request.args.get('page', default=1, type=int)
+#         limit = request.args.get('limit', default=20, type=int)
+#         status = request.args.get('status')
+#         active = request.args.get('active')
+#         email = request.args.get('email')
+#         active = True if active == 'ACTIVE' else False
 
-    if status == 'pending':
-        if email:
-            query = query.filter_by(
-                permission=PermissionLevel.PRACTITIONER,
-                is_validated=ValidationLevel.PENDING,
-                email=email
-            )
-        else:
-            query = query.filter_by(
-                permission=PermissionLevel.PRACTITIONER,
-                is_validated=ValidationLevel.PENDING, 
-                is_active=active
-            )
-    elif status == 'approved':
-        if email:
-            query = query.filter_by(
-                permission=PermissionLevel.PRACTITIONER,
-                is_validated=ValidationLevel.PENDING,
-                email=email
-            )
-        else:
-            query = query.filter_by(
-                permission=PermissionLevel.PRACTITIONER,
-                is_validated=ValidationLevel.APPROVED, 
-                is_active=active
-            )
+#         query = User.query
 
-    users = query.paginate(page=page, per_page=limit, error_out=False)
-    
+#         if email:
+#             query = query.filter_by(
+#                 permission=PermissionLevel.PRACTITIONER,
+#                 is_validated=validation_map[status],
+#                 is_active=active,
+#                 email=email
+#             )
+#         else:
+#             query = query.filter_by(
+#                 permission=PermissionLevel.PRACTITIONER,
+#                 is_validated=ValidationLevel.PENDING, 
+#                 is_active=active
+#             )
 
-    return jsonify({
-        "users": [user.to_dict() for user in users.items],
-        "total": users.total,
-        "page": users.page,
-        "pages": users.pages,
-        "has_next": users.has_next,
-        "has_prev": users.has_prev
-    })
+#         users = query.paginate(page=page, per_page=limit, error_out=False)
+#             return jsonify({
+#             "users": [user.to_dict() for user in users.items],
+#             "total": users.total,
+#             "page": users.page,
+#             "pages": users.pages,
+#             "has_next": users.has_next,
+#             "has_prev": users.has_prev
+#         })
+
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify(error="Query failed: " + str(e)), 500
 
 
-@bp.route('/api/admin/approve', methods=['POST'])
-@jwt_required_with_role()
-def approve_user():
-    current_user = get_jwt_identity()
-    data = request.get_json()
-    user_id = data.get('userId')
-    user = User.query.filter_by(id=user_id).first()
-    details = {
-        'before': user.is_validated,
-        'after': ValidationLevel.APPROVED
-    }
-    user.is_validated = ValidationLevel.APPROVED
-    
-    try:
-
-        log_audit(
-            user_id,
-            'approve',
-            details,
-            'user'
-        )
-        db.session.commit()
-        return jsonify({
-            "message": f"User  approved successfully.",
-            "user": user.to_dict()
-        }), 200
-   
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"message": f"Failed to approve user : {str(e)}"}), 500
-
-
-@bp.route('/api/admin/reject', methods=['POST'])
-@jwt_required_with_role()
-def reject_user():
-    current_user = get_jwt_identity()
-    data = request.get_json()
-    user_id = data.get('userId')
-    user = User.query.filter_by(id=user_id).first()
-    details = {
-        'before': user.is_validated,
-        'after': ValidationLevel.REJECTED
-    }
-    user.is_validated = ValidationLevel.REJECTED
-
-    try:
+# @bp.route('/api/admin/approve', methods=['POST'])
+# @jwt_required_with_role()
+# def approve_user():
+#     try:
+#         data = request.get_json()
+#         user_id = data.get('userId')
+#         user = User.query.filter_by(id=user_id).first()
+#         details = {
+#             'before': user.is_validated,
+#             'after': ValidationLevel.APPROVED
+#         }
+#         user.is_validated = ValidationLevel.APPROVED
         
-        log_audit(
-            user_id,
-            'reject',
-            details,
-            'user'
-        )
-        db.session.commit()
-        return jsonify({
-            "message": f"User  reject successfully.",
-            "user": user.to_dict()
-        }), 200
+#         log_audit(
+#             user_id,
+#             'approve',
+#             details,
+#             'user'
+#         )
+#         db.session.commit()
+#         return jsonify({
+#             "message": f"User  approved successfully.",
+#             "user": user.to_dict()
+#         }), 200
    
-    except Exception as e:
-        db.session.rollback() 
-        return jsonify({"message": f"Failed to reject user : {str(e)}"}), 500
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({"message": f"Failed to approve user : {str(e)}"}), 500
+
+
+# @bp.route('/api/admin/reject', methods=['POST'])
+# @jwt_required_with_role()
+# def reject_user():
+
+
+#     try:
+#         data = request.get_json()
+#         user_id = data.get('userId')
+#         user = User.query.filter_by(id=user_id).first()
+#         details = {
+#             'before': user.is_validated,
+#             'after': ValidationLevel.REJECTED
+#         }
+#         user.is_validated = ValidationLevel.REJECTED
+        
+#         log_audit(
+#             user_id,
+#             'reject',
+#             details,
+#             'user'
+#         )
+#         db.session.commit()
+#         return jsonify({
+#             "message": f"User  reject successfully.",
+#             "user": user.to_dict()
+#         }), 200
+   
+#     except Exception as e:
+#         db.session.rollback() 
+#         return jsonify({"message": f"Failed to reject user : {str(e)}"}), 500

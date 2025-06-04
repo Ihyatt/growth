@@ -4,12 +4,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import db
 from sqlalchemy import Enum 
 from sqlalchemy.orm import relationship
-from flask_continuum import VersioningMixin
-
-
+from sqlalchemy_continuum import make_versioned
 from app.models.constants.enums import PermissionLevel, ValidationLevel
 
-class UserForm(db.Model,VersioningMixin):
+
+make_versioned(user_cls=None)
+
+class UserForm(db.Model):
+    __versioned__ = {}
     __tablename__ = 'user_forms'
 
     id = db.Column(db.Integer, primary_key=True)

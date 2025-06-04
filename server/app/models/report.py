@@ -3,15 +3,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import db
 from sqlalchemy import Enum 
 from app.models.constants.enums import PermissionLevel, ValidationLevel
-from flask_continuum import VersioningMixin
+from sqlalchemy_continuum import make_versioned
 
 
 
+make_versioned(user_cls=None)
 
-from datetime import datetime
-from app.database import db
-
-class Report(db.Model,VersioningMixin):
+class Report(db.Model):
+    __versioned__ = {}
     __tablename__ = 'reports'
 
     id = db.Column(db.Integer, primary_key=True)

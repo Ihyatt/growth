@@ -6,8 +6,8 @@ export const USER_STATUS = {
 
 
   export const USER_ACTIVE = {
-    ACTIVE: 'active',
-    INACTIVE: 'Inactive',
+    ACTIVE: 'ACTIVE',
+    INACTIVE: 'INACTIVE',
   };
   
   export const USER_ROLES = {

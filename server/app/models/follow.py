@@ -3,11 +3,12 @@
 from datetime import datetime, timezone
 from app.database import db
 from sqlalchemy.orm import relationship
-from flask_continuum import VersioningMixin
+from sqlalchemy_continuum import make_versioned
 
 
-
-class Follow(db.Model,VersioningMixin):
+make_versioned(user_cls=None)
+class Follow(db.Model):
+    __versioned__ = {}
     __tablename__ = 'follows'
     id = Column(Integer, primary_key=True)
     practitioner_id = Column(Integer, ForeignKey('users.id'), nullable=False)

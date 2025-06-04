@@ -3,11 +3,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import db
 from sqlalchemy import Enum 
 from app.models.constants.enums import PermissionLevel, ValidationLevel
-from flask_continuum import VersioningMixin
+from sqlalchemy_continuum import make_versioned
 
 
+make_versioned(user_cls=None)
 
-class User(db.Model,VersioningMixin):
+class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -38,7 +39,7 @@ class User(db.Model,VersioningMixin):
         return self.permission == PermissionLevel.PRACTITIONER
 
     
-    def to_dict(self,VersioningMixin):
+    def to_dict(self):
         return {
             "id": self.id,
             "username": self.username,
