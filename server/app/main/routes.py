@@ -74,7 +74,7 @@ def register():
 
 
 @bp.route('/api/admin/users', methods=['GET'])
-# @jwt_required_with_role()
+@jwt_required_with_role()
 def get_admin_users():
     try:
         validation_map = {
@@ -139,7 +139,6 @@ def approve_user():
             'old_validation_level': old_validation_level,
             'new_validation_level': user.is_validated
         }
-        print(data)
         log_audit(
             target_user_id=user.id,
             action_type=AuditActionType.APPROVED,
