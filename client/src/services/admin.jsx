@@ -3,8 +3,6 @@ import React from 'react';
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 
-
-
 export const fetchUsers = async (params = {}, token) => {
 
 
@@ -33,21 +31,21 @@ export const fetchUsers = async (params = {}, token) => {
     }
 };
 
-// --- API Call for Approving a User ---
-export const approveUser = async (userId) => {
-    const url = `${API_BASE_URL}/admin/users/${userId}/approve`; // Example endpoint
-
+export const approveUser = async (userId, token) => {
+    console.log(token)
+    const url = `${API_BASE_URL}/admin/approve`;
+    console.log(token)
     try {
-        const response = await fetch(url, {
-            method: 'POST', // Method for actions/updates
-            headers: {
-                'Content-Type': 'application/json',
-                // 'Authorization': `Bearer ${jwtToken}`
-            },
-            // You might send a body if needed, e.g., { approvedBy: 'adminId' }
-            // body: JSON.stringify({})
-        });
 
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+                
+            },
+            body: JSON.stringify({ userId }),
+            });
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || `Failed to approve user ${userId}.`);
@@ -63,25 +61,26 @@ export const approveUser = async (userId) => {
 };
 
 
-export const rejectUser = async (userId, reason = '') => {
-    const url = `${API_BASE_URL}/admin/users/${userId}/reject`; 
-
+export const rejectUser = async (userId, token) => {
+    const url = `${API_BASE_URL}/admin/reject`; 
     try {
+        console.log('iam here')
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwtToken}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+                
             },
-            body: JSON.stringify({ reason }) 
-        });
-
+            body: JSON.stringify({ userId }),
+            });
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.message || `Failed to reject user ${userId}.`);
         }
 
-        const data = await response.json();
+  
+        const data = await response.json(); 
         return data;
     } catch (error) {
         console.error(`Error rejecting user ${userId}:`, error);

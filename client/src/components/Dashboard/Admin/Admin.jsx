@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchUsers } from '../../../services/admin';
+import { fetchUsers, approveUser, rejectUser } from '../../../services/admin';
 import useAuthStore from '../../../stores/auth';
 
 import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../../utils/constants';
@@ -8,6 +8,7 @@ import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../../utils/constants';
 const Admin = () => {
   const { jwtToken } = useAuthStore();
   const [users, setUsers] = useState([]);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState({
     status: USER_STATUS.PENDING,
@@ -21,6 +22,25 @@ const Admin = () => {
     limit: 10,
     hasMore: true
   });
+
+  const handleApproval = async (userId) => {
+    try {
+      const response = await approveUser(userId, jwtToken);
+      const data = await response.json();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to approve');
+    }
+  }
+
+  const handleRejection = async (userId) => {
+    try {
+      const response = await rejectUser(userId, jwtToken);
+      const data = await response.json();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to reject');
+    }
+  }
+
 
   const getUsers = async (reset = false) => {
     setLoading(true);
@@ -57,7 +77,7 @@ const Admin = () => {
   const handleLoadMore = () => {
     getUsers();
   };
-
+  console.log(users)
   return (
     <div className="user-query">
       <form onSubmit={handleSubmit}>
@@ -112,7 +132,10 @@ const Admin = () => {
 
       <div className="user-list">
         {users.map(user => (
+          
           <div key={user.id} className="user-card">
+          <button key={user.id + 1} onClick={() => handleApproval(user.id)}>approve</button>
+          <button key={user.id + 2} onClick={() => handleRejection(user.id)}>reject</button>
             <p>email: {user.email}</p>
             <p>Role: {user.permission}</p>
             <p>Validation Status: {user.is_validated}</p>
@@ -130,6 +153,7 @@ const Admin = () => {
           {loading ? 'Loading...' : 'Load More'}
         </button>
       )}
+      {error && <p className="login-error">{error}</p>}
     </div>
   );
 };

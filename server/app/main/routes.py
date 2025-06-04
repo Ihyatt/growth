@@ -69,12 +69,15 @@ def register():
         return jsonify(error="Registration failed: " + str(e)), 500
 
 
+
+
 @bp.route('/api/admin/users', methods=['GET'])
 @jwt_required()
 def get_admin_users():
     print('heelllloooo')
     # current_user = get_jwt_identity()
     # set up jwt token validator
+    current_user = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
     status = request.args.get('status')
@@ -126,29 +129,48 @@ def get_admin_users():
     })
 
 
-@bp.route('/users/<int:user_id>/approve', methods=['POST'])
+@bp.route('/api/admin/approve', methods=['POST'])
 @jwt_required()
-def approve_user(user_id):
-    # 1. Find the user
-    user = User.query.get(user_id)
-
-    if not user:
-        return jsonify({"message": f"User with ID {user_id} not found."}), 404
-
-    if user.is_validated == ValidationLevel.APPROVED:
-        return jsonify({"message": f"User {user_id} is already approved."}), 200 # Or 409 Conflict
-
+def approve_user():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    user_id = data.get('userId')
+    user = User.query.filter_by(id=user_id).first()
     user.is_validated = ValidationLevel.APPROVED
 
     try:
-        # 4. Save changes to the database
+        # # 4. Save changes to the database
         db.session.commit()
         return jsonify({
-            "message": f"User {user_id} approved successfully.",
+            "message": f"User  approved successfully.",
             "user": user.to_dict() # Return updated user data
         }), 200
+   
     except Exception as e:
         db.session.rollback() # Rollback changes if an error occurs during commit
-        return jsonify({"message": f"Failed to approve user {user_id}: {str(e)}"}), 500
+        return jsonify({"message": f"Failed to approve user : {str(e)}"}), 500
 
 
+@bp.route('/api/admin/reject', methods=['POST'])
+@jwt_required()
+def reject_user():
+    current_user = get_jwt_identity()
+    print('HELLOOO')
+    print(request)
+
+    data = request.get_json()
+    user_id = data.get('userId')
+    user = User.query.filter_by(id=user_id).first()
+    user.is_validated = ValidationLevel.REJECTED
+
+    try:
+        # # 4. Save changes to the database
+        db.session.commit()
+        return jsonify({
+            "message": f"User  reject successfully.",
+            "user": user.to_dict() # Return updated user data
+        }), 200
+   
+    except Exception as e:
+        db.session.rollback() # Rollback changes if an error occurs during commit
+        return jsonify({"message": f"Failed to reject user : {str(e)}"}), 500
