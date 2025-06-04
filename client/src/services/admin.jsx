@@ -19,23 +19,25 @@ export const fetchUsers = async (params = {}) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json(); 
+            const errorData = await response.json(); // Assuming backend sends JSON errors
             throw new Error(errorData.message || 'Failed to fetch users.');
         }
 
         const data = await response.json();
-        return data; 
+        return data; // Assuming your backend returns { data: [...], pagination: {...} }
     } catch (error) {
         console.error('Error fetching users:', error);
-        throw error; 
+        throw error; // Re-throw to be caught by the component
     }
 };
 
+// --- API Call for Approving a User ---
 export const approveUser = async (userId) => {
-    const url = `${API_BASE_URL}/admin/users/${userId}/approve`; 
+    const url = `${API_BASE_URL}/admin/users/${userId}/approve`; // Example endpoint
+
     try {
         const response = await fetch(url, {
-            method: 'POST', 
+            method: 'POST', // Method for actions/updates
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${getAuthToken()}`
