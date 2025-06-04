@@ -1,63 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './components/LoginPage/LoginPage';
-import RegisterPage from './components/RegisterPage/RegisterPage';
-import Dashboard from './components/Dashboard/Dashboard';
-import AdminDashboardPage from './pages/AdminDashboardPage';
-import { USER_ROLES } from './constants/enums';
-
-const AUTH_KEY = 'isAuthenticated';
-const TOKEN_KEY = 'jwtToken';
-const PERMISSION = 'permission';
+import useAuthStore from './stores/authStore';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem(AUTH_KEY) === 'true';
-  });
+  const { isAuthenticated, permission } = useAuthStore();
 
-  const [userPermission, setUserPermission] = useState(() => {
-    return localStorage.getItem(PERMISSION) || null;
-  });
-
-  useEffect(() => {
-    localStorage.setItem(AUTH_KEY, isAuthenticated);
-  }, [isAuthenticated]);
-
-
-  useEffect(() => {
-    localStorage.setItem(PERMISSION, userPermission);
-  }, [userPermission]);
-
-
-  const handleLogin = (jwtToken, permission) => {
-    setIsAuthenticated(true);
-    setUserPermission(permission)
-    localStorage.setItem(TOKEN_KEY, jwtToken);
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem(AUTH_KEY);
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(PERMISSION);
-  };
   return (
     <Router>
       <Routes>
-        <Route
-          path="/admin"
-          element={
-            isAuthenticated && userPermission === USER_ROLES.ADMIN
-              ? <AdminDashboardPage onLogout={handleLogout} />
-              : <Navigate to="/dashboard" replace />
-            }
-        />
         <Route
           path="/login"
           element={
             isAuthenticated
               ? <Navigate to="/dashboard" replace />
-              : <LoginPage onLogin={handleLogin} />
+              : <Login />
           }
         />
         <Route
@@ -65,24 +24,21 @@ function App() {
           element={
             isAuthenticated
               ? <Navigate to="/dashboard" replace />
-              : <RegisterPage />
+              : <Register />
           }
         />
-
         <Route
           path="/dashboard"
           element={
             isAuthenticated
-              ? <Dashboard onLogout={handleLogout} />
+              ? <Dashboard />
               : <Navigate to="/login" replace />
           }
         />
         <Route
           path="/"
           element={
-            isAuthenticated
-              ? <Navigate to="/dashboard" replace />
-              : <Navigate to="/login" replace />
+            <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
           }
         />
       </Routes>
@@ -91,3 +47,97 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from 'react';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// import Dashboard from './pages/Dashboard';
+// import Login from './pages/Login';
+// import Register from './pages/Register';
+
+
+// const AUTH_KEY = 'isAuthenticated';
+// const TOKEN_KEY = 'jwtToken';
+// const PERMISSION = 'permission';
+
+// function App() {
+//   const [isAuthenticated, setIsAuthenticated] = useState(() => {
+//     return localStorage.getItem(AUTH_KEY) === 'true';
+//   });
+
+//   const [userPermission, setUserPermission] = useState(() => {
+//     return localStorage.getItem(PERMISSION) || null;
+//   });
+
+//   useEffect(() => {
+//     localStorage.setItem(AUTH_KEY, isAuthenticated);
+//   }, [isAuthenticated]);
+
+
+//   useEffect(() => {
+//     localStorage.setItem(PERMISSION, userPermission);
+//   }, [userPermission]);
+
+
+//   const handleLogin = (jwtToken, permission) => {
+//     setIsAuthenticated(true);
+//     setUserPermission(permission)
+//     localStorage.setItem(TOKEN_KEY, jwtToken);
+//   };
+
+//   const handleLogout = () => {
+//     setIsAuthenticated(false);
+//     localStorage.removeItem(AUTH_KEY);
+//     localStorage.removeItem(TOKEN_KEY);
+//     localStorage.removeItem(PERMISSION);
+//   };
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route
+//           path="/login"
+//           element={
+//             isAuthenticated
+//               ? <Navigate to="/dashboard" replace />
+//               : <Login onLogin={handleLogin} />
+//           }
+//         />
+//         <Route
+//           path="/register"
+//           element={
+//             isAuthenticated
+//               ? <Navigate to="/dashboard" replace />
+//               : <Register />
+//           }
+//         />
+//         <Route
+//           path="/dashboard"
+//           element={
+//             isAuthenticated
+//               ? <Dashboard onLogout={handleLogout} />
+//               : <Navigate to="/login" replace />
+//           }
+//         />
+//         <Route
+//           path="/"
+//           element={
+//             isAuthenticated
+//               ? <Navigate to="/dashboard" replace />
+//               : <Navigate to="/login" replace />
+//           }
+//         />
+//       </Routes>
+//     </Router>
+//   );
+// }
+
+// export default App;
