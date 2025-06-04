@@ -4,6 +4,8 @@ from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
 from app.models.constants.enums import PermissionLevel,ValidationLevel
+from app.utils.auth_decorators import jwt_required_with_role # Your custom decorator
+
 
 @bp.route('/api/login', methods=['POST'])
 def login():
@@ -74,9 +76,6 @@ def register():
 @bp.route('/api/admin/users', methods=['GET'])
 @jwt_required()
 def get_admin_users():
-    print('heelllloooo')
-    # current_user = get_jwt_identity()
-    # set up jwt token validator
     current_user = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
@@ -130,7 +129,7 @@ def get_admin_users():
 
 
 @bp.route('/api/admin/approve', methods=['POST'])
-@jwt_required()
+@jwt_required_with_role()
 def approve_user():
     current_user = get_jwt_identity()
     data = request.get_json()
@@ -152,7 +151,7 @@ def approve_user():
 
 
 @bp.route('/api/admin/reject', methods=['POST'])
-@jwt_required()
+@jwt_required_with_role()
 def reject_user():
     current_user = get_jwt_identity()
     print('HELLOOO')

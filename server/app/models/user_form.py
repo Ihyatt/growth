@@ -12,7 +12,10 @@ class UserForm(db.Model):
     sbumitted_by_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     form_data = db.Column(db.Text, nullable=False)
     practitioner_form_id = db.Column(db.Integer, db.ForeignKey('practitioner_forms.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, 
+                         default=datetime.now(timezone.utc),
+                         onupdate=datetime.now(timezone.utc))
 
     user = relationship("User", backref="user_forms", foreign_keys=[user_id])
 

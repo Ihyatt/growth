@@ -18,6 +18,10 @@ class Report(db.Model):
     report_type = db.Column(db.String(100), nullable=False)  # e.g., "weekly_summary"
     report_data = db.Column(db.Text, nullable=False)  # This stores the actual CSV or JSON string
     generated_by = db.Column(db.Integer, db.ForeignKey('users.id'))  # optional
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, 
+                         default=datetime.now(timezone.utc),
+                         onupdate=datetime.now(timezone.utc))
 
     def to_dict(self):
         return {

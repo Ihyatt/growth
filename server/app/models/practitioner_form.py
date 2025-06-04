@@ -15,3 +15,6 @@ class PractitionerForm(db.Model):
     responses = db.Column(db.Text)
     practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # FK to User (practitioner)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, 
+                         default=datetime.now(timezone.utc),
+                         onupdate=datetime.now(timezone.utc))
