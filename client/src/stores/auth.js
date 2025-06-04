@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 const useAuthStore = create(
   persist(
-    (set, get) => ({ // 👈 Add 'get' here
+    (set, get) => ({
       jwtToken: null,
       permission: null,
       isAuthenticated: false,
@@ -24,8 +24,7 @@ const useAuthStore = create(
         });
       },
       
-      // Fixed helper functions
-      isAdmin: () => get().permission === 'ADMIN', // ✅ Now works
+      isAdmin: () => get().permission === 'ADMIN',
       isPractitioner: () => get().permission === 'PRACTITIONER',
       isPatient: () => get().permission === 'PATIENT'
     }),
@@ -33,7 +32,8 @@ const useAuthStore = create(
       name: 'auth-storage',
       partialize: (state) => ({ 
         jwtToken: state.jwtToken,
-        permission: state.permission 
+        permission: state.permission,
+        isAuthenticated: state.jwtToken !== null // Add this line
       })
     }
   )
