@@ -1,11 +1,10 @@
-
 import React, { useState, useRef } from 'react';
 
 
-export default function ViewForms() {
+export default function ViewPatients() {
   return (
     <div className="dashboard">
-        view forms page
+        practitioner view patients Pages
     </div>
   );
 }
