@@ -2,27 +2,58 @@ import React, { useState } from 'react';
 import BulletTextEditor from './components/BulletTextEditor';
 
 const Practitioner = () => {
-  const [myText, setMyText] = useState("This is some initial text.\n\n- You can type whatever you want here.\n- New lines are created with Enter.");
-
-  const handleTextChange = (newText) => {
-      console.log('Editor Content Updated:', newText);
-      setMyText(newText);
-      // You would typically save `newText` to your backend here
-  };
-return (
-  <div>
-  <h1>My Simple Text Editor</h1>
-  <div style={{ maxWidth: '600px', margin: '20px auto' }}>
-  <BulletTextEditor
-      initialContent={myText}
-      placeholder="Type your content here..."
-      onContentChange={handleTextChange}
-  />
-</div>
-<h2>Current Editor Content:</h2>
-<pre>{myText}</pre>
-  </div>
-);
-}
+    const [tasks, setTasks] = useState([
+    {
+    id: 1,
+    text: 'Doctor Appointment',
+    completed: true
+    },
+    {
+    id: 2,
+    text: 'Meeting at School',
+    completed: false
+    }
+    ]);
+    
+    const [text, setText] = useState([]);
+   function addTask(text) {
+    const newTask = {
+    id: Date.now(),
+    text,
+    completed: false
+    };
+    setTasks([...tasks, newTask]);
+    setText('');
+    }
+   function deleteTask(id) {
+    setTasks(tasks.filter(task => task.id !== id));
+    }
+   function toggleCompleted(id) {
+    setTasks(tasks.map(task => {
+    if (task.id === id) {
+    return {...task, completed: !task.completed};
+    } else {
+    return task;
+    } 
+    }));
+    }
+   return (
+    <div className="todo-list">
+    {tasks.map(task => (
+    <BulletTextEditor
+    key={task.id} 
+    task={task}
+    deleteTask={deleteTask}
+    toggleCompleted={toggleCompleted} 
+    />
+    ))}
+   <input
+    value={text}
+    onChange={e => setText(e.target.value)} 
+    />
+   <button onClick={() => addTask(text)}>Add</button>
+    </div>
+    );
+   }
 
 export default Practitioner;
