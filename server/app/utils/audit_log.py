@@ -4,7 +4,7 @@ from app.database import db
 from app.models.audit_log import AuditLog
 from app.models.constants.enums import AuditActionType # Ensure this is imported
 
-def log_admin_action(target_user_id: int, action_type: AuditActionType, details: dict = None):
+def log_audit(target_user_id: int, action_type: AuditActionType, details: dict = None):
     admin_id = getattr(g, 'user_id', None)
     try:
         new_log = AuditLog(

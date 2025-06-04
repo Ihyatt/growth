@@ -12,25 +12,29 @@ from app.utils.audit_log import log_audit
 
 @bp.route('/api/login', methods=['POST'])
 def login():
+
     try:
         data = request.get_json()
+        print(1)
         username = data.get('username', '').strip()
         password = data.get('password', '') 
-
+        print(2)
         if not username or not password:
             return jsonify(error="Email and password are required."), 400
-
+        print(3)
         user = User.query.filter_by(username=username).first()
-
+        print(4)
+        print(user.id, password)
+        print(user.check_password(password))
         if not user or not user.check_password(password):
             return jsonify(error="Invalid username or password."),
-
+        print(5)
         jwt_token = create_access_token(identity=str(user.id))
-
+        print('HELLLOOOO')
         return jsonify(
             message=f"Welcome back, {user.username}",
             jwtToken=jwt_token,
-            permission=user.permission_level.value
+            permission=user.permission
         )
 
     except Exception as e:
