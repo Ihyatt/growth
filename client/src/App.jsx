@@ -62,7 +62,7 @@ function App() {
         </Route>
 
         {/* Practitioner */}
-        <Route path="/practitioner" element={<Practitioner />}>
+        <Route path="/practitioners" element={<Practitioner />}>
           <Route path="create-form" element={<PractitionerCreateForm />} />
           <Route path="forms" element={<PractitionerViewForms />} />
           <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />
