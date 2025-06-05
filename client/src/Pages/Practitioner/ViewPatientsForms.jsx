@@ -6,4 +6,7 @@ export function PractitionerViewPatientsForms() {
       </div>
     );
   }
+
+
+export default PractitionerViewPatientsForms;
   

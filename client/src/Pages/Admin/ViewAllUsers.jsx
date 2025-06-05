@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { fetchUsers, approveUser, rejectUser } from '../../../services/admin';
-import useAuthStore from '../../../stores/auth';
+import { fetchUsers, approveUser, rejectUser } from '../../services/admin';
+import useAuthStore from '../../stores/auth';
 
-import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../../utils/constants';
+import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../utils/constants';
 
 
 const AdminViewAllUsers = () => {

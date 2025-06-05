@@ -6,3 +6,5 @@ export function PractitionerViewForms() {
       </div>
     );
   }
+
+export default PractitionerViewForms;

@@ -1,4 +1,7 @@
 // Practitioner Layout and Pages
+import { Link, Outlet } from 'react-router-dom';
+
+
 export function Practitioner() {
     return (
       <div>
@@ -13,4 +16,6 @@ export function Practitioner() {
       </div>
     );
   }
+
+export default Practitioner;
   

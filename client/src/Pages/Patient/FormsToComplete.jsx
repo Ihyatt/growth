@@ -6,3 +6,5 @@ export function PatientFormsToComplete() {
       </div>
     );
   }
+
+export default PatientFormsToComplete;

@@ -6,3 +6,5 @@ export function PractitionerViewPatients() {
       </div>
     );
   }
+
+export default PractitionerViewPatients;

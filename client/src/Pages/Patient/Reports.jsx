@@ -6,3 +6,5 @@ export function PatientReports() {
       </div>
     );
   }
+
+export default PatientReports;
