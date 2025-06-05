@@ -18,13 +18,13 @@ const Login = () => {
       const response = await userLogin(username, password);
       const data = await response.json();
       console.log(data)
-      login(data.jwtToken, data.permission);
+      login(data.jwtToken, data.permission, data.username);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }
   };
-
+  console.log('login form')
   return (
     <div className="login-container">
     <h2 className="login-heading">Login</h2>

@@ -26,7 +26,8 @@ def login():
         return jsonify(
             message=f"Welcome back, {user.username}",
             jwtToken=jwt_token,
-            permission=user.permission
+            permission=user.permission,
+            username= user.username
         )
 
     except Exception as e:

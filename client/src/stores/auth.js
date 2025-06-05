@@ -9,11 +9,13 @@ const useAuthStore = create(
       jwtToken: null,
       permission: null,
       isAuthenticated: false,
+      userName: false,
       
-      login: (jwtToken, permission) => {
+      login: (jwtToken, permission,userName) => {
         set({ 
           jwtToken,
           permission,
+          userName,
           isAuthenticated: true 
         });
       },
@@ -22,7 +24,9 @@ const useAuthStore = create(
         set({ 
           jwtToken: null,
           permission: null,
+          userName: '',
           isAuthenticated: false 
+
         });
       },
     }),
@@ -31,6 +35,7 @@ const useAuthStore = create(
       partialize: (state) => ({ 
         jwtToken: state.jwtToken,
         permission: state.permission,
+        userName: state.userName,
         isAuthenticated: state.jwtToken !== null
       })
     }

@@ -45,42 +45,42 @@ function App() {
         {/* Auth */}
         <Route
           path="/login"
-          element={<ProtectedLayout/>}
+          element={<Login/>}
         />
         <Route
           path="/register"
-          element={<ProtectedLayout/>}
+          element={<Register/>}
         />
 
-        {/* Admin */}
-        <Route path="/admin" element={ <ProtectedLayout/>}>
-          <Route path="users" element={<AdminViewAllUsers />} />
-          <Route path="users/:userId" element={<AdminViewUser />} />
-        </Route>
-
-        {/* Patient */}
-        <Route path="/patients/:patientUsername" element={ <ProtectedLayout/> }>
-          <Route path="forms" element={<PatientFormsToComplete />} />
-          <Route path="forms/:formId" element={<PatientFormToComplete />} />
-          <Route path="reports" element={<PatientReports />} />
-          <Route path="reports/:reportId" element={<PatientReport />} />
-        </Route>
-
-        {/* Practitioner */}
-        <Route path="/practitioners/:practitionerUsername" element={<ProtectedLayout/>}>
-          <Route path="create-form" element={<PractitionerCreateForm />} />
-          <Route path="forms" element={<PractitionerViewForms />} />
-          <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />
-          <Route path="patients/forms" element={<PractitionerViewPatientsForms />} />
-          <Route path="patients/forms/:formId" element={<PractitionerViewPatientForm />} />
-          <Route path="patients" element={<PractitionerViewPatients />} />
-          <Route path="patients/:patientId" element={<PractitionerViewPatient />} />
-          <Route path="reports" element={<PractitionerViewReports />} />
-          <Route path="reports/:reportId" element={<PractitionerViewReport />} />
-        </Route>
-
-        {/* Default Redirect */}
-        <Route path="/" element={<Navigate to={isAuthenticated ? "/practitioner" : "/login"} replace />} />
+               {/* Admin */}
+               <Route path="/admin" element={ <ProtectedLayout/>}>
+               <Route path="users" element={<AdminViewAllUsers />} />
+               <Route path="users/:userId" element={<AdminViewUser />} />
+             </Route>
+     
+             {/* Patient */}
+             <Route path="/patients/:patientUsername" element={ <ProtectedLayout/> }>
+               <Route path="forms" element={<PatientFormsToComplete />} />
+               <Route path="forms/:formId" element={<PatientFormToComplete />} />
+               <Route path="reports" element={<PatientReports />} />
+               <Route path="reports/:reportId" element={<PatientReport />} />
+             </Route>
+     
+             {/* Practitioner */}
+             <Route path="/practitioners/:practitionerUsername" element={<ProtectedLayout/>}>
+               <Route path="create-form" element={<PractitionerCreateForm />} />
+               <Route path="forms" element={<PractitionerViewForms />} />
+               <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />
+               <Route path="patients/forms" element={<PractitionerViewPatientsForms />} />
+               <Route path="patients/forms/:formId" element={<PractitionerViewPatientForm />} />
+               <Route path="patients" element={<PractitionerViewPatients />} />
+               <Route path="patients/:patientId" element={<PractitionerViewPatient />} />
+               <Route path="reports" element={<PractitionerViewReports />} />
+               <Route path="reports/:reportId" element={<PractitionerViewReport />} />
+             </Route>
+     
+             {/* Default Redirect */}
+             <Route path="/" element={<ProtectedLayout />} />
       </Routes>
     </Router>
   );
