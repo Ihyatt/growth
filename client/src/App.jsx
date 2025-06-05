@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
+
+
 // Layouts
 import { Patient } from './Pages/Patient/Dashboard';
 import { Practitioner } from './Pages/Practitioner/Dashboard';
@@ -29,10 +31,13 @@ import PractitionerViewPatients from './pages/Practitioner/ViewPatients';
 import PractitionerViewPatient from './pages/Practitioner/ViewPatient';
 import PractitionerViewReports from './Pages/Practitioner/ViewPatientsReports';
 import PractitionerViewReport from './Pages/Practitioner/ViewPatientsReport';
+import ProtectedLayout from './components/ProtectedLayout';
 
 
 function App() {
   const isAuthenticated = true; // Replace with actual auth logic
+
+
 
   return (
     <Router>
@@ -40,21 +45,21 @@ function App() {
         {/* Auth */}
         <Route
           path="/login"
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
+          element={<ProtectedLayout/>}
         />
         <Route
           path="/register"
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />}
+          element={<ProtectedLayout/>}
         />
 
         {/* Admin */}
-        <Route path="/admin" element={<Admin />}>
+        <Route path="/admin" element={ <ProtectedLayout/>}>
           <Route path="users" element={<AdminViewAllUsers />} />
           <Route path="users/:userId" element={<AdminViewUser />} />
         </Route>
 
         {/* Patient */}
-        <Route path="/patients/:patientUsername" element={<Patient />}>
+        <Route path="/patients/:patientUsername" element={ <ProtectedLayout/> }>
           <Route path="forms" element={<PatientFormsToComplete />} />
           <Route path="forms/:formId" element={<PatientFormToComplete />} />
           <Route path="reports" element={<PatientReports />} />
@@ -62,7 +67,7 @@ function App() {
         </Route>
 
         {/* Practitioner */}
-        <Route path="/practitioners/:practitionerUsername" element={<Practitioner />}>
+        <Route path="/practitioners/:practitionerUsername" element={<ProtectedLayout/>}>
           <Route path="create-form" element={<PractitionerCreateForm />} />
           <Route path="forms" element={<PractitionerViewForms />} />
           <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />

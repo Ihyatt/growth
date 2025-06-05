@@ -25,10 +25,6 @@ const useAuthStore = create(
           isAuthenticated: false 
         });
       },
-      
-      isAdmin: () => get().permission === 'ADMIN',
-      isPractitioner: () => get().permission === 'PRACTITIONER',
-      isPatient: () => get().permission === 'PATIENT'
     }),
     {
       name: 'auth-storage',
