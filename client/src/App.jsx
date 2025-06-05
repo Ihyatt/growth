@@ -1,34 +1,35 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Layouts
-import { Patient } from './pages/Dashboard/Patient/Dashboard';
-import { Practitioner } from './pages/Dashboard/Practitioner/Dashboard';
-import { Admin } from './pages/Dashboard/Admin/Dashboard';
+import { Patient } from './Pages/Patient/Dashboard.jsx';
+import { Practitioner } from './Pages/Practitioner/Dashboard.jsx';
+import { Admin } from './Pages/Admin/Dashboard.jsx';
 
 // Auth Pages
 import Login from './pages/Login';
 import Register from './pages/Register';
 
 // Admin Pages
-import AdminViewAllUsers from './pages/Admin/ViewAllUsers';
-import AdminViewUser from './pages/Admin/ViewUser';
+import AdminViewAllUsers from './pages/Admin/ViewAllUsers.jsx';
+import AdminViewUser from './pages/Admin/ViewUser.jsx';
 
 // Patient Pages
-import PatientFormsToComplete from './pages/Patient/FormsToComplete';
-import PatientFormToComplete from './pages/Patient/FormToComplete';
-import PatientReports from './pages/Patient/Reports';
-import PatientReport from './pages/Patient/Report';
+import PatientFormsToComplete from './pages/Patient/FormsToComplete.jsx';
+import PatientFormToComplete from './pages/Patient/FormToComplete.jsx';
+import PatientReports from './pages/Patient/Reports.jsx';
+import PatientReport from './pages/Patient/Report.jsx';
 
 // Practitioner Pages
-import PractitionerCreateForm from './pages/Practitioner/CreateForm';
-import PractitionerViewForms from './pages/Practitioner/ViewForms';
-import PractitionerEditForm from './pages/Practitioner/EditForm';
-import PractitionerViewPatientsForms from './pages/Practitioner/ViewPatientsForms';
-import PractitionerViewPatientForm from './pages/Practitioner/ViewPatientForm';
-import PractitionerViewPatients from './pages/Practitioner/ViewPatients';
-import PractitionerViewPatient from './pages/Practitioner/ViewPatient';
-import PractitionerViewReports from './pages/Practitioner/ViewReports';
-import PractitionerViewReport from './pages/Practitioner/ViewHistoricReports/ViewReport';
+import PractitionerCreateForm from './pages/Practitioner/CreateForm.jsx';
+import PractitionerViewForms from './pages/Practitioner/ViewForms.jsx';
+import PractitionerEditForm from './pages/Practitioner/EditForm.jsx';
+import PractitionerViewPatientsForms from './pages/Practitioner/ViewPatientsForms.jsx';
+import PractitionerViewPatientForm from './pages/Practitioner/ViewPatientForm.jsx';
+import PractitionerViewPatients from './pages/Practitioner/ViewPatients.jsx';
+import PractitionerViewPatient from './pages/Practitioner/ViewPatient.jsx';
+import PractitionerViewReports from './pages/Practitioner/ViewReports.jsx';
+import PractitionerViewReport from './pages/Practitioner/ViewReport.jsx';
+
 
 function App() {
   const isAuthenticated = true; // Replace with actual auth logic

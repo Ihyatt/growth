@@ -5,7 +5,7 @@ import useAuthStore from '../../../stores/auth';
 import { USER_STATUS, USER_ROLES, USER_ACTIVE } from '../../../utils/constants';
 
 
-const Admin = () => {
+const AdminViewAllUsers = () => {
   const { jwtToken } = useAuthStore();
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
@@ -158,4 +158,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default AdminViewAllUsers;
