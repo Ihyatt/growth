@@ -1,4 +1,7 @@
+import { Link, Outlet } from 'react-router-dom';
 // Patient Layout and Pages
+
+
 export function Patient() {
     return (
       <div>
