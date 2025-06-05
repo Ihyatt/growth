@@ -19,7 +19,13 @@ const Login = () => {
       const data = await response.json();
       console.log(data)
       login(data.jwtToken, data.permission, data.username);
-      navigate('/dashboard');
+      if (data.permission == 'PATIENT' ) {
+        navigate(`/patients/${data.username}`);
+      } else if (data.permission == 'PRACTITIONER'){
+        navigate(`/practitioners/${data.username}`);
+      } else {
+        navigate('admin');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }

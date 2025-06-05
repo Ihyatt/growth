@@ -23,6 +23,7 @@ def login():
         if not user or not user.check_password(password):
             return jsonify(error="Invalid username or password."),
         jwt_token = create_access_token(identity=str(user.id))
+        print(user.username)
         return jsonify(
             message=f"Welcome back, {user.username}",
             jwtToken=jwt_token,

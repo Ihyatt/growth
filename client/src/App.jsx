@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 
 
+import useAuthStore from './stores/auth';
 
 // Layouts
 import { Patient } from './Pages/Patient/Dashboard';
@@ -35,7 +36,7 @@ import ProtectedLayout from './components/ProtectedLayout';
 
 
 function App() {
-  const isAuthenticated = true; // Replace with actual auth logic
+  const { username } = useAuthStore();
 
 
 
@@ -53,13 +54,13 @@ function App() {
         />
 
                {/* Admin */}
-               <Route path="/admin" element={ <ProtectedLayout/>}>
+               <Route path="/admin" element={ <ProtectedLayout currPermission={'ADMIN'}/>}>
                <Route path="users" element={<AdminViewAllUsers />} />
                <Route path="users/:userId" element={<AdminViewUser />} />
              </Route>
      
              {/* Patient */}
-             <Route path="/patients/:patientUsername" element={ <ProtectedLayout/> }>
+             <Route path="/patients/:username" element={ <ProtectedLayout currPermission={'PATIENT'}/> }>
                <Route path="forms" element={<PatientFormsToComplete />} />
                <Route path="forms/:formId" element={<PatientFormToComplete />} />
                <Route path="reports" element={<PatientReports />} />
@@ -67,7 +68,7 @@ function App() {
              </Route>
      
              {/* Practitioner */}
-             <Route path="/practitioners/:practitionerUsername" element={<ProtectedLayout/>}>
+             <Route path='/practitioners/:username' element={<ProtectedLayout currPermission={'PRACTITIONER'}/>}>
                <Route path="create-form" element={<PractitionerCreateForm />} />
                <Route path="forms" element={<PractitionerViewForms />} />
                <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />
