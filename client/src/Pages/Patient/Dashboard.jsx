@@ -21,10 +21,10 @@ export function Patient() {
           <Link to="forms">Forms To Complete</Link>
           <Link to="reports">Past Reports</Link>
         </nav>
-        <Outlet />
         <div>
         <h1>Dashboard ({permission})</h1>
         <button onClick={handleLogout}>Logout</button>
+        <Outlet />
 
       </div>
       </div>
