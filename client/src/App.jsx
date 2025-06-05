@@ -55,35 +55,48 @@ function App() {
         />
 
                {/* Admin */}
-               <Route path="/admin" element={ <ProtectedLayout currPermission={'ADMIN'}/>}>
+              <Route path="/admin" element={ <ProtectedLayout currPermission={'ADMIN'}/>}>
                <Route path="users" element={<AdminViewAllUsers />} />
-               <Route path="users/:userId" element={<AdminViewUser />} />
-             </Route>
-     
-             {/* Patient */}
-             <Route path="/patients/:username" element={ <ProtectedLayout currPermission={'PATIENT'}/> }>
-               <Route path="forms" element={<PatientFormsToComplete />} />
-               <Route path="forms/:formId" element={<PatientFormToComplete />} />
-               <Route path="reports" element={<PatientReports />} />
-               <Route path="reports/2" element={<PatientReport />} />
-             </Route>
-     
+               <Route path=":id" element={<AdminViewUser />} />
+              </Route>
+
+              {/* Patient */}
+              <Route path="/patients/:username" element={ <ProtectedLayout currPermission={'PATIENT'}/> }>
+                <Route path="forms" element={<PatientFormsToComplete />} >
+                  <Route path="list" element={<PatientFormToComplete />} />
+                  <Route path=":id" element={<PatientFormToComplete />} />
+                </Route>
+                <Route path="reports" element={<PatientReports />} >
+                  <Route path="list" element={<PatientFormToComplete />} />
+                  <Route path=":id" element={<PatientReport />} />
+                </Route>
+              </Route>
+    
              {/* Practitioner */}
-             <Route path='/practitioners/:username' element={<ProtectedLayout currPermission={'PRACTITIONER'}/>}>
-               <Route path="create-form" element={<PractitionerCreateForm />} />
-               <Route path="forms" element={<PractitionerViewForms />} />
-               <Route path="forms/2/edit" element={<PractitionerEditForm />} />
-               <Route path="forms/2" element={<PractitionerViewForm/>} />
-               <Route path="patients/forms" element={<PractitionerViewPatientsForms />} />
-               <Route path="patients/forms/2" element={<PractitionerViewPatientForm />} />
-               <Route path="patients" element={<PractitionerViewPatients />} />
-               <Route path="patients/2" element={<PractitionerViewPatient />} />
-               <Route path="reports" element={<PractitionerViewReports />} />
-               <Route path="reports/2" element={<PractitionerViewReport />} />
-             </Route>
+                <Route path='/practitioners/:username' element={<ProtectedLayout currPermission={'PRACTITIONER'}/>}>
+                  <Route path="forms" element={<PractitionerViewForms />} >
+                    <Route path="add" element={<PractitionerCreateForm />}/>
+                    <Route path="list" element={<PractitionerViewForm/>}/>
+                    <Route path=":id" element={<PractitionerViewForm/>}>
+                      <Route path="edit" element={<PractitionerEditForm />} />
+                      <Route path="assign" element={<PractitionerEditForm />} />
+                    </Route>
+                  </Route>
+
+                  <Route path="patients" element={<PractitionerViewPatients />}>
+                    <Route path=":id" element={<PractitionerViewPatient />}>
+                      <Route path="comment" element={<PractitionerEditForm />} />
+                    </Route>
+                  </Route> 
+
+                  <Route path="reports" element={<PractitionerViewReports />}>
+                    <Route path="list" element={<PractitionerViewReport />} />
+                    <Route path=":id" element={<PractitionerViewReport />} />
+                  </Route>
+               </Route> 
      
              {/* Default Redirect */}
-             <Route path="/" element={<ProtectedLayout />} />
+             <Route path="/" element={<ProtectedLayout currPermission = {''}/>} />
       </Routes>
     </Router>
   );
