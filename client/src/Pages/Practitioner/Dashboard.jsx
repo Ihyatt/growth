@@ -21,13 +21,13 @@ const handleLogout = () => {
           <Link to="create-form">Create Form</Link>
           <Link to="forms">View Forms</Link>
           <Link to="forms/2">View Forms</Link>
-          <Link to="forms/2/edit">View Patients</Link>
-          <Link to="patients">View Reports</Link>
-          <Link to="patients/2">View Reports</Link>
-          <Link to="patients/forms">View Reports</Link>
-          <Link to="patients/forms/2">View Reports</Link>
-          <Link to="patients/reports">View Reports</Link>
-          <Link to="patients/reports/2">View Reports</Link>
+          <Link to="forms/2/edit">View Form</Link>
+          <Link to="patients">View patients</Link>
+          <Link to="patients/2">View patient</Link>
+          <Link to="patients/forms">View patients forms</Link>
+          <Link to="patients/forms/2">View patients form</Link>
+          <Link to="patients/reports">View Patients Reports</Link>
+          <Link to="patients/reports/2">View Patients Report</Link>
         </nav>
         <Outlet />
         <div>
