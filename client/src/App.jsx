@@ -1,112 +1,83 @@
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from './hooks/useAuth';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// Layout Components
-import DashboardLayout from './layouts/DashboardLayout';
-import AdminLayout from './layouts/AdminLayout';
-import PractitionerLayout from './layouts/PractitionerLayout';
-import PatientLayout from './layouts/PatientLayout';
+// Layouts
+import { Patient } from './pages/Dashboard/Patient/Dashboard';
+import { Practitioner } from './pages/Dashboard/Practitioner/Dashboard';
+import { Admin } from './pages/Dashboard/Admin/Dashboard';
 
-// Page Components
+// Auth Pages
 import Login from './pages/Login';
+import Register from './pages/Register';
 
+// Admin Pages
 import AdminViewAllUsers from './pages/Admin/ViewAllUsers';
 import AdminViewUser from './pages/Admin/ViewUser';
 
+// Patient Pages
 import PatientFormsToComplete from './pages/Patient/FormsToComplete';
 import PatientFormToComplete from './pages/Patient/FormToComplete';
 import PatientReports from './pages/Patient/Reports';
 import PatientReport from './pages/Patient/Report';
 
+// Practitioner Pages
 import PractitionerCreateForm from './pages/Practitioner/CreateForm';
 import PractitionerViewForms from './pages/Practitioner/ViewForms';
-import PractitionerEditForm from './Pages/Practitioner/EditForm';
+import PractitionerEditForm from './pages/Practitioner/EditForm';
 import PractitionerViewPatientsForms from './pages/Practitioner/ViewPatientsForms';
 import PractitionerViewPatientForm from './pages/Practitioner/ViewPatientForm';
 import PractitionerViewPatients from './pages/Practitioner/ViewPatients';
 import PractitionerViewPatient from './pages/Practitioner/ViewPatient';
-import PractitionerViewReports from './Pages/Practitioner/ViewReports';
+import PractitionerViewReports from './pages/Practitioner/ViewReports';
 import PractitionerViewReport from './pages/Practitioner/ViewHistoricReports/ViewReport';
 
-
-function AppRoutes() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) return <div>Loading...</div>;
+function App() {
+  const isAuthenticated = true; // Replace with actual auth logic
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/login" element={<Login />} />
+    <Router>
+      <Routes>
+        {/* Auth */}
+        <Route
+          path="/login"
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
+        />
+        <Route
+          path="/register"
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />}
+        />
 
-      {/* Protected Routes */}
-      <Route element={<ProtectedRoute user={user} />}>
-        <Route element={<DashboardLayout />}>
-          {/* Default redirect based on role */}
-          <Route index element={<Navigate to={getDefaultRoute(user?.role)} replace />} />
-
-          {/* Admin Routes */}
-          <Route element={<RoleRoute allowedRoles={['admin']} user={user} />}>
-            <Route element={<AdminLayout />}>
-              <Route path="admin/users" element={<AdminViewAllUsers />} />
-              <Route path="admin/users/:userId" element={<AdminViewUser />} />
-            </Route>
-          </Route>
-
-          {/* Patient Routes */}
-          <Route element={<RoleRoute allowedRoles={['patient']} user={user} />}>
-            <Route element={<PatientLayout />}>
-              <Route path="patient/forms" element={<PatientFormsToComplete />} />
-              <Route path="patient/forms/:formId" element={<PatientFormToComplete />} />
-              <Route path="patient/reports" element={<PatientReports />} />
-              <Route path="patient/reports/:reportId" element={<PatientReport />} />
-            </Route>
-          </Route>
-
-          {/* Practitioner Routes */}
-          <Route element={<RoleRoute allowedRoles={['practitioner']} user={user} />}>
-            <Route element={<PractitionerLayout />}>
-              <Route path="practitioner/create-form" element={<PractitionerCreateForm />} />
-              <Route path="practitioner/forms" element={<PractitionerViewForms />} />
-              <Route path="practitioner/forms/:formId/edit" element={<PractitionerEditForm />} />
-              
-              <Route path="practitioner/patient-forms" element={<PractitionerViewPatientsForms />}>
-                <Route path=":formId" element={<PractitionerViewPatientForm />} />
-              </Route>
-              
-              <Route path="practitioner/patients" element={<PractitionerViewPatients />} />
-              <Route path="practitioner/patients/:patientId" element={<PractitionerViewPatient />} />
-              
-              <Route path="practitioner/reports" element={<PractitionerViewReports />} />
-              <Route path="practitioner/reports/:reportId" element={<PractitionerViewReport />} />
-            </Route>
-          </Route>
+        {/* Admin */}
+        <Route path="/admin" element={<Admin />}>
+          <Route path="users" element={<AdminViewAllUsers />} />
+          <Route path="users/:userId" element={<AdminViewUser />} />
         </Route>
-      </Route>
 
-      {/* Fallback Routes */}
-      <Route path="/unauthorized" element={<div>You don't have permission</div>} />
-      <Route path="*" element={<div>Page not found</div>} />
-    </Routes>
+        {/* Patient */}
+        <Route path="/patient" element={<Patient />}>
+          <Route path="forms" element={<PatientFormsToComplete />} />
+          <Route path="forms/:formId" element={<PatientFormToComplete />} />
+          <Route path="reports" element={<PatientReports />} />
+          <Route path="reports/:reportId" element={<PatientReport />} />
+        </Route>
+
+        {/* Practitioner */}
+        <Route path="/practitioner" element={<Practitioner />}>
+          <Route path="create-form" element={<PractitionerCreateForm />} />
+          <Route path="forms" element={<PractitionerViewForms />} />
+          <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />
+          <Route path="patients/forms" element={<PractitionerViewPatientsForms />} />
+          <Route path="patients/forms/:formId" element={<PractitionerViewPatientForm />} />
+          <Route path="patients" element={<PractitionerViewPatients />} />
+          <Route path="patients/:patientId" element={<PractitionerViewPatient />} />
+          <Route path="reports" element={<PractitionerViewReports />} />
+          <Route path="reports/:reportId" element={<PractitionerViewReport />} />
+        </Route>
+
+        {/* Default Redirect */}
+        <Route path="/" element={<Navigate to={isAuthenticated ? "/practitioner" : "/login"} replace />} />
+      </Routes>
+    </Router>
   );
 }
 
-// Auth Protection Components
-function ProtectedRoute({ user, children }) {
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
-}
-
-function RoleRoute({ allowedRoles, user, children }) {
-  return allowedRoles.includes(user?.role) ? <Outlet /> : <Navigate to="/unauthorized" replace />;
-}
-
-function getDefaultRoute(role) {
-  switch(role) {
-    case 'admin': return '/admin/users';
-    case 'practitioner': return '/practitioner/patient-forms';
-    case 'patient': return '/patient/forms';
-    default: return '/login';
-  }
-}
-
-export default AppRoutes;
+export default App;
