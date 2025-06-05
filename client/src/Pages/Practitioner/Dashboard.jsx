@@ -26,8 +26,8 @@ const handleLogout = () => {
           <Link to="patients/2">View patient</Link>
           <Link to="patients/forms">View patients forms</Link>
           <Link to="patients/forms/2">View patients form</Link>
-          <Link to="patients/reports">View Patients Reports</Link>
-          <Link to="patients/reports/2">View Patients Report</Link>
+          <Link to="reports">View Patients Reports</Link>
+          <Link to="reports/2">View Patients Report</Link>
         </nav>
         <Outlet />
         <div>

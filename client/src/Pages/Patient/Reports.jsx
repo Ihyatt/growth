@@ -5,7 +5,7 @@ export function PatientReports() {
     return (
       <div>
         <h2>Past Reports</h2>
-        <Link to="/patients/reports/456">View Report 456</Link>
+        <Link to="/reports/2">View Report 456</Link>
       </div>
     );
   }

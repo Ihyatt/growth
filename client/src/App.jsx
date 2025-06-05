@@ -25,6 +25,7 @@ import PatientReport from './pages/Patient/Report';
 // Practitioner Pages
 import PractitionerCreateForm from './pages/Practitioner/CreateForm';
 import PractitionerViewForms from './pages/Practitioner/ViewForms';
+import PractitionerViewForm from './pages/Practitioner/ViewForm';
 import PractitionerEditForm from './pages/Practitioner/EditForm';
 import PractitionerViewPatientsForms from './pages/Practitioner/ViewPatientsForms';
 import PractitionerViewPatientForm from './pages/Practitioner/ViewPatientForm';
@@ -64,20 +65,21 @@ function App() {
                <Route path="forms" element={<PatientFormsToComplete />} />
                <Route path="forms/:formId" element={<PatientFormToComplete />} />
                <Route path="reports" element={<PatientReports />} />
-               <Route path="reports/:reportId" element={<PatientReport />} />
+               <Route path="reports/2" element={<PatientReport />} />
              </Route>
      
              {/* Practitioner */}
              <Route path='/practitioners/:username' element={<ProtectedLayout currPermission={'PRACTITIONER'}/>}>
                <Route path="create-form" element={<PractitionerCreateForm />} />
                <Route path="forms" element={<PractitionerViewForms />} />
-               <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />
+               <Route path="forms/2/edit" element={<PractitionerEditForm />} />
+               <Route path="forms/2" element={<PractitionerViewForm/>} />
                <Route path="patients/forms" element={<PractitionerViewPatientsForms />} />
-               <Route path="patients/forms/:formId" element={<PractitionerViewPatientForm />} />
+               <Route path="patients/forms/2" element={<PractitionerViewPatientForm />} />
                <Route path="patients" element={<PractitionerViewPatients />} />
-               <Route path="patients/:patientId" element={<PractitionerViewPatient />} />
+               <Route path="patients/2" element={<PractitionerViewPatient />} />
                <Route path="reports" element={<PractitionerViewReports />} />
-               <Route path="reports/:reportId" element={<PractitionerViewReport />} />
+               <Route path="reports/2" element={<PractitionerViewReport />} />
              </Route>
      
              {/* Default Redirect */}
