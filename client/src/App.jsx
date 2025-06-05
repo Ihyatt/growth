@@ -27,8 +27,8 @@ import PractitionerViewPatientsForms from './pages/Practitioner/ViewPatientsForm
 import PractitionerViewPatientForm from './pages/Practitioner/ViewPatientForm';
 import PractitionerViewPatients from './pages/Practitioner/ViewPatients';
 import PractitionerViewPatient from './pages/Practitioner/ViewPatient';
-import PractitionerViewReports from './pages/Practitioner/ViewReports';
-import PractitionerViewReport from './pages/Practitioner/ViewReport';
+import PractitionerViewReports from './Pages/Practitioner/ViewPatientsReports';
+import PractitionerViewReport from './Pages/Practitioner/ViewPatientsReport';
 
 
 function App() {
@@ -54,7 +54,7 @@ function App() {
         </Route>
 
         {/* Patient */}
-        <Route path="/patient" element={<Patient />}>
+        <Route path="/patients" element={<Patient />}>
           <Route path="forms" element={<PatientFormsToComplete />} />
           <Route path="forms/:formId" element={<PatientFormToComplete />} />
           <Route path="reports" element={<PatientReports />} />

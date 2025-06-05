@@ -9,8 +9,14 @@ export function Practitioner() {
         <nav>
           <Link to="create-form">Create Form</Link>
           <Link to="forms">View Forms</Link>
-          <Link to="patients">View Patients</Link>
-          <Link to="reports">View Reports</Link>
+          <Link to="forms/2">View Forms</Link>
+          <Link to="forms/2/edit">View Patients</Link>
+          <Link to="patients">View Reports</Link>
+          <Link to="patients/2">View Reports</Link>
+          <Link to="patients/forms">View Reports</Link>
+          <Link to="patients/forms/2">View Reports</Link>
+          <Link to="patients/reports">View Reports</Link>
+          <Link to="patients/reports/2">View Reports</Link>
         </nav>
         <Outlet />
       </div>
