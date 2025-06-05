@@ -54,7 +54,7 @@ function App() {
         </Route>
 
         {/* Patient */}
-        <Route path="/patients" element={<Patient />}>
+        <Route path="/patients/:patientUsername" element={<Patient />}>
           <Route path="forms" element={<PatientFormsToComplete />} />
           <Route path="forms/:formId" element={<PatientFormToComplete />} />
           <Route path="reports" element={<PatientReports />} />
@@ -62,7 +62,7 @@ function App() {
         </Route>
 
         {/* Practitioner */}
-        <Route path="/practitioners" element={<Practitioner />}>
+        <Route path="/practitioners/:practitionerUsername" element={<Practitioner />}>
           <Route path="create-form" element={<PractitionerCreateForm />} />
           <Route path="forms" element={<PractitionerViewForms />} />
           <Route path="forms/:formId/edit" element={<PractitionerEditForm />} />
