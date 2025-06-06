@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
-from sqlalchemy import ForeignKey, String, Text, Column
+from sqlalchemy import ForeignKey, String, Text, Column, Boolean
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
@@ -21,6 +21,7 @@ class Medication(db.Model):
     end_date = Column(db.Date)
     instructions = Column(Text)
     is_active = Column(db.Boolean, default=True, nullable=False)
+    is_deleted = Column(Boolean, default=True, nullable=False)
     created_at = Column(db.DateTime, server_default=db.func.now())
     updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 

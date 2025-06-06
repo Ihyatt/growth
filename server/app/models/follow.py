@@ -14,7 +14,7 @@ class Follow(db.Model):
     id = Column(Integer, primary_key=True)
     practitioner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     patient_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    active = Column(Boolean, default=True, nullable=False)
+    connected = Column(Boolean, default=True, nullable=False)
     created_at = Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(
         db.DateTime,

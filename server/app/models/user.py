@@ -6,6 +6,7 @@ from sqlalchemy.orm import validates
 from sqlalchemy_continuum import make_versioned
 from sqlalchemy.orm import relationship, validates
 from app.database import db
+from app.models.report import Report
 from app.models.constants.enums import UserLevel, ApprovalStatus, ProfileStatus
 
 
@@ -41,18 +42,30 @@ class User(db.Model):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+    
 
     @property
     def is_admin(self) -> bool:
-        return self.permission == UserLevel.ADMIN
+        return self.user_level == UserLevel.ADMIN
+    
+    @property
+    def get_patient_reports(self):
+        if self.is_patient:
+            return Report.query.filter_by(patient_id=self.user_id)
+        
+        
+    @property
+    def get_practitioner_reports(self):
+        if self.is_practitioner:
+            return Report.query.filter_by(practitioner_id=self.user_id)
 
     @property
     def is_practitioner(self) -> bool:
-        return self.permission == UserLevel.PRACTITIONER
+        return self.user_level == UserLevel.PRACTITIONER
 
     @property
     def is_patient(self) -> bool:
-        return self.permission == UserLevel.PATIENT
+        return self.user_level == UserLevel.PATIENT
 
     @property
     def full_name(self) -> str:

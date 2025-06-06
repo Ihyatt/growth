@@ -12,14 +12,11 @@ class Report(db.Model):
 
     id = Column(db.Integer, primary_key=True)
     report_name = Column(String(255), nullable=False)
-    report_type = Column(
-        Enum('weekly_summary', 'monthly_analytics', 'ad_hoc', name='report_types'),
-        nullable=False
-    )
     report_data = Column(Text, nullable=False)
     file_format = Column(String(10), default='json')
-    generated_by = Column(db.Integer, ForeignKey('users.id'))
-    is_archived = Column(db.Boolean, default=False, nullable=False)
+    patient_id = Column(db.Integer, ForeignKey('users.id'))
+    practitioner_id = Column(db.Integer, ForeignKey('users.id'))
+    is_deleted = Column(Boolean, default=True, nullable=False)
     created_at = Column(db.DateTime, server_default=db.func.now(), nullable=False)
     updated_at = Column(
         db.DateTime,
@@ -29,6 +26,7 @@ class Report(db.Model):
 
     generator = relationship('User', back_populates='generated_reports')
     comments = relationship('ReportComment', back_populates='report', cascade='all, delete-orphan')
+    
 
     @validates('report_name')
     def validate_report_name(self, key, name):

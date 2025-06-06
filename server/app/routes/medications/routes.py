@@ -2,7 +2,7 @@ from flask import request, jsonify
 from app.routes.medications import medications_bp
 from app.models.user import User, Medication
 from app.database import db
-from server.app.utils.decorators import enforce_role_practioner, enforce_role_patient, enforce_role_practioner, set_versioning_user
+from server.app.utils.decorators import enforce_elite_user, enforce_role_patient, enforce_elite_user, set_versioning_user
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.utils.decorators import 
 
@@ -36,7 +36,7 @@ def get_medication():
 @medications_bp.route('<str:username>/add', methods=['POST'])
 @set_versioning_user
 @jwt_required()
-@enforce_role_practioner
+@enforce_elite_user
 def add():
     practitioner_user_id = get_jwt_identity()
     data = request.get_json()
@@ -62,7 +62,7 @@ def add():
 
 @medications_bp.route('<str:username>/<int:medication_id>/edit', methods=['POST'])
 @set_versioning_user
-@enforce_role_practioner
+@enforce_elite_user
 def edit():
     practitioner_user_id = get_jwt_identity()
     data = request.get_json()
@@ -82,7 +82,7 @@ def edit():
 
 @medications_bp.route('<str:username>/<int:medication_id>/delete', methods=['POST'])
 @set_versioning_user
-@enforce_role_practioner
+@enforce_elite_user
 def delete():
     practitioner_user_id = get_jwt_identity()
     data = request.get_json()

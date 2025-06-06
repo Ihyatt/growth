@@ -38,7 +38,7 @@ def enforce_role_admin():
     return decorator
 
 
-def enforce_role_practioner():
+def enforce_elite_user():
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
@@ -46,11 +46,14 @@ def enforce_role_practioner():
                 verify_jwt_in_request()
                 user_id = get_jwt_identity()
                 user = User.query.get(user_id)
-           
+            
                 if not user:
                     return jsonify({"msg": "User not found"}), 404
 
-                if user.user_level != UserLevel.PRACTITIONER and not user.approval_status == ApprovalStatus.APPROVED:
+                elite_users = [UserLevel.PRACTITIONER, UserLevel.Admin]
+
+
+                if user.user_level not in elite_users or  and not user.approval_status == ApprovalStatus.APPROVED:
                     return jsonify({"msg": "Access forbidden: Insufficient permissions"}), 403
 
                 if user.approval_status != ApprovalStatus.APPROVED:

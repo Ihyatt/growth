@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
-from sqlalchemy import ForeignKey, Text, String, Column, Enum
+from sqlalchemy import ForeignKey, Text, String, Column, Enum, Boolean
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
@@ -20,6 +20,7 @@ class PractitionerForm(db.Model):
     questions = Column(Text, nullable=False)
     status = Column(Enum(FormStatus), nullable=False, default=FormStatus.IN_PROCESS)
     practitioner_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    is_archived = Column(Boolean, default=True, nullable=False)
     created_at = Column(db.DateTime, server_default=db.func.now()) 
     updated_at = Column(
         db.DateTime, 

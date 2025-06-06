@@ -5,7 +5,7 @@ from app.models.user_form import UserForm, User, PractitionerForm
 from app.database import db
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.models.constants.enums import FormStatus, FormResponses
-from server.app.utils.decorators import enforce_role_practioner, enforce_role_patient, enforce_role_practioner, set_versioning_user
+from server.app.utils.decorators import enforce_elite_user, enforce_role_patient, enforce_elite_user, set_versioning_user
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType #this needs to be set up for permissions, or actually i can use a decoratore
 
 
@@ -15,7 +15,7 @@ PRACTITIONER APIS
 """
 
 @forms_bp.route('/search', methods=['GET'])
-@enforce_role_practioner
+@enforce_elite_user
 def get_practitoner_forms():
     current_user_id = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
@@ -44,7 +44,7 @@ def get_practitoner_forms():
 
 
 @forms_bp.route('/patients-forms', methods=['GET'])
-@enforce_role_practioner
+@enforce_elite_user
 def get_patients_forms():
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
@@ -73,7 +73,7 @@ def get_patients_forms():
 
  
 @forms_bp.route('/<int:form_id>', methods=['GET'])
-@enforce_role_practioner
+@enforce_elite_user
 def get_practitoner_form(form_id):
     
     current_user_id = get_jwt_identity() 
@@ -85,7 +85,7 @@ def get_practitoner_form(form_id):
      
     
 @forms_bp.route('/user-form/<int:form_id>', methods=['GET'])
-@enforce_role_practioner
+@enforce_elite_user
 def get_patient_form():
     form_id = request.args.get('form_id')
     form = UserForm.query.get(id=form_id)
@@ -96,7 +96,7 @@ def get_patient_form():
 
 @forms_bp.route('/create', methods=['POST'])
 @set_versioning_user
-@enforce_role_practioner
+@enforce_elite_user
 def create():
     current_user_id = get_jwt_identity()
     
@@ -118,7 +118,7 @@ def create():
 
 
 @forms_bp.route('/archive', methods=['POST'])
-@enforce_role_practioner
+@enforce_elite_user
 def archive():
     form_id = request.args.get('form_id')
     form = PractitionerForm.query.get(id=form_id)

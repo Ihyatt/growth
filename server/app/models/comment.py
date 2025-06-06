@@ -16,6 +16,8 @@ class Comment(db.Model):
     resource_type = db.Column(db.String(50), nullable=False) #('medication', 'report')
     resource_id = db.Column(db.Integer, nullable=False) #(e.g., medication.id, report.id)
     user = db.relationship('User', backref=db.backref('comments', lazy=True))
+    is_deleted = Column(Boolean, default=True, nullable=False)
+
     created_at = Column(db.DateTime, server_default=db.func.now(), nullable=False)
     updated_at = Column(
         db.DateTime,

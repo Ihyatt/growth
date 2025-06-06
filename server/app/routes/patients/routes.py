@@ -3,7 +3,7 @@ from flask import request, jsonify
 from app.routes.patients import patients_bp
 from app.models.user import User, Medication,Follow
 from app.database import db
-from server.app.utils.decorators import enforce_role_practioner, enforce_role_patient, enforce_role_practioner, set_versioning_user
+from server.app.utils.decorators import enforce_elite_user, enforce_role_patient, enforce_elite_user, set_versioning_user
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.utils.decorators import 
 
@@ -11,9 +11,8 @@ from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditAc
 from server.app.utils.decorators import jwt_required_with_role
 
 
-
 @patients_bp.route('/search', methods=['GET'])
-@enforce_role_practioner
+@enforce_elite_user
 def get_patients():
     current_user_id = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
@@ -37,24 +36,13 @@ def get_patients():
     })
 
 
-
 @patients_bp.route('/<str:username>', methods=['GET'])
-@enforce_role_practioner
+@enforce_elite_user
 def get_patient():
     current_user_id = get_jwt_identity()
     patient_username = request.args.get('username')
 
     patient_user =  User.query.get(username=patient_username)
-    follow = Follow.query.get(
-        practitioner_id=current_user_id,
-        patient_id=patient_user.id
-    )
-    follow.is_active = False
-    db.session.commit()
 
-    return jsonify({"medication": 'unfollowed'})
+    return jsonify({"patient": patient_user.to_dict()})
     
-
-    practitioner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    patient_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    active = Column(Boolean, default=True, nullable=False)

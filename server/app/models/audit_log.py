@@ -2,6 +2,8 @@
 from datetime import datetime, timezone
 from sqlalchemy import Enum, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB 
+from sqlalchemy import Column, ForeignKey, Boolean
+
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
@@ -21,6 +23,8 @@ class AuditLog(db.Model):
     details = db.Column(JSONB, nullable=True)
     action_type = db.Column(Enum(AuditActionStatus), nullable=False)
     audited_model = db.Column(db.String(120), nullable=False)
+    is_deleted = Column(Boolean, default=True, nullable=False)
+
     
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(
