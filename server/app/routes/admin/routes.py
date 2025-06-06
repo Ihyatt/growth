@@ -1,6 +1,6 @@
 
 from flask import request, jsonify
-from app.routes import bp
+from app.routes.admin.routes import admin_bp
 from app.models.user import User
 from app.database import db
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
@@ -8,7 +8,7 @@ from app.utils.auth_decorators import jwt_required_with_role
 from app.utils.audit_log import log_audit
 
 
-@bp.route('/users', methods=['GET'])
+@admin_bp.route('/users', methods=['GET'])
 @jwt_required_with_role()
 def get_admin_users():
     try:
@@ -47,7 +47,7 @@ def get_admin_users():
         return jsonify(error="Query failed: " + str(e)), 500
 
 
-@bp.route('/approve', methods=['POST'])
+@admin_bp.route('/approve', methods=['POST'])
 @jwt_required_with_role()
 def approve_user():
     try:
@@ -90,46 +90,3 @@ def approve_user():
         db.session.rollback()
         return jsonify({"message": f"Failed to approve user: {str(e)}"}), 
 
-
-@bp.route('/admin/reject', methods=['POST'])
-@jwt_required_with_role()
-def reject_user():
-    try:
-        data = request.get_json()
-        user_id = data.get('userId')
-        
-        if not user_id:
-            return jsonify({"message": "User ID is required."}), 400
-
-        user = User.query.filter_by(id=user_id).first()
-
-        if not user:
-            return jsonify({"message": "User not found."}), 404
-
-        if user.is_validated == ValidationLevel.REJECTED:
-            return jsonify({"message": f"User {user.email} is already rejected."}), 200
-
-        old_validation_level = user.is_validated
-        user.is_validated = ValidationLevel.REJECTED
-
-        audit_details = {
-            'old_validation_level': old_validation_level,
-            'new_validation_level': user.is_validated
-        }
-
-        log_audit(
-            target_user_id=user.id,
-            action_type=AuditActionType.REJECTED,
-            details=audit_details
-        )
-        db.session.commit()
-
-        return jsonify({
-            "message": f"User {user.email} rejected successfully.",
-            "user": user.to_dict() 
-        }), 200
-   
-    except Exception as e:
-        db.session.rollback()
-
-        return jsonify({"message": f"Failed to reject user: {str(e)}"}), 500

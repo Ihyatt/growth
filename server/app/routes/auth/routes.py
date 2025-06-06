@@ -1,13 +1,13 @@
 
 from flask import request, jsonify
-from app.routes import bp
+from app.routes.auth import auth_bp
 from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token
 from app.models.constants.enums import PermissionLevel
 
 
-@bp.route('/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
 
     try:
@@ -32,7 +32,7 @@ def login():
         return jsonify(error="Login failed: " + str(e)), 500
 
 
-@bp.route('/register', methods=['POST'])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     try:
         data = request.get_json()
