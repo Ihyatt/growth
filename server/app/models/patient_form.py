@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Dict, Any
-from sqlalchemy import ForeignKey, Text, Column, Enum
 from sqlalchemy.orm import relationship, validates
+
 from sqlalchemy_continuum import make_versioned
 from app.database import db
 from app.models.constants.enums import FormStatus
@@ -12,20 +12,21 @@ class PatientForm(db.Model):
     __versioned__ = {}
     __tablename__ = 'user_forms'
 
-    id = Column(db.Integer, primary_key=True)
-    patient_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
-    form_data = Column(Text, nullable=False)
-    practitioner_form_id = Column(db.Integer, ForeignKey('practitioner_forms.id'), nullable=False)
-    status = Column(Enum(FormStatus), nullable=False, default=FormStatus.TODO)
-    reviewed_at = Column(db.DateTime)
-    reviewed_by_id = Column(db.Integer, ForeignKey('users.id'))
-    created_at = Column(db.DateTime, server_default=db.func.now())
-    updated_at = Column(
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    form_data = db.Column(db.Text, nullable=False)
+    practitioner_form_id = db.Column(db.Integer, db.ForeignKey('practitioner_forms.id'), nullable=False)
+    status = db.Column(db.Enum(FormStatus), nullable=False, default=FormStatus.TODO)
+    reviewed_at = db.Column(db.DateTime)
+    reviewed_by_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(
         db.DateTime,
         server_default=db.func.now(),
         onupdate=db.func.now()
     )
-
     practitioner_form = relationship("PractitionerForm", back_populates="user_submissions")
     reviewer = relationship("User", foreign_keys=[reviewed_by_id])
     patient = relationship("User", foreign_keys=[patient_id])

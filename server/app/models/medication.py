@@ -1,6 +1,5 @@
-from datetime import datetime, timezone
-from typing import Optional, List, Dict, Any
-from sqlalchemy import ForeignKey, String, Text, Column, Boolean
+
+from typing import Dict, Any
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
@@ -11,19 +10,19 @@ class Medication(db.Model):
     __versioned__ = {}
     __tablename__ = 'medications'
 
-    id = Column(db.Integer, primary_key=True)
-    patient_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
-    name = Column(String(120), nullable=False)
-    dosage = Column(String(120), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    dosage = db.Column(db.String(120), nullable=False)
     practioner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    frequency = Column(String(120))
-    start_date = Column(db.Date)
-    end_date = Column(db.Date)
-    instructions = Column(Text)
-    is_active = Column(db.Boolean, default=True, nullable=False)
-    is_deleted = Column(Boolean, default=True, nullable=False)
-    created_at = Column(db.DateTime, server_default=db.func.now())
-    updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    frequency = db.Column(db.String(120))
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
+    instructions = db.Column(db.Text)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
     patient_owner = relationship('User', back_populates='medications')
     medication_comments = relationship('MedicationComment', back_populates='medication')
@@ -67,8 +66,10 @@ class MedicationComment(db.Model):
     medication_id = db.Column(db.Integer, db.ForeignKey('medication.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
-    created_at = Column(db.DateTime, server_default=db.func.now())
-    updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+
     
     medication_comment_author = db.relationship('User', backref=db.backref('medications_comments', lazy=True))
     medication = db.relationship('Medication', back_populates='medication_comments', lazy=True)
@@ -85,6 +86,5 @@ class MedicationComment(db.Model):
             "medication_id": self.medication_id,
             "user_id": self.user_id
         }
-        if include_user and self.comment_author:
-            data["user"] = {"id": self.comment_author.id, "username": self.comment_author.username}
+        
         return data

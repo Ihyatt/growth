@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Dict, Any
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import Enum, String, Column, Boolean
 from sqlalchemy.orm import validates
 from sqlalchemy_continuum import make_versioned
 from sqlalchemy.orm import relationship, validates
@@ -17,20 +16,22 @@ class User(db.Model):
     __tablename__ = 'users'
     __versioned__ = {}
 
-    id = Column(db.Integer, primary_key=True)
-    username = Column(String(80), unique=True, nullable=False)
-    email = Column(String(255), unique=True, nullable=False)
-    password_hash = Column(String(512), nullable=False)
-    first_name = Column(String(80))
-    last_name = Column(String(80))
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.String(512), nullable=False)
+    first_name = db.Column(db.String(80))
+    last_name = db.Column(db.String(80))
     
-    user_level = Column(Enum(UserLevel), nullable=False, default=UserLevel.PATIENT)
-    approval_status = Column(Enum(ApprovalStatus), nullable=False, default=ApprovalStatus.PENDING)
-    profile_status = Column(Enum(ProfileStatus), nullable=False, default=ProfileStatus.ACTIVE)
+    user_level = db.Column(db.Enum(UserLevel), nullable=False, default=UserLevel.PATIENT)
+    approval_status = db.Column(db.Enum(ApprovalStatus), nullable=False, default=ApprovalStatus.PENDING)
+    profile_status = db.Column(db.Enum(ProfileStatus), nullable=False, default=ProfileStatus.ACTIVE)
 
-    last_login_at = Column(db.DateTime)
-    created_at = Column(db.DateTime, server_default=db.func.now(), nullable=False)
-    updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
+    last_login_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
+    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
 
     medications = db.relationship('Medication', backref='patient_owner', lazy=True)
