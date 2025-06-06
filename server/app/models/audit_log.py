@@ -33,16 +33,9 @@ class AuditLog(db.Model):
         onupdate=lambda: datetime.now(timezone.utc)
     )
 
-    admin = relationship(
-        'User',
-        foreign_keys=[admin_id],
-        backref=db.backref('admin_audit_logs', lazy='dynamic')
-    )
-    audited_user = relationship(
-        'User',
-        foreign_keys=[audited_id],
-        backref=db.backref('user_audit_logs', lazy='dynamic')
-    )
+    admin = relationship('User', backref='audit_logs_as_admin',lazy= 'dynamic')
+    audited_user = relationship('User', backref='audit_logs_about_user',lazy= 'dynamic')
+    
 
     @validates('audited_model')
     def validate_audited_model(self, key: str, model_name: str) -> str:

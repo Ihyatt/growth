@@ -22,16 +22,17 @@ class Follow(db.Model):
         onupdate=lambda: datetime.now(timezone.utc)
     )
 
-    practitioner = relationship(
+    follower = relationship(
         "User",
         foreign_keys=[practitioner_id],
-        backref=db.backref("patients_following", lazy='dynamic')
+        backref=db.backref("follow_as_practitioner", lazy=True)
     )
-    patient = relationship(
+    followed = relationship(
         "User",
         foreign_keys=[patient_id],
-        backref=db.backref("practitioners_followed", lazy='dynamic')
+        backref=db.backref("follow_as_patient", lazy=True)
     )
+
 
     __table_args__ = (
         UniqueConstraint('patient_id', 'practitioner_id', name='_patient_practitioner_uc'),
