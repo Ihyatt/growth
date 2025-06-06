@@ -3,15 +3,12 @@ from flask import request, jsonify
 from app.routes import bp
 from app.models.user import User
 from app.database import db
-from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
 from app.utils.auth_decorators import jwt_required_with_role
 from app.utils.audit_log import log_audit
 
 
-
-
-@bp.route('/admin/users', methods=['GET'])
+@bp.route('/users', methods=['GET'])
 @jwt_required_with_role()
 def get_admin_users():
     try:
@@ -50,7 +47,7 @@ def get_admin_users():
         return jsonify(error="Query failed: " + str(e)), 500
 
 
-@bp.route('/admin/approve', methods=['POST'])
+@bp.route('/approve', methods=['POST'])
 @jwt_required_with_role()
 def approve_user():
     try:

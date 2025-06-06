@@ -3,11 +3,8 @@ from flask import request, jsonify
 from app.routes import bp
 from app.models.user import User
 from app.database import db
-from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
-from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
-from app.utils.auth_decorators import jwt_required_with_role
-from app.utils.audit_log import log_audit
-
+from flask_jwt_extended import create_access_token
+from app.models.constants.enums import PermissionLevel
 
 
 @bp.route('/login', methods=['POST'])

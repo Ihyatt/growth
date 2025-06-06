@@ -50,11 +50,8 @@ def create_app():
     app.config["JWT_SECRET_KEY"] = "romeoluna" 
     jwt.init_app(app)
 
-
-    
     app.register_blueprint(bp, url_prefix='/api')
     
-
     print(f"Using DB: {app.config.get('SQLALCHEMY_DATABASE_URI')}")
 
     return app
