@@ -29,7 +29,7 @@ class Report(db.Model):
 
     report_reviewer = db.relationship('User', back_populates='reports_as_practitioner')
     reported_patient = db.relationship('User', back_populates='reports_as_patient')
-    report_comments = db.relationship('ReportComment', backref='report')
+    report_comments = db.relationship('ReportComment', back_populates='report')
 
 
 
@@ -82,7 +82,7 @@ class ReportComment(db.Model):
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     
-    report_comment_author = db.relationship('User', backref=db.backref('reports_comments', lazy=True))
+    report_comment_author = db.relationship('User', back_populates='reports_comments', lazy=True)
     report = db.relationship('Report', back_populates='report_comments', lazy=True)
 
 

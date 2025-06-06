@@ -21,20 +21,13 @@ class Follow(db.Model):
         onupdate=lambda: datetime.now(timezone.utc)
     )
 
-    follower = relationship(
-        "User",
-        foreign_keys=[practitioner_id],
-        backref=db.backref("follow_as_practitioner", lazy=True)
-    )
-    followed = relationship(
-        "User",
-        foreign_keys=[patient_id],
-        backref=db.backref("follow_as_patient", lazy=True)
-    )
+
+    follower = relationship( "User", back_populates = "follow_as_practitioner", lazy=True)
+    followed = relationship("User",  back_populates="follow_as_patient", lazy=True)
 
 
     __table_args__ = (
-        UniqueConstraint('patient_id', 'practitioner_id', name='_patient_practitioner_uc'),
+        db.UniqueConstraint('patient_id', 'practitioner_id', name='_patient_practitioner_uc'),
     )
 
     def __repr__(self) -> str:

@@ -30,8 +30,8 @@ class AuditLog(db.Model):
         onupdate=lambda: datetime.now(timezone.utc)
     )
 
-    admin = relationship('User', backref='audit_logs_as_admin',lazy= 'dynamic')
-    audited_user = relationship('User', backref='audit_logs_about_user',lazy= 'dynamic')
+    admin = relationship('User', back_populates='audit_logs_as_admin',lazy= 'dynamic')
+    audited_user = relationship('User', back_populates='audit_logs_about_user',lazy= 'dynamic')
     
 
     @validates('audited_model')

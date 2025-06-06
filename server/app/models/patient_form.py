@@ -30,10 +30,10 @@ class PatientForm(db.Model):
 
 
 
-    form_reviewer = db.relationship('User',backref='reviewed_forms', lazy=True)
-    assigned_patient = db.relationship('User',backref='forms_as_patient', lazy=True)
+    form_reviewer = db.relationship('User',back_populates='reviewed_forms', lazy=True)
+    assigned_patient = db.relationship('User',back_populates='forms_as_patient', lazy=True)
 
-    form_author = db.relationship('User',backref='forms_as_practitioner', lazy=True)
+    form_author = db.relationship('User',back_populates='forms_as_practitioner', lazy=True)
 
 
 

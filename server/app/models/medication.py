@@ -71,7 +71,7 @@ class MedicationComment(db.Model):
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     
-    medication_comment_author = db.relationship('User', backref=db.backref('medications_comments', lazy=True))
+    medication_comment_author = db.relationship('User', back_populates = 'medications_comments', lazy=True)
     medication = db.relationship('Medication', back_populates='medication_comments', lazy=True)
 
 

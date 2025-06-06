@@ -34,24 +34,24 @@ class User(db.Model):
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
 
-    medications = db.relationship('Medication', backref='patient_owner', lazy=True)
-    medications_comments = db.relationship('Comment', backref='medication_comment_author', lazy=True)
-    report_comments = db.relationship('Comment', backref='report_comment_author', lazy=True)
+    medications = db.relationship('Medication', back_populates='patient_owner', lazy=True)
+    medications_comments = db.relationship('Comment', back_populates='medication_comment_author', lazy=True)
+    report_comments = db.relationship('Comment', back_populates='report_comment_author', lazy=True)
     
-    audit_logs_as_admin = db.relationship('Audit_Log', backref='admin', lazy=True)
-    audit_logs_about_user = db.relationship('Audit_Log', backref='audited_user', lazy=True)
+    audit_logs_as_admin = db.relationship('Audit_Log', back_populates='admin', lazy=True)
+    audit_logs_about_user = db.relationship('Audit_Log', back_populates='audited_user', lazy=True)
     
-    forms_as_patient = db.relationship('Patient_Form', backref='assigned_patient', lazy=True)
-    reviewed_forms = db.relationship('Patient_Form', backref='form_reviewer', lazy=True)
+    forms_as_patient = db.relationship('Patient_Form', back_populates='assigned_patient', lazy=True)
+    reviewed_forms = db.relationship('Patient_Form', back_populates='form_reviewer', lazy=True)
 
-    forms_as_practitioner = db.relationship('Practitioner_Form', backref='form_author', lazy=True)
+    forms_as_practitioner = db.relationship('Practitioner_Form', back_populates='form_author', lazy=True)
     
 
-    reports_as_patient = db.relationship('Report',backref='reported_patient', lazy=True)
-    reports_as_practitioner = db.relationship('Report', backref='report_reviewer',lazy=True)
+    reports_as_patient = db.relationship('Report',back_populates='reported_patient', lazy=True)
+    reports_as_practitioner = db.relationship('Report', back_populates='report_reviewer',lazy=True)
 
-    follow_as_patient = db.relationship('Follow', backref='followed', lazy=True)
-    follow_as_practitioner = db.relationship('Follow', backref='follower',lazy=True)
+    follow_as_patient = db.relationship('Follow', back_populates='followed', lazy=True)
+    follow_as_practitioner = db.relationship('Follow', back_populates='follower',lazy=True)
 
 
     def set_password(self, password: str) -> None:
