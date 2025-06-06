@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Enum, String, Column, Boolean
 from sqlalchemy.orm import validates
 from sqlalchemy_continuum import make_versioned
+from sqlalchemy.orm import relationship, validates
 from app.database import db
 from app.models.constants.enums import UserLevel, ApprovalStatus, ProfileStatus
 
@@ -29,6 +30,9 @@ class User(db.Model):
     last_login_at = Column(db.DateTime)
     created_at = Column(db.DateTime, server_default=db.func.now(), nullable=False)
     updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
+
+    medications = db.relationship('Medication', backref='patient', lazy=True)
+
 
     def set_password(self, password: str) -> None:
         if not password or len(password) < 8:

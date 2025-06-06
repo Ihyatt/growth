@@ -15,6 +15,7 @@ class Medication(db.Model):
     patient_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
     name = Column(String(120), nullable=False)
     dosage = Column(String(120), nullable=False)
+    practioner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     frequency = Column(String(120))
     start_date = Column(db.Date)
     end_date = Column(db.Date)

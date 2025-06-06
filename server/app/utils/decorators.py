@@ -8,6 +8,10 @@ from sqlalchemy_continuum import transaction_class
 from app.models.constants.enums import UserLevel, ApprovalStatus, ProfileStatus
 
 
+from app.models.medication import Medication
+from app.models.report import Report
+
+
 
 def enforce_role_admin():
     def decorator(fn):
@@ -96,3 +100,19 @@ def set_versioning_user(fn):
             pass 
         return fn(*args, **kwargs)
     return wrapper
+
+
+
+def get_resource_model(resource_type_str):
+
+    resource_models_map = {
+        'medication': Medication,
+        'report': Report,
+    }
+    
+    model = resource_models_map.get(resource_type_str.lower())
+    
+    if not model:
+        abort(400, description=f"Invalid resource type: '{resource_type_str}'")
+        
+    return model
