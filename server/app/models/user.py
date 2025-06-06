@@ -22,8 +22,8 @@ class User(db.Model):
     first_name = Column(String(80))
     last_name = Column(String(80))
     
-    permission = Column(Enum(UserLevel), nullable=False, default=UserLevel.PATIENT)
-    validation_status = Column(Enum(ApprovalStatus), nullable=False, default=ApprovalStatus.PENDING)
+    user_level = Column(Enum(UserLevel), nullable=False, default=UserLevel.PATIENT)
+    approval_status = Column(Enum(ApprovalStatus), nullable=False, default=ApprovalStatus.PENDING)
     profile_status = Column(Enum(ProfileStatus), nullable=False, default=ProfileStatus.ACTIVE)
 
     last_login_at = Column(db.DateTime)
@@ -72,9 +72,9 @@ class User(db.Model):
         data = {
             "id": self.id,
             "username": self.username,
-            "permission": self.permission.value,
+            "user_level": self.user_level.value,
             "validation_status": self.validation_status.value,
-            "status": self.profile_status.value,
+            "approval_status": self.approval_status.value,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),
             "full_name": self.full_name,

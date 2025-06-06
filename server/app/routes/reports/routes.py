@@ -3,6 +3,7 @@ from app.routes.reports import reports_bp
 from app.models.user import User
 from app.database import db
 from app.utils.auth_decorators import jwt_required_with_role,set_versioning_user
+from flask_jwt_extended import get_jwt_identity
 
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
 from app.utils.auth_decorators import jwt_required_with_role

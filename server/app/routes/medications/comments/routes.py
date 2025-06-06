@@ -5,7 +5,7 @@ from app.database import db
 from app.utils.auth_decorators import jwt_required_with_role,set_versioning_user
 
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
-from app.utils.auth_decorators import jwt_required_with_role
+from flask_jwt_extended import get_jwt_identity
 
 
 @medications_comments_bp.route('/', methods=['GET'])

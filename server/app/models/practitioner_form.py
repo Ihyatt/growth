@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
-from sqlalchemy import ForeignKey, Text, String, Column
+from sqlalchemy import ForeignKey, Text, String, Column, Enum
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
+from app.models.constants.enums import FormStatus
+
 
 
 make_versioned(user_cls='app.models.user.User')
@@ -15,10 +17,9 @@ class PractitionerForm(db.Model):
 
     id = Column(db.Integer, primary_key=True)
     title = Column(String(255), nullable=False)
-    description = Column(Text)
     questions = Column(Text, nullable=False)
     responses = Column(Text)
-    is_active = Column(db.Boolean, default=True, nullable=False) 
+    status = Column(Enum(FormStatus), nullable=False, default=FormStatus.IN_PROCESS)
     practitioner_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
     created_at = Column(db.DateTime, server_default=db.func.now()) 
     updated_at = Column(
@@ -47,8 +48,7 @@ class PractitionerForm(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'description': self.description,
-            'is_active': self.is_active,
+            'status': self.status,
             'practitioner_id': self.practitioner_id,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,

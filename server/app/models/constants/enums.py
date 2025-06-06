@@ -19,3 +19,18 @@ class AuditActionStatus(enum.Enum):
     APPROVED = "APPROVED"
     SET_TO_PENDING = "SET_TO_PENDING"
     REJECTED = "REJECTED"
+
+
+class FormStatus(str, enum.Enum):
+    TODO = 'TODO'
+    IN_PROCESS = 'IN_PROCESS'
+    COMPLETED = 'COMPLETED'
+    ARCHIVED = 'ARCHIVED'
+
+
+class FormResponses(str, enum.Enum):
+    NOT_AT_ALL = 'NOT_AT_ALL'
+    SEVERAL_DAYS = 'SEVERAL_DAYS'
+    MORE_THAN_HALF_THE_DAYS = 'MORE_THAN_HALF_THE_DAYS'
+    NEARLY_EVERY_DAY = 'NEARLY_EVERY_DAY'
+
