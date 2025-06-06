@@ -66,29 +66,6 @@ def enforce_elite_user():
     return decorator
 
 
-def enforce_role_patient():
-    def decorator(fn):
-        @wraps(fn)
-        def wrapper(*args, **kwargs):
-            try:
-                verify_jwt_in_request()
-                user_id = get_jwt_identity()
-                user = User.query.filter_by(user_id).first()
-           
-                if not user:
-                    return jsonify({"msg": "User not found"}), 404
-
-                if user.user_level != UserLevel.PATIENT:
-                    return jsonify({"msg": "you are not a patient"}), 403
-                
-                return fn(*args, **kwargs)
-            except Exception as e:
-                return jsonify({"msg": str(e)}), 401
-        return wrapper
-    return decorator
-
-
-
 def set_versioning_user(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
