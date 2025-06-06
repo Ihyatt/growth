@@ -29,7 +29,8 @@ class PractitionerForm(db.Model):
     )
 
     practitioner = db.relationship('User', back_populates='created_forms')
-    report_comments = db.relationship('ReportComment', back_populates='form', cascade='all, delete-orphan')
+    forms_as_practitioner = db.relationship('Patient_Form', back_populates='form_author')
+
 
     @validates('title')
     def validate_title(self, key, title):

@@ -27,9 +27,15 @@ class PatientForm(db.Model):
         server_default=db.func.now(),
         onupdate=db.func.now()
     )
-    practitioner_form = relationship("PractitionerForm", back_populates="user_submissions")
-    reviewer = relationship("User", foreign_keys=[reviewed_by_id])
-    patient = relationship("User", foreign_keys=[patient_id])
+
+
+
+    form_reviewer = db.relationship('User',backref='reviewed_forms', lazy=True)
+    assigned_patient = db.relationship('User',backref='forms_as_patient', lazy=True)
+
+    form_author = db.relationship('User',backref='forms_as_practitioner', lazy=True)
+
+
 
     @validates('form_data')
     def validate_form_data(self, key, form_data):

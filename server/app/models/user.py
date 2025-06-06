@@ -42,7 +42,10 @@ class User(db.Model):
     audit_logs_about_user = db.relationship('Audit_Log', backref='audited_user', lazy=True)
     
     forms_as_patient = db.relationship('Patient_Form', backref='assigned_patient', lazy=True)
+    reviewed_forms = db.relationship('Patient_Form', backref='form_reviewer', lazy=True)
+
     forms_as_practitioner = db.relationship('Practitioner_Form', backref='form_author', lazy=True)
+    
 
     reports_as_patient = db.relationship('Report',backref='reported_patient', lazy=True)
     reports_as_practitioner = db.relationship('Report', backref='report_reviewer',lazy=True)
