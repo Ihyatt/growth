@@ -1,60 +1,56 @@
 
 from flask import request, jsonify
-from app.routes.forms import forms_bp
-from app.models.user_form import UserForm, User, PractitionerForm
+from app.routes.comments import comments_bp
+from app.models.user_form import UserForm, User, PractitionerForm, Comment
 from app.database import db
+from server.app.routes.helpers.model_helpers import get_resource_model
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.models.constants.enums import FormStatus, FormResponses
 from server.app.utils.decorators import enforce_role_practioner, enforce_role_patient, enforce_role_practioner, set_versioning_user
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType #this needs to be set up for permissions, or actually i can use a decoratore
 
 
-@forms_bp.route('/create', methods=['GET'])
+@comments_bp.route('/create/<string:resource_type>', methods=['POST'])
 @jwt_required()
 def create():
     current_user_id = get_jwt_identity()
+    data = request.get_json()
+    comment_text = data.get('text')
+    resource_type = request.args.get('resource_type')
+
+    new_comment = Comment(
+        text=comment_text,
+        user_id=current_user_id,
+        resource_type=resource_type.lower(), 
+    )
+    db.session.add(new_comment)
+    db.session.commit()
+
+    return jsonify(new_comment.to_dict()), 201
 
 
-    return jsonify()
-
-
-@forms_bp.route('/edit/<int:form_id>', methods=['GET'])
+@comments_bp.route('edit/<string:resource_type>/<int:resource_id>', methods=['POST'])
 @jwt_required()
 def edit():
-    page = request.args.get('page', default=1, type=int)
-    limit = request.args.get('limit', default=20, type=int)
-    status = request.args.get('status')
-    owner = request.args.get('owner')
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
+    comment_text = data.get('text')
+    resource_type = request.args.get('resource_type')
+    resource_id = request.args.get('resource_id')
 
-    user = User.query.get(username = owner)
+    # ResourceModel = get_resource_model(resource_type)
 
-    query = UserForm.query
+    # resource_instance = ResourceModel.query.get(resource_id)
 
-    query = query.filter_by(
-        patient_user_id = user.user_id,
-        status = status
-    ).all()
+    # put logic that checks instance
 
-    forms_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+    new_comment = Comment(
+        text=comment_text,
+        user_id=current_user_id,
+        resource_type=resource_type.lower(),
+        resource_id=resource_id   
+    )
+    db.session.add(new_comment)
+    db.session.commit()
 
-    return jsonify({
-        "forms": [form.to_dict() for form in forms_pagination.items],
-        "total": forms_pagination.total,
-        "page": forms_pagination.page,
-        "pages": forms_pagination.pages,
-        "has_next": forms_pagination.has_next,
-        "has_prev": forms_pagination.has_prev,
-    })
-
- 
-@forms_bp.route('delete/<int:form_id>', methods=['GET'])
-@jwt_required()
-def delete(form_id):
-    
-    current_user_id = get_jwt_identity() 
-    form_id = request.args.get('form_id')
-    form = PractitionerForm.query.get(practitioner_id=current_user_id, id=form_id)
-
-    return jsonify({'form':form})
-     
-  
+    return jsonify(new_comment.to_dict()), 201
