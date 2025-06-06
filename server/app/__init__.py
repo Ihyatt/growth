@@ -6,7 +6,6 @@ from app.routes import bp
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 
-# Import top-level blueprints
 from app.routes.auth.routes import auth_bp
 from app.routes.admin.routes import admin_bp
 from app.routes.forms.routes import forms_bp
