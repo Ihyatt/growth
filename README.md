@@ -1,61 +1,91 @@
-# Growth: Mental Wellness Companion
+# Growth - Mental Health Platform
 
-## Project Overview
-Growth is a full-stack web application designed to connect patients with mental health practitioners, foster self-awareness through trend tracking, and streamline medication management. This platform aims to empower patients by visualizing their mental health journey, while providing practitioners with essential tools for patient oversight and engagement.
+*A platform connecting therapists and clients for better mental health outcomes*
 
-## Current Progress
-I've laid down the foundational architecture for the "Growth" application. Here's what's currently implemented:
+## Table of Contents
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [API Documentation](#api-documentation)
+- [Development](#development)
+- [License](#license)
+
+## ✨ Features
+
+### For Therapists
+- **Form Management**
+  - Create custom assessment forms
+  - Assign forms to specific patients
+  - View form completion progress
+- **Patient Management**
+  - Follow/unfollow patients
+  - View patient medication dashboards
+  - Comment on patient medications and reports
+- **Reporting**
+  - Automatic weekly report generation
+  - Historical report analysis
+
+### For Patients
+- **Form Completion**
+  - Fill out assigned forms
+  - View form history
+- **Medication Tracking** 💊
+  - Dashboard of current medications
+  - Add/edit medication details
+  - Comment on medications (visible to therapist)
+- **Communication**
+  - Comment on generated reports
+  - Follow/unfollow therapists
+
+### For Admins
+- **Therapist Approval**
+  - Review and approve new therapist accounts
+  - Manage platform users
+- **Content Moderation**
+  - Monitor comments and interactions
+  - Handle reports
+
+## 🛠 Tech Stack
 
 ### Frontend
-- ✅ Initialized with React and Vite
-- ✅ Core authentication pages (login/registration)
-- ✅ Admin practitioner list view
+- React.js
+- React Router v6
+- Chart.js (for reports)
+- Tailwind CSS
 
 ### Backend
-- ✅ PostgreSQL database setup
-- ✅ SQLAlchemy ORM configuration
-- ✅ Flask Blueprints for modular APIs
-- ✅ JWT authentication system
-- ✅ User table implementation
+- Flask (Python)
+- PostgreSQL
+- SQLAlchemy
+- JWT Authentication
 
-## Technical Stack
-| Category        | Technologies                          |
-|-----------------|---------------------------------------|
-| **Frontend**    | React, Vite, JavaScript               |
-| **Backend**     | Python (Flask), Flask Blueprints      |
-| **Database**    | PostgreSQL (PSQL)                     |
-| **ORM**         | SQLAlchemy                            |
-| **Auth**        | JWT (JSON Web Tokens)                 |
-| **Planned**     | Celery (async tasks), Redis (broker)  |
+### DevOps
+- Docker
+- AWS EC2
+- GitHub Actions CI/CD
 
-## Future Enhancements
+## 🚀 Installation
 
-### Core Features
-- [ ] Custom form builder for practitioners
-- [ ] Patient form completion interface
-- [ ] Dynamic trend visualization charts
-- [ ] Medication tracking system
-  - [ ] Patient medication logs
-  - [ ] Practitioner suggestions
-  - [ ] Refill reminders
+```bash
+# Clone repository
+git clone https://github.com/yourusername/growth.git
 
-### Automation & Reporting
-- [ ] Weekly report generation
-- [ ] Email reminder system for forms
+# Backend setup
+cd server
+python -m venv venv
+source venv/bin/activate 
+pip3 install -r requirements.txt
+rm -rf migrations
+psql -U <Username> -d growth_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+psql -U <username> -d growth_db -c 'GRANT ALL ON SCHEMA public TO "Inashyatt1";'
+psql -U <username>-d growth_db -c "\dn+ public"
+flask db init
+flask db migrate -m "Initial schema creation"
+flask db upgrade
+python seed.py
+python3 run.py
 
-### Admin & Security
-- [ ] Practitioner approval workflow
-- [ ] Audit tracking middleware
-- [ ] API rate limiting
-- [ ] Comprehensive activity logs
-
-## Development Roadmap
-
-```mermaid
-graph TD
-    A[Current Foundation] --> B[Form Management]
-    B --> C[Data Visualization]
-    C --> D[Medication System]
-    D --> E[Automation Features]
-    E --> F[Admin Security]
-    
+# Frontend setup
+cd ../client
+npm install

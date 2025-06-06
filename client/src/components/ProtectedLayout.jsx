@@ -13,8 +13,7 @@ function ProtectedLayout({currPermission}) {
   
     const { isAuthenticated, permission, userName } = useAuthStore();
   
-    console.log(currPermission)
-    console.log('here meow')
+
     if (!isAuthenticated) {
       return <Navigate to="/login" replace />;
     }
@@ -37,8 +36,10 @@ function ProtectedLayout({currPermission}) {
     }
     return (
       <div>
-      hello
-      <Outlet />
+      {!isAuthenticated && <Login/>}
+      {isPatient && <Patient/>}
+      {isPractitioner && <Practitioner/>}
+      {isAdmin && <Admin/>}
 
       </div>
     );
