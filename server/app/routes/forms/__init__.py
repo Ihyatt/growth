@@ -1,5 +1,4 @@
 from flask import Blueprint
 
-bp = Blueprint('forms', __name__)
+forms_bp = Blueprint('forms', __name__)
 
-from app.routes.forms import routes

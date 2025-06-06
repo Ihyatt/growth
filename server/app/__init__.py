@@ -13,34 +13,37 @@ from app.routes.forms.routes import forms_bp
 from app.routes.medications.routes import medications_bp
 from app.routes.reports.routes import reports_bp
 
-
+from app.routes.medications.comments.routes import medications_comments_bp
+from app.routes.reports.comments.routes import reports_comments_bp
 from app.config import Config
 
-load_dotenv()
 
-jwt = JWTManager()
-
-app = Flask(__name__)
 
 def create_app():
+
+    load_dotenv()
+
+    jwt = JWTManager()
+
+    app = Flask(__name__)
+
+    CORS(app)
     
     app.config.from_object(Config)
 
-
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp, url_prefix='/admins')
+
     app.register_blueprint(medications_bp, url_prefix='/medications')
+    app.register_blueprint(medications_comments_bp, url_prefix='/comments')
+    medications_bp.register_blueprint(medications_comments_bp)
+
     app.register_blueprint(forms_bp, url_prefix='/forms')
+
     app.register_blueprint(reports_bp, url_prefix='/reports')
+    app.register_blueprint(reports_comments_bp, url_prefix='/comments')
+    reports_bp.register_blueprint(reports_comments_bp)
 
-
-    from app.routes.admin.routes import admin_bp
-    from app.routes.forms.routes import forms_bp
-    from app.routes.medications.routes import medications_bp
-    from app.routes.reports.routes import reports_bp
-    
-    CORS(app)
-        
     database.init_app(app)
     Migrate(app, database.db)
     
