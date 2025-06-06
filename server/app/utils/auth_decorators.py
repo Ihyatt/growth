@@ -4,6 +4,7 @@ from flask import jsonify, g
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from app.models.user import User
 from app.models.constants.enums import PermissionLevel,ValidationLevel
+from sqlalchemy_continuum import transaction_class
 
 
 def jwt_required_with_role():
@@ -11,13 +12,8 @@ def jwt_required_with_role():
         @wraps(fn)
         def wrapper(*args, **kwargs):
             try:
-                print('heeellloooo')
-                print(args)
-                print(kwargs)
                 verify_jwt_in_request()
-                print(1)
                 user_id = get_jwt_identity()
-                print(2)
                 user = User.query.get(user_id)
                 print(3)
                 if not user:
@@ -37,3 +33,19 @@ def jwt_required_with_role():
                 return jsonify({"msg": str(e)}), 401
         return wrapper
     return decorator
+
+
+def set_versioning_user(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            verify_jwt_in_request(optional=True)
+            identity = get_jwt_identity()
+            if identity:
+                user = User.query.filter_by(id=identity).first()
+                if user:
+                    transaction_class().user = user
+        except Exception:
+            pass 
+        return fn(*args, **kwargs)
+    return wrapper

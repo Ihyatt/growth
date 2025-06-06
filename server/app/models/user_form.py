@@ -12,12 +12,12 @@ class UserForm(db.Model):
     __tablename__ = 'user_forms'
 
     id = Column(db.Integer, primary_key=True)
-    submitted_by_user_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)  # Fixed typo in column name
+    submitted_by_user_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
     form_data = Column(Text, nullable=False)
     practitioner_form_id = Column(db.Integer, ForeignKey('practitioner_forms.id'), nullable=False)
-    status = Column(db.String(20), default='submitted', nullable=False)  # Added status field
-    reviewed_at = Column(db.DateTime)  # Added review timestamp
-    reviewed_by = Column(db.Integer, ForeignKey('users.id'))  # Added reviewer reference
+    status = Column(db.String(20), default='submitted', nullable=False)
+    reviewed_at = Column(db.DateTime)
+    reviewed_by = Column(db.Integer, ForeignKey('users.id'))
     created_at = Column(db.DateTime, server_default=db.func.now())
     updated_at = Column(
         db.DateTime,
@@ -25,12 +25,10 @@ class UserForm(db.Model):
         onupdate=db.func.now()
     )
 
-    # Relationships
     user = relationship("User", foreign_keys=[submitted_by_user_id], backref="submitted_forms")
     practitioner_form = relationship("PractitionerForm", back_populates="user_submissions")
     reviewer = relationship("User", foreign_keys=[reviewed_by])
 
-    # Validations
     @validates('form_data')
     def validate_form_data(self, key, form_data):
         if not form_data or len(form_data.strip()) == 0:

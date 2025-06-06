@@ -46,7 +46,6 @@ class Follow(db.Model):
         )
 
     def to_dict(self) -> dict:
-        """Serialize the Follow relationship to a dictionary."""
         return {
             "id": self.id,
             "practitioner_id": self.practitioner_id,

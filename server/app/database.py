@@ -1,6 +1,8 @@
 import click
 from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_continuum import versioning_manager
+
 
 db = SQLAlchemy()
 
@@ -10,9 +12,13 @@ def init_app(app):
 
 @click.command("init-db")
 def init_db_command():
-    """Create tables from models or run schema.sql."""
     
     with current_app.app_context():
         db.drop_all()
         db.create_all()
         click.echo("PostgreSQL tables created successfully!")
+
+
+@versioning_manager.transaction_class.user.setter
+def set_current_user(transaction, user):
+    transaction.user = user

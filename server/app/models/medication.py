@@ -67,11 +67,9 @@ class MedicationComment(db.Model):
     created_at = Column(db.DateTime, server_default=db.func.now())
     updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    # Relationships
     medication = relationship('Medication', back_populates='comments')
     commenter = relationship('User')
 
-    # Validations
     @validates('content')
     def validate_content(self, key, content):
         if not content or len(content.strip()) == 0:

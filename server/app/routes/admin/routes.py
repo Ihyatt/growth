@@ -4,12 +4,13 @@ from app.routes.admin.routes import admin_bp
 from app.models.user import User
 from app.database import db
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
-from app.utils.auth_decorators import jwt_required_with_role
+from app.utils.auth_decorators import jwt_required_with_role,set_versioning_user
 from app.utils.audit_log import log_audit
 
 
 @admin_bp.route('/users', methods=['GET'])
-@jwt_required_with_role()
+@set_versioning_user
+@jwt_required_with_role
 def get_admin_users():
     try:
         validation_map = {
@@ -48,7 +49,8 @@ def get_admin_users():
 
 
 @admin_bp.route('/approve', methods=['POST'])
-@jwt_required_with_role()
+@set_versioning_user
+@jwt_required_with_role
 def approve_user():
     try:
         data = request.get_json()

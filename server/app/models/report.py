@@ -76,11 +76,9 @@ class ReportComment(db.Model):
         onupdate=db.func.now()
     )
 
-    # Relationships
     report = relationship('Report', back_populates='comments')
     commenter = relationship('User', back_populates='report_comments')
 
-    # Validations
     @validates('content')
     def validate_content(self, key, content):
         if not content or len(content.strip()) < 1:

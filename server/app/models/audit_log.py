@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
-from app.models.constants.enums import AuditActionType
+from app.models.constants.enums import AuditActionStatus
 from typing import Dict, Any
 
 make_versioned(user_cls='app.models.user.User')
@@ -19,7 +19,7 @@ class AuditLog(db.Model):
     admin_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     audited_user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     details = db.Column(JSONB, nullable=True)
-    action_type = db.Column(Enum(AuditActionType), nullable=False)
+    action_type = db.Column(Enum(AuditActionStatus), nullable=False)
     audited_model = db.Column(db.String(120), nullable=False)
     
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
