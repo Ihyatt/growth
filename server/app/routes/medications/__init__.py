@@ -1,8 +1,8 @@
 from flask import Blueprint
-from app.routes.comments.routes import comments_bp
+from app.routes.medications.comments.routes import medication_comments_bp
 
 
 medications_bp = Blueprint('medications', __name__, url_prefix='/medications')
-medications_bp.register_blueprint(comments_bp)
+medications_bp.register_blueprint(medication_comments_bp)
 
 
