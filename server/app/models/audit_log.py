@@ -1,7 +1,7 @@
 
 
 from sqlalchemy import Enum, ForeignKey
-from app.models.constants.enums import AuditActionType, PermissionLevel
+from app.models.constants.enums import AuditActionType
 from datetime import datetime, timezone
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
@@ -10,6 +10,7 @@ from app.database import db
 
 
 make_versioned(user_cls=None)
+
 class AuditLog(db.Model):
     __versioned__ = {}
     __tablename__ = 'audit_logs'
