@@ -1,30 +1,93 @@
 from datetime import datetime, timezone
-from werkzeug.security import generate_password_hash, check_password_hash
-from app.database import db
-from sqlalchemy import Enum 
-from app.models.constants.enums import PermissionLevel, ValidationLevel
-
-
+from typing import Optional, List, Dict, Any
+from sqlalchemy import ForeignKey, String, Text, Column
+from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
+from app.database import db
 
+make_versioned(user_cls='app.models.user.User')
 
-make_versioned(user_cls=None)
 class Medication(db.Model):
     __versioned__ = {}
     __tablename__ = 'medications'
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    name = db.Column(db.String)
-    dosage = db.Column(db.String)
-    instructions = db.Column(db.String)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-make_versioned(user_cls=None)
+    id = Column(db.Integer, primary_key=True)
+    patient_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    name = Column(String(120), nullable=False)
+    dosage = Column(String(120), nullable=False)
+    frequency = Column(String(120))
+    start_date = Column(db.Date)
+    end_date = Column(db.Date)
+    instructions = Column(Text)
+    is_active = Column(db.Boolean, default=True, nullable=False)
+    created_at = Column(db.DateTime, server_default=db.func.now())
+    updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+    patient = relationship('User', back_populates='medications')
+    comments = relationship('MedicationComment', back_populates='medication', cascade='all, delete-orphan')
+
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name or len(name.strip()) == 0:
+            raise ValueError("Medication name cannot be empty")
+        return name.strip()
+
+    @validates('dosage')
+    def validate_dosage(self, key, dosage):
+        if not dosage or len(dosage.strip()) == 0:
+            raise ValueError("Dosage cannot be empty")
+        return dosage.strip()
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'id': self.id,
+            'name': self.name,
+            'dosage': self.dosage,
+            'frequency': self.frequency,
+            'start_date': self.start_date.isoformat() if self.start_date else None,
+            'end_date': self.end_date.isoformat() if self.end_date else None,
+            'instructions': self.instructions,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
+
+    def __repr__(self) -> str:
+        return f'<Medication {self.id} {self.name} for patient {self.patient_id}>'
+
+
 class MedicationComment(db.Model):
     __versioned__ = {}
     __tablename__ = 'medication_comments'
-    id = db.Column(db.Integer, primary_key=True)
-    medication_id = db.Column(db.Integer, db.ForeignKey('medications.id'))
-    commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    content = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    id = Column(db.Integer, primary_key=True)
+    medication_id = Column(db.Integer, ForeignKey('medications.id'), nullable=False)
+    commenter_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(db.DateTime, server_default=db.func.now())
+    updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+
+    # Relationships
+    medication = relationship('Medication', back_populates='comments')
+    commenter = relationship('User')
+
+    # Validations
+    @validates('content')
+    def validate_content(self, key, content):
+        if not content or len(content.strip()) == 0:
+            raise ValueError("Comment content cannot be empty")
+        return content.strip()
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'id': self.id,
+            'medication_id': self.medication_id,
+            'commenter_id': self.commenter_id,
+            'content': self.content,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'commenter_name': getattr(self.commenter, 'name', None)
+        }
+
+    def __repr__(self) -> str:
+        return f'<MedicationComment {self.id} on medication {self.medication_id}>'
