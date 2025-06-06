@@ -32,7 +32,40 @@ class User(db.Model):
     created_at = Column(db.DateTime, server_default=db.func.now(), nullable=False)
     updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
+
     medications = db.relationship('Medication', backref='patient', lazy=True)
+    comments = db.relationship('Comment', backref='user', lazy=True)
+    audit_logs = db.relationship('Audit_Log', backref='admin', lazy=True)
+    patient_forms = db.relationship('Audit_Log', backref='patient', lazy=True)
+    practitioner_forms = db.relationship('Audit_Log', backref='practitioner', lazy=True)
+
+    reports_as_patient = db.relationship(
+        'Report',
+        backref='patient_subject',
+        lazy=True,
+        foreign_keys='[Report.patient_id]'
+    )
+
+    reports_as_practitioner = db.relationship(
+        'Report',
+        backref='assigned_practitioner',
+        lazy=True,
+        foreign_keys='[Report.practitioner_id]'
+    )
+
+    follow_as_patient = db.relationship(
+        'Follow',
+        backref='patient',
+        lazy=True,
+        foreign_keys='[Follow.patient_id]'
+    )
+
+    follow_as_practitioner = db.relationship(
+        'Follow',
+        backref='practitioner',
+        lazy=True,
+        foreign_keys='[Follow.practitioner_id]'
+    )
 
 
     def set_password(self, password: str) -> None:
@@ -43,21 +76,9 @@ class User(db.Model):
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
     
-
     @property
     def is_admin(self) -> bool:
         return self.user_level == UserLevel.ADMIN
-    
-    @property
-    def get_patient_reports(self):
-        if self.is_patient:
-            return Report.query.filter_by(patient_id=self.user_id)
-        
-        
-    @property
-    def get_practitioner_reports(self):
-        if self.is_practitioner:
-            return Report.query.filter_by(practitioner_id=self.user_id)
 
     @property
     def is_practitioner(self) -> bool:
@@ -72,35 +93,18 @@ class User(db.Model):
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return self.username
+    
 
-    @validates('email')
-    def validate_email(self, key: str, email: str) -> str:
-        if '@' not in email:
-            raise ValueError("Invalid email address")
-        return email.lower()
-
-    @validates('username')
-    def validate_username(self, key: str, username: str) -> str:
-        if len(username) < 4:
-            raise ValueError("Username must be at least 4 characters")
-        return username
-
-    def to_dict(self, include_sensitive: bool = False) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         data = {
             "id": self.id,
             "username": self.username,
             "user_level": self.user_level.value,
-            "validation_status": self.validation_status.value,
-            "approval_status": self.approval_status.value,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat(),
             "full_name": self.full_name,
         }
-        if include_sensitive:
-            data["email"] = self.email
-            data["last_login_at"] = self.last_login_at.isoformat() if self.last_login_at else None
+
         return data
 
     def __repr__(self) -> str:
-        return f"<User id={self.id} username={self.username} permission={self.permission.name}>"
+        return f"<User id={self.id} username={self.username} user_level={self.user_level}>"
     

@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.routes.forms import forms_bp
-from app.models.user_form import UserForm, User, PractitionerForm
+from server.app.models.patient_form import UserForm, User, PractitionerForm
 from app.database import db
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.models.constants.enums import FormStatus, FormResponses

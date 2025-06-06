@@ -5,16 +5,16 @@ from app.models.audit_log import AuditLog
 from app.models.constants.enums import AuditActionType 
 
 def log_audit(
-    target_user_id: int,
+    admin_id: admin_id,
+    audited_id: int,
     action_type: AuditActionType.APPROVED,
     details: dict = None
     ):
-    admin_id = getattr(g, 'user_id', None)
-
+    
     try:
         new_log = AuditLog(
             admin_id=admin_id,
-            target_user_id=target_user_id,
+            audited_id=audited_id,
             action_type=action_type,
             details=details
         )

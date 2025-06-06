@@ -46,7 +46,7 @@ def get_patients_reports():
 def get_report():
     report_id = request.args.get('report_id')
     report_id = request.args.get('report_id')
-    report =  Report.query.get(report_id)
+    report =  Report.query.filter_by(report_id).first()
 
 
     return jsonify({"medication": report.to_dict()})
@@ -56,12 +56,12 @@ def get_report():
 @set_versioning_user
 @enforce_elite_user
 def delete_report():
-    practitioner_user_id = get_jwt_identity()
+    practitioner_id = get_jwt_identity()
     data = request.get_json()
     patient_username = request.args.get('username')
     report_id = request.args.get('report_id')
 
-    medication = Report.query.get(report_id)
+    medication = Report.query.filter_by(report_id).first()
     report_id.is_active = False
     db.session.commit()
     

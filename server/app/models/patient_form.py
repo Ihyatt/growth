@@ -8,12 +8,12 @@ from app.models.constants.enums import FormStatus
 
 make_versioned(user_cls='app.models.user.User')
 
-class UserForm(db.Model):
+class PatientForm(db.Model):
     __versioned__ = {}
     __tablename__ = 'user_forms'
 
     id = Column(db.Integer, primary_key=True)
-    patient_user_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    patient_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
     form_data = Column(Text, nullable=False)
     practitioner_form_id = Column(db.Integer, ForeignKey('practitioner_forms.id'), nullable=False)
     status = Column(Enum(FormStatus), nullable=False, default=FormStatus.TODO)
@@ -26,7 +26,7 @@ class UserForm(db.Model):
         onupdate=db.func.now()
     )
 
-    user = relationship("User", foreign_keys=[patient_user_id], backref="submitted_forms")
+    user = relationship("User", foreign_keys=[patient_id], backref="submitted_forms")
     practitioner_form = relationship("PractitionerForm", back_populates="user_submissions")
     reviewer = relationship("User", foreign_keys=[reviewed_by])
 
@@ -46,7 +46,7 @@ class UserForm(db.Model):
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "patient_user_id": self.patient_user_id,
+            "patient_id": self.patient_id,
             "practitioner_form_id": self.practitioner_form_id,
             "status": self.status,
             "created_at": self.created_at.isoformat(),
@@ -58,4 +58,4 @@ class UserForm(db.Model):
         }
 
     def __repr__(self) -> str:
-        return f"<UserForm id={self.id} user={self.patient_user_id} form={self.practitioner_form_id} status={self.status}>"
+        return f"<UserForm id={self.id} user={self.patient_id} form={self.practitioner_form_id} status={self.status}>"

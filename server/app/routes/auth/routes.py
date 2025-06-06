@@ -18,9 +18,12 @@ def login():
         password = data.get('password', '') 
         if not username or not password:
             return jsonify(error="Email and password are required."), 400
+        
         user = User.query.filter_by(username=username).first()
+
         if not user or not user.check_password(password):
-            return jsonify(error="Invalid username or password."),
+            return jsonify(error="Invalid username or password."), 400
+    
         jwt_token = create_access_token(identity=str(user.id))
         print(user.username)
         return jsonify(
@@ -46,9 +49,6 @@ def register():
 
         if not all([email, username, password, user_type]):
             return jsonify(error="Email, password, username, and user type are required."), 400
-
-        if user_type not in ['patient', 'practitioner']:
-            return jsonify(error="Invalid user type. Must be 'patient' or 'practitioner'."), 400
 
         if User.query.filter_by(username=username).first():
             return jsonify(error="Username already exists. Please use a different username."), 400

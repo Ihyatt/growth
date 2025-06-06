@@ -42,7 +42,7 @@ def get_patient():
     current_user_id = get_jwt_identity()
     patient_username = request.args.get('username')
 
-    patient_user =  User.query.get(username=patient_username)
+    patient_user =  User.query.filter_by(username=patient_username).first()
 
     return jsonify({"patient": patient_user.to_dict()})
     

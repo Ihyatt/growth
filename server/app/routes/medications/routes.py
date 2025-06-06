@@ -14,7 +14,7 @@ from server.app.utils.decorators import jwt_required_with_role
 @jwt_required
 def get_medications():
     patient_username = request.args.get('username')
-    patient_user =  User.query.get(username=patient_username)
+    patient_user =  User.query.filter_by(username=patient_username).first()
     medications = patient_user.medications
 
 
@@ -26,7 +26,7 @@ def get_medications():
 @jwt_required()
 def get_medication():
     medication_id = request.args.get('medication_id')
-    medication =  Medication.query.get(medication_id)
+    medication =  Medication.query.filter_by(medication_id).first()
 
 
     return jsonify({"medication": medication.to_dict()})
@@ -38,7 +38,7 @@ def get_medication():
 @jwt_required()
 @enforce_elite_user
 def add():
-    practitioner_user_id = get_jwt_identity()
+    practitioner_id = get_jwt_identity()
     data = request.get_json()
     patient_username = request.args.get('username')
 
@@ -46,11 +46,11 @@ def add():
     frequency = data.get('frequency') 
     instructions = data.get('instructions') 
     
-    patient_user = User.query.get(username=patient_username)
+    patient_user = User.query.filter_by(username=patient_username).first()
 
     new_medication = Medication(
         patient_id=patient_user.id,
-        practitioner_id=practitioner_user_id,
+        practitioner_id=practitioner_id,
         dosage=dosage,
         frequency=frequency,
         instructions=instructions  
@@ -64,7 +64,7 @@ def add():
 @set_versioning_user
 @enforce_elite_user
 def edit():
-    practitioner_user_id = get_jwt_identity()
+    practitioner_id = get_jwt_identity()
     data = request.get_json()
     patient_username = request.args.get('username')
     medication_id = request.args.get('medication_id')
@@ -72,7 +72,7 @@ def edit():
     frequency = data.get('frequency') 
     instructions = data.get('instructions') 
     
-    medication = Medication.query.get(medication_id)
+    medication = Medication.query.filter_by(medication_id).first()
     medication.dosage = dosage
     medication.frequency = frequency
     medication.instructions = instructions
@@ -84,12 +84,12 @@ def edit():
 @set_versioning_user
 @enforce_elite_user
 def delete():
-    practitioner_user_id = get_jwt_identity()
+    practitioner_id = get_jwt_identity()
     data = request.get_json()
     patient_username = request.args.get('username')
     medication_id = request.args.get('medication_id')
 
-    medication = Medication.query.get(medication_id)
+    medication = Medication.query.filter_by(medication_id).first()
     medication.is_active = False
     db.session.commit()
     

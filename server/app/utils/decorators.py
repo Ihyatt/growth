@@ -20,7 +20,7 @@ def enforce_role_admin():
             try:
                 verify_jwt_in_request()
                 user_id = get_jwt_identity()
-                user = User.query.get(user_id)
+                user = User.query.filter_by(user_id).first()
                 
                 if not user:
                     return jsonify({"msg": "User not found"}), 404
@@ -45,7 +45,7 @@ def enforce_elite_user():
             try:
                 verify_jwt_in_request()
                 user_id = get_jwt_identity()
-                user = User.query.get(user_id)
+                user = User.query.filter_by(user_id).first()
             
                 if not user:
                     return jsonify({"msg": "User not found"}), 404
@@ -73,7 +73,7 @@ def enforce_role_patient():
             try:
                 verify_jwt_in_request()
                 user_id = get_jwt_identity()
-                user = User.query.get(user_id)
+                user = User.query.filter_by(user_id).first()
            
                 if not user:
                     return jsonify({"msg": "User not found"}), 404

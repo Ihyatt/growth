@@ -1,7 +1,7 @@
 
 from flask import request, jsonify
 from app.routes.comments import comments_bp
-from app.models.user_form import UserForm, User, PractitionerForm, Comment
+from server.app.models.patient_form import UserForm, User, PractitionerForm, Comment
 from app.database import db
 from app.utils.decorators import get_resource_model
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -43,7 +43,7 @@ def edit():
 
     ResourceModel = get_resource_model(resource_type)
 
-    resource_instance = ResourceModel.query.get(resource_id)
+    resource_instance = ResourceModel.query.filter_by(resource_id).first()
 
     # put logic that checks instance
 

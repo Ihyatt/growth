@@ -19,7 +19,7 @@ class AuditLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     admin_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
-    audited_user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    audited_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
     details = db.Column(JSONB, nullable=True)
     action_type = db.Column(Enum(AuditActionStatus), nullable=False)
     audited_model = db.Column(db.String(120), nullable=False)
@@ -40,7 +40,7 @@ class AuditLog(db.Model):
     )
     audited_user = relationship(
         'User',
-        foreign_keys=[audited_user_id],
+        foreign_keys=[audited_id],
         backref=db.backref('user_audit_logs', lazy='dynamic')
     )
 
@@ -55,7 +55,7 @@ class AuditLog(db.Model):
             "id": self.id,
             "admin_id": self.admin_id,
             "admin_email": getattr(self.admin, 'email', None),
-            "audited_user_id": self.audited_user_id,
+            "audited_id": self.audited_id,
             "audited_user_email": getattr(self.audited_user, 'email', None),
             "action_type": self.action_type.value,
             "audited_model": self.audited_model,
@@ -69,5 +69,5 @@ class AuditLog(db.Model):
             f"<AuditLog id={self.id} "
             f"action_type={self.action_type.value} "
             f"admin_id={self.admin_id} "
-            f"audited_user_id={self.audited_user_id}>"
+            f"audited_id={self.audited_id}>"
         )

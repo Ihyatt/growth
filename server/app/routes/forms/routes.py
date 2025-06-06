@@ -1,7 +1,7 @@
 
 from flask import request, jsonify
 from app.routes.forms import forms_bp
-from app.models.user_form import UserForm, User, PractitionerForm
+from server.app.models.patient_form import UserForm, User, PractitionerForm
 from app.database import db
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.models.constants.enums import FormStatus, FormResponses
@@ -51,7 +51,7 @@ def get_patients_forms():
     status = request.args.get('status')
     owner = request.args.get('owner')
 
-    user = User.query.get(username = owner)
+    user = User.query.filter_by(username = owner).first()
 
     query = UserForm.query
 
@@ -78,7 +78,7 @@ def get_practitoner_form(form_id):
     
     current_user_id = get_jwt_identity() 
     form_id = request.args.get('form_id')
-    form = PractitionerForm.query.get(practitioner_id=current_user_id, id=form_id)
+    form = PractitionerForm.query.filter_by(practitioner_id=current_user_id, id=form_id).first()
 
     return jsonify({'form':form})
      
@@ -88,7 +88,7 @@ def get_practitoner_form(form_id):
 @enforce_elite_user
 def get_patient_form():
     form_id = request.args.get('form_id')
-    form = UserForm.query.get(id=form_id)
+    form = UserForm.query.filter_by(id=form_id).first()
 
     return jsonify({'form':form})
 
@@ -121,8 +121,8 @@ def create():
 @enforce_elite_user
 def archive():
     form_id = request.args.get('form_id')
-    form = PractitionerForm.query.get(id=form_id)
+    form = PractitionerForm.query.filter_by(id=form_id).first()
     form.status = FormStatus.ARCHIVED
-
+    db.session.commit()
 
 
