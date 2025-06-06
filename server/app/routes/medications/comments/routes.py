@@ -6,7 +6,7 @@ from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditAc
 from app.utils.auth_decorators import jwt_required_with_role
 
 
-@medications_comments_bp.route('/get_comments', methods=['GET'])
+@medications_comments_bp.route('/', methods=['GET'])
 def get_comments():
     pass
 
@@ -15,11 +15,11 @@ def add():
     pass
 
 
-@medications_comments_bp.route('/edit', methods=['POST'])
+@medications_comments_bp.route('<int:comment_id>/edit', methods=['POST'])
 def edit():
     pass
 
 
-@medications_comments_bp.route('/delete', methods=['POST'])
+@medications_comments_bp.route('<int:comment_id>/delete', methods=['POST'])
 def delete():
     pass

@@ -20,7 +20,7 @@ def add():
     pass
 
 
-@medications_bp.route('/edit', methods=['POST'])
+@medications_bp.route('/<int:medication_id>/edit', methods=['POST'])
 def edit():
     pass
 

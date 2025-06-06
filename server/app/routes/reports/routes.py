@@ -13,3 +13,7 @@ def get_medications():
 @reports_bp.route('/<int:report_id>', methods=['GET'])
 def view():
     pass
+
+@reports_bp.route('/<int:report_id>/delete', methods=['GET'])
+def delete():
+    pass

@@ -14,3 +14,12 @@ def get_forms():
 @forms_bp.route('/<int:form_id>', methods=['GET'])
 def view():
     pass
+
+@forms_bp.route('/create', methods=['GET'])
+def create():
+    pass
+
+
+@forms_bp.route('/archive', methods=['GET'])
+def archive():
+    pass
