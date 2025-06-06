@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from sqlalchemy import ForeignKey, Text, String, Column, Enum
+from sqlalchemy import ForeignKey, Text, String, Column, Enum, Boolean
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
@@ -15,6 +15,7 @@ class Report(db.Model):
     report_data = Column(Text, nullable=False)
     file_format = Column(String(10), default='json')
     patient_id = Column(db.Integer, ForeignKey('users.id'))
+    patient_username = Column(String(80), unique=True, nullable=False)
     practitioner_id = Column(db.Integer, ForeignKey('users.id'))
     is_deleted = Column(Boolean, default=True, nullable=False)
     created_at = Column(db.DateTime, server_default=db.func.now(), nullable=False)
