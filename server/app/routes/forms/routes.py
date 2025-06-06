@@ -10,13 +10,11 @@ from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditAc
 
 
 
-
 """
 PRACTITIONER APIS
 """
 
-
-@forms_bp.route('/search/my_forms', methods=['GET'])
+@forms_bp.route('/search', methods=['GET'])
 @enforce_role_practioner
 def get_practitoner_forms():
     current_user_id = get_jwt_identity()
@@ -45,8 +43,8 @@ def get_practitoner_forms():
     })
 
 
-@forms_bp.route('/search/patients_forms', methods=['GET'])
-@jenforce_role_practioner
+@forms_bp.route('/patients-forms', methods=['GET'])
+@enforce_role_practioner
 def get_patients_forms():
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
@@ -74,7 +72,7 @@ def get_patients_forms():
     })
 
  
-@forms_bp.route('/my_forms/<int:form_id>', methods=['GET'])
+@forms_bp.route('/<int:form_id>', methods=['GET'])
 @enforce_role_practioner
 def get_practitoner_form(form_id):
     
@@ -86,7 +84,7 @@ def get_practitoner_form(form_id):
      
      
     
-@forms_bp.route('/patients/<int:form_id>', methods=['GET'])
+@forms_bp.route('/user-form/<int:form_id>', methods=['GET'])
 @enforce_role_practioner
 def get_patient_form():
     form_id = request.args.get('form_id')
@@ -119,7 +117,7 @@ def create():
 
 
 
-@forms_bp.route('/archive/<int:form_id>', methods=['POST'])
+@forms_bp.route('/archive', methods=['POST'])
 @enforce_role_practioner
 def archive():
     form_id = request.args.get('form_id')
@@ -128,40 +126,3 @@ def archive():
 
 
 
-"""
-PATIENT APIS
-"""
-
-    
-     
-     
-@forms_bp.route('/todo', methods=['POST'])
-@set_versioning_user
-@enforce_role_patient
-def get_user_forms():
-    current_user_id = get_jwt_identity()
-    forms = UserForm.query.filter_by(
-        patient_user_id = current_user_id,
-        status = FormStatus.TODO
-    ).all()
-
-    compiled_forms = []
-
-    for form in forms:
-    
-        practitioner = form.practitioner_form.practitioner
-    
-        form_data = form.form_data
-        status = form.status
-        compiled_forms.append(
-            {
-                'practitioner': practitioner.username,
-                'questions': form.practitioner_form.questions,
-                'answers': FormResponses,
-                'form_data': form_data, 
-                'status': status
-            }
-        )
-
-    return jsonify({"compiled_forms": compiled_forms})
- 

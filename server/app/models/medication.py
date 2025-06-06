@@ -54,38 +54,3 @@ class Medication(db.Model):
 
     def __repr__(self) -> str:
         return f'<Medication {self.id} {self.name} for patient {self.patient_id}>'
-
-
-class MedicationComment(db.Model):
-    __versioned__ = {}
-    __tablename__ = 'medication_comments'
-
-    id = Column(db.Integer, primary_key=True)
-    medication_id = Column(db.Integer, ForeignKey('medications.id'), nullable=False)
-    commenter_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
-    content = Column(Text, nullable=False)
-    created_at = Column(db.DateTime, server_default=db.func.now())
-    updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-
-    medication = relationship('Medication', back_populates='comments')
-    commenter = relationship('User')
-
-    @validates('content')
-    def validate_content(self, key, content):
-        if not content or len(content.strip()) == 0:
-            raise ValueError("Comment content cannot be empty")
-        return content.strip()
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            'id': self.id,
-            'medication_id': self.medication_id,
-            'commenter_id': self.commenter_id,
-            'content': self.content,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
-            'commenter_name': getattr(self.commenter, 'name', None)
-        }
-
-    def __repr__(self) -> str:
-        return f'<MedicationComment {self.id} on medication {self.medication_id}>'
