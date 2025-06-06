@@ -38,6 +38,7 @@ def create_app():
     from app.routes.forms.routes import forms_bp
     from app.routes.medications.routes import medications_bp
     from app.routes.reports.routes import reports_bp
+    
     CORS(app)
         
     database.init_app(app)
