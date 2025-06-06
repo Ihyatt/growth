@@ -33,42 +33,20 @@ class User(db.Model):
     updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
 
-    medications = db.relationship('Medication', backref='patient', lazy=True)
-    comments = db.relationship('Comment', backref='user', lazy=True)
+    medications = db.relationship('Medication', backref='patient_owner', lazy=True)
+    comments = db.relationship('Comment', backref='comment_author', lazy=True)
     
-    admin_audit_logs = db.relationship('Audit_Log', backref='admin', lazy=True)
-    user_audit_logs = db.relationship('Audit_Log', backref='user', lazy=True)
+    audit_logs_as_admin = db.relationship('Audit_Log', backref='admin', lazy=True)
+    audit_logs_about_user = db.relationship('Audit_Log', backref='audited_user', lazy=True)
     
-    patient_forms = db.relationship('Patient_Form', backref='patient', lazy=True)
-    practitioner_forms = db.relationship('Audit_Log', backref='practitioner', lazy=True)
+    forms_as_patient = db.relationship('Patient_Form', backref='assigned_patient', lazy=True)
+    forms_as_practitioner = db.relationship('Practitioner_Form', backref='form_author', lazy=True)
 
-    reports_as_patient = db.relationship(
-        'Report',
-        backref='patient',
-        lazy=True,
-        foreign_keys='[Report.patient_id]'
-    )
+    reports_as_patient = db.relationship('Report',backref='reported_patient', lazy=True)
+    reports_as_practitioner = db.relationship('Report', backref='report_reviewer',lazy=True)
 
-    reports_as_practitioner = db.relationship(
-        'Report',
-        backref='practitioner',
-        lazy=True,
-        foreign_keys='[Report.practitioner_id]'
-    )
-
-    follow_as_patient = db.relationship(
-        'Follow',
-        backref='patient',
-        lazy=True,
-        foreign_keys='[Follow.patient_id]'
-    )
-
-    follow_as_practitioner = db.relationship(
-        'Follow',
-        backref='practitioner',
-        lazy=True,
-        foreign_keys='[Follow.practitioner_id]'
-    )
+    follow_as_patient = db.relationship('Follow', backref='followed', lazy=True)
+    follow_as_practitioner = db.relationship('Follow', backref='follower',lazy=True)
 
 
     def set_password(self, password: str) -> None:
