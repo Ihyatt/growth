@@ -25,8 +25,8 @@ class Medication(db.Model):
     created_at = Column(db.DateTime, server_default=db.func.now())
     updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-    patient = relationship('User', back_populates='medications')
-    comments = relationship('MedicationComment', back_populates='medication', cascade='all, delete-orphan')
+    patient_owner = relationship('User', back_populates='medications')
+    medication_comments = relationship('MedicationComment', back_populates='medication')
 
     @validates('name')
     def validate_name(self, key, name):
@@ -56,3 +56,35 @@ class Medication(db.Model):
 
     def __repr__(self) -> str:
         return f'<Medication {self.id} {self.name} for patient {self.patient_id}>'
+
+
+make_versioned(user_cls='app.models.user.User')
+
+class MedicationComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+
+    medication_id = db.Column(db.Integer, db.ForeignKey('medication.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    created_at = Column(db.DateTime, server_default=db.func.now())
+    updated_at = Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now()
+    
+    medication_comment_author = db.relationship('User', backref=db.backref('medications_comments', lazy=True))
+    medication = db.relationship('Medication', back_populates='medication_comments', lazy=True)
+
+
+    def __repr__(self):
+        return f'<MedicationComment {self.id} on Medication:{self.medication_id}>'
+
+    def to_dict(self, include_user=True):
+        data = {
+            "id": self.id,
+            "text": self.text,
+            "created_at": self.created_at.isoformat(),
+            "medication_id": self.medication_id,
+            "user_id": self.user_id
+        }
+        if include_user and self.comment_author:
+            data["user"] = {"id": self.comment_author.id, "username": self.comment_author.username}
+        return data

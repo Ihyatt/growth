@@ -34,7 +34,8 @@ class User(db.Model):
 
 
     medications = db.relationship('Medication', backref='patient_owner', lazy=True)
-    comments = db.relationship('Comment', backref='comment_author', lazy=True)
+    medications_comments = db.relationship('Comment', backref='medication_comment_author', lazy=True)
+    report_comments = db.relationship('Comment', backref='report_comment_author', lazy=True)
     
     audit_logs_as_admin = db.relationship('Audit_Log', backref='admin', lazy=True)
     audit_logs_about_user = db.relationship('Audit_Log', backref='audited_user', lazy=True)
