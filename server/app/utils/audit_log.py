@@ -9,13 +9,8 @@ def log_audit(
     action_type: AuditActionType.APPROVED,
     details: dict = None
     ):
-    print('HELLLOOOOO')
     admin_id = getattr(g, 'user_id', None)
 
-
-
-
-    print('log_audit', admin_id)
     try:
         new_log = AuditLog(
             admin_id=admin_id,

@@ -1,6 +1,6 @@
 
 from flask import request, jsonify
-from app.main import bp
+from app.routes import bp
 from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
@@ -10,72 +10,8 @@ from app.utils.audit_log import log_audit
 
 
 
-@bp.route('/api/login', methods=['POST'])
-def login():
 
-    try:
-        data = request.get_json()
-        username = data.get('username', '').strip()
-        password = data.get('password', '') 
-        if not username or not password:
-            return jsonify(error="Email and password are required."), 400
-        user = User.query.filter_by(username=username).first()
-        if not user or not user.check_password(password):
-            return jsonify(error="Invalid username or password."),
-        jwt_token = create_access_token(identity=str(user.id))
-        print(user.username)
-        return jsonify(
-            message=f"Welcome back, {user.username}",
-            jwtToken=jwt_token,
-            permission=user.permission,
-            username= user.username
-        )
-
-    except Exception as e:
-        return jsonify(error="Login failed: " + str(e)), 500
-
-
-@bp.route('/api/register', methods=['POST'])
-def register():
-    try:
-        data = request.get_json()
-        email = data.get('email', '').strip()
-        username = data.get('username', '').strip()
-        password = data.get('password', '').strip()
-        user_type = data.get('userType', '').strip()
-
-        if not all([email, username, password, user_type]):
-            return jsonify(error="Email, password, username, and user type are required."), 400
-
-        if user_type not in ['patient', 'practitioner']:
-            return jsonify(error="Invalid user type. Must be 'patient' or 'practitioner'."), 400
-
-        if User.query.filter_by(username=username).first():
-            return jsonify(error="Username already exists. Please use a different username."), 400
-
-        if User.query.filter_by(email=email).first():
-            return jsonify(error="Email already exists. Please use a different email."), 400
-
-        user = User(email=email)
-        user.set_password(password)
-
-        user.permission_level = (
-            PermissionLevel.PATIENT if user_type == 'patient'
-            else PermissionLevel.PRACTITIONER
-        )
-
-        db.session.add(user)
-        db.session.commit()
-
-        return jsonify(message=f"User registered successfully with email: {email}")
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify(error="Registration failed: " + str(e)), 500
-
-
-
-@bp.route('/api/admin/users', methods=['GET'])
+@bp.route('/admin/users', methods=['GET'])
 @jwt_required_with_role()
 def get_admin_users():
     try:
@@ -114,7 +50,7 @@ def get_admin_users():
         return jsonify(error="Query failed: " + str(e)), 500
 
 
-@bp.route('/api/admin/approve', methods=['POST'])
+@bp.route('/admin/approve', methods=['POST'])
 @jwt_required_with_role()
 def approve_user():
     try:
@@ -158,7 +94,7 @@ def approve_user():
         return jsonify({"message": f"Failed to approve user: {str(e)}"}), 
 
 
-@bp.route('/api/admin/reject', methods=['POST'])
+@bp.route('/admin/reject', methods=['POST'])
 @jwt_required_with_role()
 def reject_user():
     try:

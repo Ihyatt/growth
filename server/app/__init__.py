@@ -2,10 +2,16 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 from app import database
-from app.main import bp
+from app.routes import bp
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
-from datetime import timedelta
+
+# Import top-level blueprints
+from app.routes.auth.routes import auth_bp
+from app.routes.admin.routes import admin_bp
+from app.routes.forms.routes import forms_bp
+from app.routes.medications.routes import medications_bp
+from app.routes.reports.routes import reports_bp
 
 
 from app.config import Config
@@ -20,6 +26,18 @@ def create_app():
     
     app.config.from_object(Config)
 
+
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admins')
+    app.register_blueprint(medications_bp, url_prefix='/medications')
+    app.register_blueprint(forms_bp, url_prefix='/forms')
+    app.register_blueprint(reports_bp, url_prefix='/reports')
+
+
+    from app.routes.admin.routes import admin_bp
+    from app.routes.forms.routes import forms_bp
+    from app.routes.medications.routes import medications_bp
+    from app.routes.reports.routes import reports_bp
     CORS(app)
         
     database.init_app(app)
@@ -29,9 +47,9 @@ def create_app():
     jwt.init_app(app)
 
 
-    # from app.models.user import User
     
-    app.register_blueprint(bp)
+    app.register_blueprint(bp, url_prefix='/api')
+    
 
     print(f"Using DB: {app.config.get('SQLALCHEMY_DATABASE_URI')}")
 

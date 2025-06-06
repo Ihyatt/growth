@@ -27,3 +27,18 @@ class UserForm(db.Model):
 
     def __repr__(self):
         return f"<FormSubmission {self.id} for Form {self.practitioner_form_id}>"
+    
+
+make_versioned(user_cls=None)
+
+class ReportComment(db.Model):
+    __versioned__ = {}
+    __tablename__ = 'report_comments'
+    id = db.Column(db.Integer, primary_key=True)
+    report_id = db.Column(db.Integer, db.ForeignKey('reports.id'))
+    commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    content = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))    
+    updated_at = db.Column(db.DateTime, 
+                         default=datetime.now(timezone.utc),
+                         onupdate=datetime.now(timezone.utc))
