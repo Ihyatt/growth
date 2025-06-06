@@ -89,7 +89,6 @@ def get_practitoner_form(form_id):
 @forms_bp.route('/patients/<int:form_id>', methods=['GET'])
 @enforce_role_practioner
 def get_patient_form():
-    current_user_id = get_jwt_identity() #use this for permission validation
     form_id = request.args.get('form_id')
     form = UserForm.query.get(id=form_id)
 
@@ -123,7 +122,6 @@ def create():
 @forms_bp.route('/archive/<int:form_id>', methods=['POST'])
 @enforce_role_practioner
 def archive():
-    current_user_id = get_jwt_identity()
     form_id = request.args.get('form_id')
     form = PractitionerForm.query.get(id=form_id)
     form.status = FormStatus.ARCHIVED
