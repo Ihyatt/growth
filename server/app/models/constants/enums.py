@@ -10,15 +10,16 @@ class ApprovalStatus(str, enum.Enum):
     APPROVED = 'APPROVED'
     REJECTED = 'REJECTED'
 
+
 class ProfileStatus(str, enum.Enum):
     ACTIVE = 'ACTIVE'
     INACTIVE = 'INACTIVE'
   
 
 class AuditActionStatus(enum.Enum):
-    APPROVED = "APPROVED"
+    SET_TO_APPROVED = "SET_TO_APPROVED"
     SET_TO_PENDING = "SET_TO_PENDING"
-    REJECTED = "REJECTED"
+    SET_TO_REJECTED = "SET_TO_REJECTED"
 
 
 class FormStatus(str, enum.Enum):

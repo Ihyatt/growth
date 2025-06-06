@@ -4,15 +4,14 @@ from app.routes.auth import auth_bp
 from app.models.user import User
 from app.database import db
 from flask_jwt_extended import create_access_token
-from app.utils.auth_decorators import jwt_required_with_role,set_versioning_user
+from server.app.utils.decorators import set_versioning_user
 from app.models.constants.enums import PermissionLevel
+from flask_jwt_extended import jwt_required
 
 
 @auth_bp.route('/login', methods=['POST'])
-@set_versioning_user
-@jwt_required_with_role
+@jwt_required()
 def login():
-
     try:
         data = request.get_json()
         username = data.get('username', '').strip()
@@ -37,7 +36,6 @@ def login():
 
 @auth_bp.route('/register', methods=['POST'])
 @set_versioning_user
-@jwt_required_with_role
 def register():
     try:
         data = request.get_json()

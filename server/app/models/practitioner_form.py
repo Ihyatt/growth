@@ -18,7 +18,6 @@ class PractitionerForm(db.Model):
     id = Column(db.Integer, primary_key=True)
     title = Column(String(255), nullable=False)
     questions = Column(Text, nullable=False)
-    responses = Column(Text)
     status = Column(Enum(FormStatus), nullable=False, default=FormStatus.IN_PROCESS)
     practitioner_id = Column(db.Integer, ForeignKey('users.id'), nullable=False)
     created_at = Column(db.DateTime, server_default=db.func.now()) 

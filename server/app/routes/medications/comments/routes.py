@@ -2,7 +2,7 @@ from flask import request, jsonify
 from app.routes.medications.comments import medications_comments_bp
 from app.models.user import User
 from app.database import db
-from app.utils.auth_decorators import jwt_required_with_role,set_versioning_user
+from server.app.utils.decorators import jwt_required_with_role,set_versioning_user
 
 from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
 from flask_jwt_extended import get_jwt_identity

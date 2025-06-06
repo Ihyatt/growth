@@ -3,137 +3,144 @@ from flask import request, jsonify
 from app.routes.forms import forms_bp
 from app.models.user_form import UserForm, User, PractitionerForm
 from app.database import db
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.models.constants.enums import FormStatus, FormResponses
+from server.app.utils.decorators import enforce_role_practioner, enforce_role_patient, enforce_role_practioner, set_versioning_user
+from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType #this needs to be set up for permissions, or actually i can use a decoratore
 
 
 
-from app.utils.auth_decorators import jwt_required_with_role,set_versioning_user
 
-from app.models.constants.enums import PermissionLevel, ValidationLevel, AuditActionType
+"""
+PRACTITIONER APIS
+"""
 
 
 @forms_bp.route('/search/my_forms', methods=['GET'])
-@set_versioning_user
-@jwt_required_with_role
+@enforce_role_practioner
 def get_practitoner_forms():
+    current_user_id = get_jwt_identity()
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=20, type=int)
+    title = request.args.get('title')
+    status = request.args.get('status')
+    query = PractitionerForm.query
 
-        page = request.args.get('page', default=1, type=int)
-        limit = request.args.get('limit', default=20, type=int)
-        title = request.args.get('title')
-        status = request.args.get('status')
-        query = PractitionerForm.query
+    query = query.filter_by(practitioner_id=current_user_id, status=status)
 
-        query = query.filter_by(status=status)
-        if title:
-            query = query.filter(PractitionerForm.title.ilike(f'%{title}%'))
-        
-        forms_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+    if title:
+        query = query.filter(PractitionerForm.title.ilike(f'%{title}%'))
 
-        return jsonify({
-            "forms": [form.to_dict() for form in forms_pagination.items],
-            "total": forms_pagination.total,
-            "page": forms_pagination.page,
-            "pages": forms_pagination.pages,
-            "has_next": forms_pagination.has_next,
-            "has_prev": forms_pagination.has_prev,
-        })
+    query = query.order_by(PractitionerForm.created_at.desc())
+    
+    forms_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+
+    return jsonify({
+        "forms": [form.to_dict() for form in forms_pagination.items],
+        "total": forms_pagination.total,
+        "page": forms_pagination.page,
+        "pages": forms_pagination.pages,
+        "has_next": forms_pagination.has_next,
+        "has_prev": forms_pagination.has_prev,
+    })
 
 
 @forms_bp.route('/search/patients_forms', methods=['GET'])
-@set_versioning_user
-@jwt_required_with_role
+@jenforce_role_practioner
 def get_patients_forms():
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=20, type=int)
+    status = request.args.get('status')
+    owner = request.args.get('owner')
 
-        page = request.args.get('page', default=1, type=int)
-        limit = request.args.get('limit', default=20, type=int)
-        title = request.args.get('title')
-        status = request.args.get('status')
-        owner = request.args.get('owner')
-        query = User.query
+    user = User.query.get(username = owner)
 
-        query = query.filter_by(
-            permission=PermissionLevel.PRACTITIONER,
-            is_validated=validation_map[status_param],
-            is_active=active,
-        )
-        if email_param:
-            query = query.filter(User.email.ilike(f'%{email_param}%'))
-        users_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+    query = UserForm.query
 
-        return jsonify({
-            "users": [user.to_dict() for user in users_pagination.items],
-            "total": users_pagination.total,
-            "page": users_pagination.page,
-            "pages": users_pagination.pages,
-            "has_next": users_pagination.has_next,
-            "has_prev": users_pagination.has_pre
+    query = query.filter_by(
+        patient_user_id = user.user_id,
+        status = status
+    ).all()
+
+    forms_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+
+    return jsonify({
+        "forms": [form.to_dict() for form in forms_pagination.items],
+        "total": forms_pagination.total,
+        "page": forms_pagination.page,
+        "pages": forms_pagination.pages,
+        "has_next": forms_pagination.has_next,
+        "has_prev": forms_pagination.has_prev,
+    })
+
  
 @forms_bp.route('/my_forms/<int:form_id>', methods=['GET'])
-@set_versioning_user
-@jwt_required_with_role
-def get_practitoner_form():
-
-        page = request.args.get('page', default=1, type=int)
-        limit = request.args.get('limit', default=20, type=int)
-        title = request.args.get('title')
-        status = request.args.get('status')
-        owner = request.args.get('owner')
-        query = User.query
-
-        query = query.filter_by(
-            permission=PermissionLevel.PRACTITIONER,
-            is_validated=validation_map[status_param],
-            is_active=active,
-        )
-        if email_param:
-            query = query.filter(User.email.ilike(f'%{email_param}%'))
-        users_pagination = query.paginate(page=page, per_page=limit, error_out=False)
-
-        return jsonify({
-            "users": [user.to_dict() for user in users_pagination.items],
-            "total": users_pagination.total,
-            "page": users_pagination.page,
-            "pages": users_pagination.pages,
-            "has_next": users_pagination.has_next,
-            "has_prev": users_pagination.has_pre
-
-@forms_bp.route('/patients/<int:form_id>', methods=['GET'])
-@set_versioning_user
-@jwt_required_with_role
-def get_patient_form():
-
-        page = request.args.get('page', default=1, type=int)
-        limit = request.args.get('limit', default=20, type=int)
-        title = request.args.get('title')
-        status = request.args.get('status')
-        owner = request.args.get('owner')
-        query = User.query
-
-        query = query.filter_by(
-            permission=PermissionLevel.PRACTITIONER,
-            is_validated=validation_map[status_param],
-            is_active=active,
-        )
-        if email_param:
-            query = query.filter(User.email.ilike(f'%{email_param}%'))
-        users_pagination = query.paginate(page=page, per_page=limit, error_out=False)
-
-        return jsonify({
-            "users": [user.to_dict() for user in users_pagination.items],
-            "total": users_pagination.total,
-            "page": users_pagination.page,
-            "pages": users_pagination.pages,
-            "has_next": users_pagination.has_next,
-            "has_prev": users_pagination.has_pre
-
-
-
-@forms_bp.route('/todo', methods=['GET'])
-@set_versioning_user
-@jwt_required_with_role
-def get_user_forms():
+@enforce_role_practioner
+def get_practitoner_form(form_id):
     
+    current_user_id = get_jwt_identity() 
+    form_id = request.args.get('form_id')
+    form = PractitionerForm.query.get(practitioner_id=current_user_id, id=form_id)
+
+    return jsonify({'form':form})
+     
+     
+    
+@forms_bp.route('/patients/<int:form_id>', methods=['GET'])
+@enforce_role_practioner
+def get_patient_form():
+    current_user_id = get_jwt_identity() #use this for permission validation
+    form_id = request.args.get('form_id')
+    form = UserForm.query.get(id=form_id)
+
+    return jsonify({'form':form})
+
+
+
+@forms_bp.route('/create', methods=['POST'])
+@set_versioning_user
+@enforce_role_practioner
+def create():
+    current_user_id = get_jwt_identity()
+    
+    data = request.get_json()
+    title = data.get('title')
+    questions = data.get('questions')
+
+    practitioner_form = PractitionerForm(
+        title=title,
+        questions=questions,
+        practitoner_id=current_user_id
+    )
+
+    db.session.add(practitioner_form)
+    db.session.commit()
+
+    return jsonify(message="file created") 
+
+
+
+@forms_bp.route('/archive/<int:form_id>', methods=['POST'])
+@enforce_role_practioner
+def archive():
+    current_user_id = get_jwt_identity()
+    form_id = request.args.get('form_id')
+    form = PractitionerForm.query.get(id=form_id)
+    form.status = FormStatus.ARCHIVED
+
+
+
+"""
+PATIENT APIS
+"""
+
+    
+     
+     
+@forms_bp.route('/todo', methods=['POST'])
+@set_versioning_user
+@enforce_role_patient
+def get_user_forms():
     current_user_id = get_jwt_identity()
     forms = UserForm.query.filter_by(
         patient_user_id = current_user_id,
@@ -143,16 +150,15 @@ def get_user_forms():
     compiled_forms = []
 
     for form in forms:
-        practitioner_form = db.session.get(PractitionerForm, form.practitioner_form_id)
-        practitioner = db.session.get(User, practitioner_form.practitioner_id)
-
-        practitioner_username = practitioner.username
+    
+        practitioner = form.practitioner_form.practitioner
+    
         form_data = form.form_data
         status = form.status
         compiled_forms.append(
             {
-                'practitioner': practitioner_username,
-                'questions': practitioner_form.questions,
+                'practitioner': practitioner.username,
+                'questions': form.practitioner_form.questions,
                 'answers': FormResponses,
                 'form_data': form_data, 
                 'status': status
@@ -161,14 +167,3 @@ def get_user_forms():
 
     return jsonify({"compiled_forms": compiled_forms})
  
-
-@forms_bp.route('/create', methods=['GET'])
-@set_versioning_user
-@jwt_required_with_role
-def create():
-    pass
-
-
-@forms_bp.route('/archive', methods=['GET'])
-def archive():
-    pass
