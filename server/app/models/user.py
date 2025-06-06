@@ -35,20 +35,23 @@ class User(db.Model):
 
     medications = db.relationship('Medication', backref='patient', lazy=True)
     comments = db.relationship('Comment', backref='user', lazy=True)
-    audit_logs = db.relationship('Audit_Log', backref='admin', lazy=True)
-    patient_forms = db.relationship('Audit_Log', backref='patient', lazy=True)
+    
+    admin_audit_logs = db.relationship('Audit_Log', backref='admin', lazy=True)
+    user_audit_logs = db.relationship('Audit_Log', backref='user', lazy=True)
+    
+    patient_forms = db.relationship('Patient_Form', backref='patient', lazy=True)
     practitioner_forms = db.relationship('Audit_Log', backref='practitioner', lazy=True)
 
     reports_as_patient = db.relationship(
         'Report',
-        backref='patient_subject',
+        backref='patient',
         lazy=True,
         foreign_keys='[Report.patient_id]'
     )
 
     reports_as_practitioner = db.relationship(
         'Report',
-        backref='assigned_practitioner',
+        backref='practitioner',
         lazy=True,
         foreign_keys='[Report.practitioner_id]'
     )

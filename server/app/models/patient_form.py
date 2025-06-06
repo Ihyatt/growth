@@ -18,7 +18,7 @@ class PatientForm(db.Model):
     practitioner_form_id = Column(db.Integer, ForeignKey('practitioner_forms.id'), nullable=False)
     status = Column(Enum(FormStatus), nullable=False, default=FormStatus.TODO)
     reviewed_at = Column(db.DateTime)
-    reviewed_by = Column(db.Integer, ForeignKey('users.id'))
+    reviewed_by_id = Column(db.Integer, ForeignKey('users.id'))
     created_at = Column(db.DateTime, server_default=db.func.now())
     updated_at = Column(
         db.DateTime,
@@ -26,9 +26,9 @@ class PatientForm(db.Model):
         onupdate=db.func.now()
     )
 
-    user = relationship("User", foreign_keys=[patient_id], backref="submitted_forms")
     practitioner_form = relationship("PractitionerForm", back_populates="user_submissions")
-    reviewer = relationship("User", foreign_keys=[reviewed_by])
+    reviewer = relationship("User", foreign_keys=[reviewed_by_id])
+    patient = relationship("User", foreign_keys=[patient_id])
 
     @validates('form_data')
     def validate_form_data(self, key, form_data):
