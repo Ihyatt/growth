@@ -5,7 +5,7 @@ from server.app.models.form_template import User
 from app.database import db
 from app.models.constants.enums import UserLevel, UserApprovalStatus, ProfileStatus, AuditActionStatus
 from server.app.utils.decorators import enforce_role_admin, set_versioning_user
-from app.utils.audit_log import log_audit
+from app.utils.helpers import audit_log_helper
 from flask_jwt_extended import get_jwt_identity
 
 
@@ -96,7 +96,7 @@ def approve_practioners(user_id):
             'new_validation_level': user.is_validated
         }
 
-        log_audit(
+        audit_log_helper(
             admin_id=admin_id
             audited_id=user.id,
             action_type=AuditActionStatus.APPROVED,

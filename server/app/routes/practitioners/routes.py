@@ -4,7 +4,7 @@ from flask import request, jsonify
 from app.routes.patient import practitioner_bp
 from server.app.models import User, CareTeam, FormTemplate
 from app.database import db
-from app.routes.helpers.utils import get_current_user_object
+from server.app.utils.helpers import get_current_user_object
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user
 from flask_jwt_extended import get_jwt_identity
 
