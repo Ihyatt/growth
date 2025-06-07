@@ -1,4 +1,3 @@
-
 from datetime import datetime, timezone
 from sqlalchemy.dialects.postgresql import JSONB 
 from sqlalchemy.orm import relationship, validates
@@ -7,32 +6,47 @@ from app.database import db
 from app.models.constants.enums import AuditActionStatus
 from typing import Dict, Any
 
-make_versioned(user_cls='app.models.user.User')
+
+make_versioned(user_cls='app.models.user.User') #tracks user that inserts/updates/deletes
 
 class AuditLog(db.Model):
-    __versioned__ = {}
+    __versioned__ = {} #creates historic record of update/insert/delete
     __tablename__ = 'audit_logs'
 
     id = db.Column(db.Integer, primary_key=True)
-    
+
     admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     audited_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     details = db.Column(JSONB, nullable=True)
-    action_type = db.Column(db.Enum(AuditActionStatus), nullable=False)
+    action_type = db.Column(db.Enum(AuditActionStatus), nullable=False, default=AuditActionStatus.SET_TO_PENDING )
     audited_model = db.Column(db.String(120), nullable=False)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
-    
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(
+        db.DateTime(timezone=True), 
+        default=lambda: datetime.now(timezone.utc), 
+        nullable=False
+    )
     updated_at = db.Column(
-        db.DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)
+        db.DateTime(timezone=True), 
+        default=lambda: datetime.now(timezone.utc), 
+        onupdate=lambda: datetime.now(timezone.utc), 
+        nullable=False
     )
 
-    admin = relationship('User', back_populates='audit_logs_as_admin',lazy= 'dynamic')
-    audited_user = relationship('User', back_populates='audit_logs_about_user',lazy= 'dynamic')
-    
+    # Relationships: 'lazy="dynamic"' is invalid for many-to-one relationships
+    admin = relationship(
+        'User',
+        foreign_keys=[admin_id],
+        back_populates='audit_logs_as_admin',
+        lazy='joined'
+    )
+    audited_user = relationship(
+        'User',
+        foreign_keys=[audited_id],
+        back_populates='audit_logs_about_user',
+        lazy='joined'
+    )
 
     @validates('audited_model')
     def validate_audited_model(self, key: str, model_name: str) -> str:
@@ -47,7 +61,7 @@ class AuditLog(db.Model):
             "admin_email": getattr(self.admin, 'email', None),
             "audited_id": self.audited_id,
             "audited_user_email": getattr(self.audited_user, 'email', None),
-            "action_type": self.action_type.value,
+            "action_type": self.action_type.value if self.action_type else None,
             "audited_model": self.audited_model,
             "details": self.details,
             "created_at": self.created_at.isoformat() if self.created_at else None,
@@ -57,7 +71,8 @@ class AuditLog(db.Model):
     def __repr__(self) -> str:
         return (
             f"<AuditLog id={self.id} "
-            f"action_type={self.action_type.value} "
+            f"action_type={self.action_type.value if self.action_type else None} "
             f"admin_id={self.admin_id} "
             f"audited_id={self.audited_id}>"
         )
+    

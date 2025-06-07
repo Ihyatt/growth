@@ -1,12 +1,13 @@
 from datetime import datetime, timezone
 from typing import Dict, Any
 from sqlalchemy.orm import relationship, validates
-
 from sqlalchemy_continuum import make_versioned
+
 from app.database import db
 from app.models.constants.enums import FormStatus
 
 make_versioned(user_cls='app.models.user.User')
+
 
 class PatientForm(db.Model):
     __versioned__ = {}
@@ -20,34 +21,31 @@ class PatientForm(db.Model):
     reviewed_at = db.Column(db.DateTime)
     reviewed_by_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
-    
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now(),
-        onupdate=db.func.now()
-    )
 
+    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
+    # Relationships
+    assigned_patient = relationship('User', foreign_keys=[patient_id], backref='forms_as_patient', lazy='select')
+    form_reviewer = relationship('User', foreign_keys=[reviewed_by_id], backref='reviewed_forms', lazy='select')
 
-    form_reviewer = db.relationship('User',back_populates='reviewed_forms', lazy=True)
-    assigned_patient = db.relationship('User',back_populates='forms_as_patient', lazy=True)
+    # You may need a separate table/model for practitioner forms; below assumes it's another User
+    # form_author = relationship('User', foreign_keys=[practitioner_form_id], backref='forms_as_practitioner', lazy='select')
 
-    form_author = db.relationship('User',back_populates='forms_as_practitioner', lazy=True)
-
-
+    practitioner_form = relationship('PractitionerForm', backref='patient_forms', lazy='select')
 
     @validates('form_data')
     def validate_form_data(self, key, form_data):
         if not form_data or len(form_data.strip()) == 0:
             raise ValueError("Form data cannot be empty")
-        return form_data
+        return form_data.strip()
 
     @validates('status')
     def validate_status(self, key, status):
-        valid_statuses = ['submitted', 'reviewed', 'approved', 'rejected']
-        if status not in valid_statuses:
-            raise ValueError(f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
+        if isinstance(status, str):
+            status = FormStatus[status.upper()] if status.upper() in FormStatus.__members__ else None
+        if not isinstance(status, FormStatus):
+            raise ValueError(f"Invalid status. Must be one of: {[s.name for s in FormStatus]}")
         return status
 
     def to_dict(self) -> Dict[str, Any]:
@@ -55,14 +53,14 @@ class PatientForm(db.Model):
             "id": self.id,
             "patient_id": self.patient_id,
             "practitioner_form_id": self.practitioner_form_id,
-            "status": self.status,
-            "created_at": self.created_at.isoformat(),
+            "status": self.status.name if self.status else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "reviewed_at": self.reviewed_at.isoformat() if self.reviewed_at else None,
-            "reviewed_by": self.reviewed_by,
-            "user_name": getattr(self.user, 'name', None),
-            "reviewer_name": getattr(self.reviewer, 'name', None) if self.reviewer else None
+            "reviewed_by": self.reviewed_by_id,
+            "patient_name": getattr(self.assigned_patient, 'name', None),
+            "reviewer_name": getattr(self.form_reviewer, 'name', None)
         }
 
     def __repr__(self) -> str:
-        return f"<UserForm id={self.id} user={self.patient_id} form={self.practitioner_form_id} status={self.status}>"
+        return f"<PatientForm id={self.id} patient={self.patient_id} form={self.practitioner_form_id} status={self.status.name if self.status else None}>"

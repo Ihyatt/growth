@@ -1,4 +1,3 @@
-
 from typing import Dict, Any
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
@@ -6,26 +5,28 @@ from app.database import db
 
 make_versioned(user_cls='app.models.user.User')
 
+
 class Medication(db.Model):
     __versioned__ = {}
     __tablename__ = 'medications'
 
     id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     name = db.Column(db.String(120), nullable=False)
     dosage = db.Column(db.String(120), nullable=False)
-    practioner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ✅ fixed typo in "practioner_id"
     frequency = db.Column(db.String(120))
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
     instructions = db.Column(db.Text)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
-    patient_owner = relationship('User', back_populates='medications')
-    medication_comments = relationship('MedicationComment', back_populates='medication')
+    patient_owner = relationship('User', foreign_keys=[patient_id], backref='medications', lazy='select')
+    practitioner = relationship('User', foreign_keys=[practitioner_id], backref='prescribed_medications', lazy='select')
+    medication_comments = relationship('MedicationComment', back_populates='medication', cascade="all, delete-orphan")
 
     @validates('name')
     def validate_name(self, key, name):
@@ -56,24 +57,24 @@ class Medication(db.Model):
     def __repr__(self) -> str:
         return f'<Medication {self.id} {self.name} for patient {self.patient_id}>'
 
-
-make_versioned(user_cls='app.models.user.User')
+# Only needed once per module
+# make_versioned(...) is already called above — removed duplicate here
 
 class MedicationComment(db.Model):
+    __tablename__ = 'medication_comments'
+
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
 
-    medication_id = db.Column(db.Integer, db.ForeignKey('medication.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    medication_id = db.Column(db.Integer, db.ForeignKey('medications.id'), nullable=False)  # ✅ fixed table name
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ✅ fixed table name
+
+    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
-    
-    medication_comment_author = db.relationship('User', back_populates = 'medications_comments', lazy=True)
-    medication = db.relationship('Medication', back_populates='medication_comments', lazy=True)
-
+    medication_comment_author = relationship('User', backref='medications_comments', lazy='select')
+    medication = relationship('Medication', back_populates='medication_comments', lazy='select')
 
     def __repr__(self):
         return f'<MedicationComment {self.id} on Medication:{self.medication_id}>'
@@ -86,5 +87,6 @@ class MedicationComment(db.Model):
             "medication_id": self.medication_id,
             "user_id": self.user_id
         }
-        
+        if include_user:
+            data["user_email"] = getattr(self.medication_comment_author, "email", None)
         return data

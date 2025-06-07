@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from sqlalchemy.orm import validates
 
@@ -18,19 +18,22 @@ class PractitionerForm(db.Model):
     questions = db.Column(db.Text, nullable=False)
     status = db.Column(db.Enum(FormStatus), nullable=False, default=FormStatus.IN_PROCESS)
     practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    is_archived = db.Column(db.Boolean, default=True, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    is_archived = db.Column(db.Boolean, default=False, nullable=False)  # Usually default False for archived flags
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
 
+    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
     updated_at = db.Column(
         db.DateTime,
         server_default=db.func.now(),
-        onupdate=db.func.now()
+        onupdate=db.func.now(),
+        nullable=False
     )
 
+    # Relationships
     practitioner = db.relationship('User', back_populates='created_forms')
-    forms_as_practitioner = db.relationship('Patient_Form', back_populates='form_author')
 
+    # Fix relationship name to match PatientForm table and attribute
+    forms_as_practitioner = db.relationship('PatientForm', back_populates='practitioner_form', lazy='select')
 
     @validates('title')
     def validate_title(self, key, title):
@@ -48,12 +51,12 @@ class PractitionerForm(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'status': self.status.name, # Access the enum name for string representation
+            'status': self.status.name if self.status else None,
             'practitioner_id': self.practitioner_id,
-            'is_archived': self.is_archived, # Include this field in to_dict
+            'is_archived': self.is_archived,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
-            'practitioner_name': getattr(self.practitioner, 'username', None) # Assuming User has a 'username'
+            'practitioner_name': getattr(self.practitioner, 'username', None)
         }
 
     def __repr__(self) -> str:
