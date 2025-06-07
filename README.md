@@ -113,11 +113,11 @@ therapists/therapist_username/search-form-templates?
 therapists/therapist_username/create-form-template
 
 THERAPIST/THERAPIST_USERNAME/PATIENTS/PATIENT_USERNAME
-therapists/therapist_id/patients/patient_username 
+therapists/therapist_username/patients/patient_username 
 therapists/therapist_username/patients/patient_username/medications
 therapists/therapist_username/patients/patient_username/medications/add
-therapists/therapist_id/patients/patient_username/reports
-therapists/therapist_id/patients/patient_username/assigned_forms
+therapists/therapist_username/patients/patient_username/reports
+therapists/therapist_username/patients/patient_username/assigned_forms
 
 
 THERAPIST/THERAPIST_USERNAME/PATIENTS/PATIENT_USERNAME/MEDICATIONS/MEDICATION_ID

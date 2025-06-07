@@ -20,6 +20,8 @@ class AuditActionStatus(enum.Enum):
     SET_TO_APPROVED = "SET_TO_APPROVED"
     SET_TO_PENDING = "SET_TO_PENDING"
     SET_TO_REJECTED = "SET_TO_REJECTED"
+    SET_TO_INACTIVE = "SET_TO_REJECTED"
+    SET_TO_ACTIVE = "SET_TO_ACTIVE"
 
 
 class FormStatus(str, enum.Enum):
