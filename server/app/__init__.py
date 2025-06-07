@@ -11,7 +11,7 @@ from flask_jwt_extended import JWTManager
 
 from app.routes.auth.routes import auth_bp
 from app.routes.admin.routes import admin_bp
-from app.routes.therapist.routes import therapist_bp
+from app.routes.practitioners.routes import practitioner_bp
 from app.routes.patient.routes import patient_bp
 
 from app.config import Config
@@ -47,7 +47,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
-    app.register_blueprint(therapist_bp)
+    app.register_blueprint(practitioner_bp)
     app.register_blueprint(patient_bp)
 
     database.init_app(app)

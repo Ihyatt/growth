@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.routes.patient import therapist_bp, patient_bp
+from app.routes.patient import practitioner_bp, patient_bp
 from server.app.models.form_template import User, AssignForm, Report
 from app.database import db
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user
@@ -31,7 +31,7 @@ def scroll_assigned_forms():
 
 
 @patient_bp.route('/medications', methods=['GET'])
-def get_medications(therapist_username, patient_username):
+def get_medications(practitioner_username, patient_username):
     patient_username = request.args.get('username')
     patient_user =  User.query.filter_by(username=patient_username).first()
     medications = patient_user.medications
