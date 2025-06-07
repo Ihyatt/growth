@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.routes.care_team import care_team_bp
-from app.models.user import User, CareTeam
+from server.app.models.form_template import User, CareTeam
 from app.database import db
 from server.app.utils.decorators import set_versioning_user
 

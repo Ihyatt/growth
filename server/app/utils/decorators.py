@@ -2,10 +2,10 @@
 from functools import wraps
 from flask import jsonify, g
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-from app.models.user import User
+from server.app.models.form_template import User
 from app.models.constants.enums import PermissionLevel,ValidationLevel
 from sqlalchemy_continuum import transaction_class
-from app.models.constants.enums import UserLevel, ApprovalStatus, ProfileStatus
+from app.models.constants.enums import UserLevel, UserApprovalStatus, ProfileStatus
 
 
 from app.models.medication import Medication
@@ -53,10 +53,10 @@ def enforce_elite_user():
                 elite_users = [UserLevel.PRACTITIONER, UserLevel.Admin]
 
 
-                if user.user_level not in elite_users or  and not user.approval_status == ApprovalStatus.APPROVED:
+                if user.user_level not in elite_users or  and not user.approval_status == UserApprovalStatus.APPROVED:
                     return jsonify({"msg": "Access forbidden: Insufficient permissions"}), 403
 
-                if user.approval_status != ApprovalStatus.APPROVED:
+                if user.approval_status != UserApprovalStatus.APPROVED:
                     return jsonify({"msg": "Access forbidden: Insufficient validation"}), 403
                 
                 return fn(*args, **kwargs)

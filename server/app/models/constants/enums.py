@@ -5,7 +5,7 @@ class UserLevel(str, enum.Enum):
     PRACTITIONER = "PRACTITIONER"
     PATIENT = "PATIENT"
 
-class ApprovalStatus(str, enum.Enum):
+class UserApprovalStatus(str, enum.Enum):
     PENDING = 'PENDING'
     APPROVED = 'APPROVED'
     REJECTED = 'REJECTED'

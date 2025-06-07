@@ -2,7 +2,7 @@ import sys
 from werkzeug.security import generate_password_hash
 from app import app
 from app.database import db
-from app.models.user import User
+from server.app.models.form_template import User
 from app.models.constants.enums import PermissionLevel, ValidationLevel
 from app import create_app
 

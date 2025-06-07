@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.routes.report import report_bp
-from app.models.user import Report, User, ReportComment
+from server.app.models.form_template import Report, User, ReportComment
 from app.database import db
 from server.app.utils.decorators import,set_versioning_user
 from flask_jwt_extended import get_jwt_identity

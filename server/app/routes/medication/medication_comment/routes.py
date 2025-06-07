@@ -2,7 +2,7 @@
 from flask import request, jsonify
 from app.routes.medication.medication_comment import medication_comment_bp
 from app.database import db
-from app.models.user import User, MedicationComment
+from server.app.models.form_template import User, MedicationComment
 
 from app.utils.decorators import get_resource_model
 from flask_jwt_extended import get_jwt_identity, jwt_required

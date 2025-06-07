@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.routes.medication import medication_bp
-from app.models.user import User, Medication, MedicationComment
+from server.app.models.form_template import User, Medication, MedicationComment
 from app.database import db
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user, set_versioning_user
 from flask_jwt_extended import get_jwt_identity, jwt_required

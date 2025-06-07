@@ -1,30 +1,29 @@
 
 from flask import request, jsonify
 from app.routes.admin.routes import admin_bp
-from app.models.user import User
+from server.app.models.form_template import User
 from app.database import db
-from app.models.constants.enums import UserLevel,ApprovalStatus,ProfileStatus,AuditActionStatus
+from app.models.constants.enums import UserLevel,UserApprovalStatus,ProfileStatus,AuditActionStatus
 from server.app.utils.decorators import enforce_role_admin, set_versioning_user
 from app.utils.audit_log import log_audit
 from flask_jwt_extended import get_jwt_identity
 
 
-
-# @set_versioning_user
-# @enforce_role_admin
 @admin_bp.route('/search', methods=['GET'])
 def get_users():
     try:
         approval_status_map = {
-            'PENDING': ApprovalStatus.PENDING,
-            'APPROVED': ApprovalStatus.APPROVED,
-            'REJECTED': ApprovalStatus.REJECTED, 
+            'PENDING': UserApprovalStatus.PENDING,
+            'APPROVED': UserApprovalStatus.APPROVED,
+            'REJECTED': UserApprovalStatus.REJECTED, 
         }
+
         user_level_status_map = {
             'PATIENT': UserLevel.PATIENT,
             'PRACTITIONER': UserLevel.PRACTITIONER,
             'ADMIN': UserLevel.ADMIN, 
         }
+
         profile_status_map = {
             'ACTIVE': ProfileStatus.ACTIVE,
             'INACTIVE': ProfileStatus.INACTIVE,
@@ -68,9 +67,6 @@ def get_users():
         return jsonify(error="Query failed: " + str(e)), 500
 
 
-
-# @set_versioning_user
-# @enforce_role_admin
 @admin_bp.route('/approve/<int:user_id>', methods=['POST'])
 def approve_practioners():
     try:
@@ -136,12 +132,12 @@ def reject_practioners():
             return jsonify({"message": "User not found."}), 404
 
 
-        if user.approval_status == ApprovalStatus.REJECTED:
+        if user.approval_status == UserApprovalStatus.REJECTED:
             return jsonify({"message": f"User {user.email} is already rejected."}),
         
         old_validation_level = user.is_validated
 
-        user.approval_status = ApprovalStatus.REJECTED
+        user.approval_status = UserApprovalStatus.REJECTED
 
         audit_details = {
             'old_validation_level': old_validation_level,

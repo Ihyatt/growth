@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.routes.patient import therapist_bp, patient_bp
-from app.models.user import User, AssignForm, Report
+from server.app.models.form_template import User, AssignForm, Report
 from app.database import db
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user
 from flask_jwt_extended import get_jwt_identity

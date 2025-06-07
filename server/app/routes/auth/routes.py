@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.routes.auth import auth_bp
-from app.models.user import User
+from server.app.models.form_template import User
 from app.database import db
 from flask_jwt_extended import create_access_token
 from server.app.utils.decorators import set_versioning_user

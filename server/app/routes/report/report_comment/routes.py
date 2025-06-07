@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from app.routes.report.report_comment import report_comment_bp
 from app.database import db
-from app.models.user import User, ReportComment
+from server.app.models.form_template import User, ReportComment
 
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
