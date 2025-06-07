@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.routes.patient import therapist_bp, patient_bp
-from app.models.user import User, AssignForm
+from app.models.user import User, AssignForm, Report
 from app.database import db
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user
 from flask_jwt_extended import get_jwt_identity
@@ -39,5 +39,31 @@ def get_medications(therapist_username, patient_username):
 
     return jsonify({
         "medications": [medication.to_dict() for medication in medications.items]
+    })
+
+
+@patient_bp.route('/reports', methods=['GET'])
+def get_reports(patient_username):
+    current_user_id = get_jwt_identity()
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=20, type=int)
+    patient_user = User.query.filter_by(username=patient_username)
+    
+
+    #check permissions on what query to send so current user ignore
+    #practitioner_id just use users
+    query = Report.query
+    query = query.filter_by(practitioner_id=current_user_id,patient_id=patient_user.id)
+    query = query.order_by(Report.created_at.desc())
+    
+    reports_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+
+    return jsonify({
+        "forms": [report.to_dict() for report in reports_pagination.items],
+        "total": reports_pagination.total,
+        "page": reports_pagination.page,
+        "pages": reports_pagination.pages,
+        "has_next": reports_pagination.has_next,
+        "has_prev": reports_pagination.has_prev,
     })
 
