@@ -67,3 +67,82 @@ def get_reports(patient_username):
         "has_prev": reports_pagination.has_prev,
     })
 
+
+@admin_bp.route('/actvate/<int:user_id>', methods=['POST'])
+def activate_account(user_id):
+    try:
+
+        user = User.query.filter_by(id=user_id).first()
+        
+        if not user:
+            return jsonify({"message": "User not found."}), 404
+
+        if user.profile_status == ProfileStatus.ACTIVE:
+            return jsonify({'message': 'user is already active'}), 404
+
+        old_activation_status = user.profile_status
+
+        user.profile_status = ProfileStatus.ACTIVE
+
+        audit_details = {
+            'old_activation_status': old_activation_status,
+            'new_activation_status': user.profile_status
+        }
+
+        log_audit(
+            target_user_id=user.id,
+            action_type=AuditActionStatus.SET_TO_ACTIVE,
+            details=audit_details
+        )
+
+        db.session.commit()
+
+        return jsonify({
+            "message": f"User {user.email} to to inactive successfully.",
+            "user": user.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Failed to deactive user: {str(e)}"})
+    
+
+
+
+@admin_bp.route('/deactivate/<int:user_id>', methods=['POST'])
+def deactivate_account(user_id):
+    try:
+
+        user = User.query.filter_by(id=user_id).first()
+        
+        if not user:
+            return jsonify({"message": "User not found."}), 404
+
+        if user.profile_status == ProfileStatus.INACTIVE:
+            return jsonify({'message': 'user is already deactivated'}), 404
+
+        old_activation_status = user.profile_status
+
+        user.profile_status = ProfileStatus.INACTIVE
+
+        audit_details = {
+            'old_activation_status': old_activation_status,
+            'new_activation_status': user.profile_status
+        }
+
+        log_audit(
+            target_user_id=user.id,
+            action_type=AuditActionStatus.SET_TO_INACTIVE,
+            details=audit_details
+        )
+        db.session.commit()
+
+        return jsonify({
+            "message": f"User {user.email} to to inactive successfully.",
+            "user": user.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Failed to deactive user: {str(e)}"})
+    

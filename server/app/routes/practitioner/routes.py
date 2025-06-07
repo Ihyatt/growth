@@ -119,3 +119,179 @@ def create_form_template(practitioner_username):
 
     return jsonify(message="file created") 
 
+
+@admin_bp.route('/approve-practioner/<int:user_id>', methods=['POST'])
+@jwt_required()
+@roles_required([UserLevel.ADMIN])
+def approve_practioners(user_id):
+    try:
+        user_id = request.args.get('user_id')
+
+        if not user_id:
+            return jsonify({"message": "User ID is required."}), 400
+
+        user = User.query.filter_by(id=user_id).first()
+
+
+        if user.user_level != UserLevel.PRACTITIONER:
+            return jsonify({'message': 'user is not a practioner'}), 404
+
+        if not user:
+            return jsonify({"message": "User not found."}), 404
+
+        if user.is_validated == UserLevel.APPROVED:
+            return jsonify({"message": f"User {user.email} is already approved."}),
+        
+        old_validation_level = user.is_validated
+
+        user.is_validated = UserLevel.APPROVED
+
+        audit_details = {
+            'old_validation_level': old_validation_level,
+            'new_validation_level': user.is_validated
+        }
+
+        audit_log_helper(
+            admin_id=admin_id
+            audited_id=user.id,
+            action_type=AuditActionStatus.APPROVED,
+            details=audit_details
+        )
+        db.session.commit()
+
+        return jsonify({
+            "message": f"User {user.email} approved successfully.",
+            "user": user.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Failed to approve user: {str(e)}"}), 
+
+
+
+@admin_bp.route('/reject-practitioner/<int:user_id>', methods=['POST'])
+def reject_practioners():
+    try:
+        user_id = request.args.get('user_id')
+
+        if not user_id:
+            return jsonify({"message": "User ID is required."}), 400
+
+        user = User.query.filter_by(id=user_id).first()
+
+        if user.user_level != UserLevel.PRACTITIONER:
+            return jsonify({'message': 'user is not a practioner'}), 404
+
+        if not user:
+            return jsonify({"message": "User not found."}), 404
+
+
+        if user.approval_status == UserApprovalStatus.REJECTED:
+            return jsonify({"message": f"User {user.email} is already rejected."}),
+        
+        old_validation_level = user.is_validated
+
+        user.approval_status = UserApprovalStatus.REJECTED
+
+        audit_details = {
+            'old_validation_level': old_validation_level,
+            'new_validation_level': user.is_validated
+        }
+        log_audit(
+            target_user_id=user.id,
+            action_type=AuditActionStatus.SET_TO_REJECTED,
+            details=audit_details
+        )
+        db.session.commit()
+
+        return jsonify({
+            "message": f"User {user.email} rejected successfully.",
+            "user": user.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Failed to reject user: {str(e)}"})
+    
+
+
+@admin_bp.route('/actvate/<int:user_id>', methods=['POST'])
+def activate_account(user_id):
+    try:
+
+        user = User.query.filter_by(id=user_id).first()
+        
+        if not user:
+            return jsonify({"message": "User not found."}), 404
+
+        if user.profile_status == ProfileStatus.ACTIVE:
+            return jsonify({'message': 'user is already active'}), 404
+
+        old_activation_status = user.profile_status
+
+        user.profile_status = ProfileStatus.ACTIVE
+
+        audit_details = {
+            'old_activation_status': old_activation_status,
+            'new_activation_status': user.profile_status
+        }
+
+        log_audit(
+            target_user_id=user.id,
+            action_type=AuditActionStatus.SET_TO_ACTIVE,
+            details=audit_details
+        )
+
+        db.session.commit()
+
+        return jsonify({
+            "message": f"User {user.email} to to inactive successfully.",
+            "user": user.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Failed to deactive user: {str(e)}"})
+    
+
+
+
+@admin_bp.route('/deactivate/<int:user_id>', methods=['POST'])
+def deactivate_account(user_id):
+    try:
+
+        user = User.query.filter_by(id=user_id).first()
+        
+        if not user:
+            return jsonify({"message": "User not found."}), 404
+
+        if user.profile_status == ProfileStatus.INACTIVE:
+            return jsonify({'message': 'user is already deactivated'}), 404
+
+        old_activation_status = user.profile_status
+
+        user.profile_status = ProfileStatus.INACTIVE
+
+        audit_details = {
+            'old_activation_status': old_activation_status,
+            'new_activation_status': user.profile_status
+        }
+
+        log_audit(
+            target_user_id=user.id,
+            action_type=AuditActionStatus.SET_TO_INACTIVE,
+            details=audit_details
+        )
+        db.session.commit()
+
+        return jsonify({
+            "message": f"User {user.email} to to inactive successfully.",
+            "user": user.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Failed to deactive user: {str(e)}"})
+    
+
