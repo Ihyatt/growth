@@ -37,7 +37,7 @@ def get_current_user_object():
     
 
 def audit_log_helper(
-    admin_id: admin_id,
+    admin_id: int,
     audited_id: int,
     action_type: AuditActionType.APPROVED,
     details: dict = None

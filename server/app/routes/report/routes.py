@@ -3,7 +3,7 @@ from flask import request, jsonify
 from app.routes.report import report_bp
 from server.app.models.form_template import Report, User, ReportComment
 from app.database import db
-from server.app.utils.helpers import get_current_user_object,resource_owner_or_admin_required, roles_required, care_giver_or_admin_required
+from server.app.utils.helpers import audit_log_helper,get_current_user_object,resource_owner_or_admin_required, roles_required, care_giver_or_admin_required
 from app.models.constants.enums import UserLevel, UserApprovalStatus, ProfileStatus, AuditActionStatus
 
 from server.app.utils.decorators import set_versioning_user

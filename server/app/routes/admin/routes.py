@@ -3,9 +3,9 @@ from flask import request, jsonify
 from app.routes.admin.routes import admin_bp
 from server.app.models.form_template import User
 from app.database import db
+from app.utils.helpers import audit_log_helper
 from app.models.constants.enums import UserLevel, UserApprovalStatus, ProfileStatus, AuditActionStatus
 from server.app.utils.decorators import enforce_role_admin, set_versioning_user
-from app.utils.helpers import audit_log_helper
 from flask_jwt_extended import get_jwt_identity
 
 
@@ -237,3 +237,17 @@ def deactivate_account(user_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"Failed to deactive user: {str(e)}"})
+    
+
+
+# get practitoners
+
+# get patients
+
+#get form templats
+
+#get reports
+
+# get medications
+ # get assigned_forms
+ #get care_team
