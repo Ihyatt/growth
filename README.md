@@ -89,3 +89,76 @@ python3 run.py
 # Frontend setup
 cd ../client
 npm install
+
+
+TODO:
+add a cron job to expire expired forms that havent been completed after a week
+
+
+API ROUTE PAGES
+
+AUTH
+/login
+/register
+
+ADMIN
+/admins/search
+/admins/approve/user_id
+/admins/reject/user_id
+
+
+THERAPIST
+therapists/therapist_username/search-patients?
+therapists/therapist_username/search-form-templates?
+therapists/therapist_username/create-form-template
+
+THERAPIST/THERAPIST_USERNAME/PATIENTS/PATIENT_USERNAME
+therapists/therapist_id/patients/patient_username 
+therapists/therapist_username/patients/patient_username/medications
+therapists/therapist_username/patients/patient_username/medications/add
+therapists/therapist_id/patients/patient_username/reports
+therapists/therapist_id/patients/patient_username/assigned_forms
+
+
+THERAPIST/THERAPIST_USERNAME/PATIENTS/PATIENT_USERNAME/MEDICATIONS/MEDICATION_ID
+therapists/therapist_username/patients/patient_username/medications/medication_id/delete
+therapists/therapist_username/patients/patient_username/medications/medication_id/edit
+therapists/therapist_username/patients/patient_username/medications/medication_id/comment
+
+
+THERAPIST/THERAPIST_USERNAME/PATIENTS/PATIENT_USERNAME/MEDICATIONS/MEDICATION_ID/MEDICATION_COMMENTS/MEDICATION_COMMENT_ID
+therapists/therapist_username/patients/patient_username/medications/medication_id/comments/medication_comment_id/edit
+therapists/therapist_username/patients/patient_username/medications/medication_id/comments/medication_comment_id/delete
+
+
+
+THERAPIST/THERAPIST_USERNAME/FORM_TEMPLATE/FORM_TEMPLATE_ID
+therapists/therapist_username/form_template/form_template_id/assign
+therapists/therapist_username/form_template/form_template_id/un_assign
+therapists/therapist_username/form_template/form_template_id/archive
+
+
+therapists/therapist_username/patients/care_team/connect
+therapists/therapist_username/patients/care_team/disconnect
+
+
+
+patients/patient_username
+patients/patient_username/assigned_forms
+patients/patient_username/reports
+patients/patient_username/medications
+
+
+patients/patient_username/assigned_forms/assigned_form_id
+patients/patient_username/assigned_forms/assigned_form_id/submit
+
+
+patients/patient_username/medications/medication_id
+patients/patient_username/medications/medications_id/comments/create
+
+
+patients/patient_username/reports/reports_id
+patients/patient_username/reports/reports_id/comments/create
+
+
+create cron job that expires forms that are a week old, cron job can be run every night
