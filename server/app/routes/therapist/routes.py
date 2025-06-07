@@ -6,8 +6,8 @@ from server.app.utils.decorators import enforce_elite_user, enforce_elite_user
 from flask_jwt_extended import get_jwt_identity
 
 
-@therapist_bp.route('/search', methods=['GET'])
-def search():
+@therapist_bp.route('/search-patients', methods=['GET'])
+def search_patients(therapist_username):
     current_user_id = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
@@ -30,8 +30,8 @@ def search():
     })
 
 
-@therapist_bp.route('/search-form-template', methods=['GET'])
-def get_form_template():
+@therapist_bp.route('/search-form-templates', methods=['GET'])
+def search_form_templates(therapist_username):
     current_user_id = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)
@@ -62,8 +62,8 @@ def get_form_template():
 
 
 
-@therapist_bp.route('/create', methods=['POST'])
-def create():
+@therapist_bp.route('/create-form-template', methods=['POST'])
+def create_form_template(therapist_username):
     current_user_id = get_jwt_identity()
     
     data = request.get_json()

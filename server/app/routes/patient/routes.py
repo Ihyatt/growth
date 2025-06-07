@@ -7,7 +7,7 @@ from flask_jwt_extended import get_jwt_identity
 
 
 @patient_bp.route('/scroll', methods=['GET']) #this is only for patients
-def scroll_forms():
+def scroll_assigned_forms():
     current_user_id = get_jwt_identity()
     page = request.args.get('page', default=1, type=int)
     limit = request.args.get('limit', default=20, type=int)

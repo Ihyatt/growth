@@ -25,7 +25,7 @@ def edit(medication_comment_id):
 
 
 @medication_comment_bp.route('delete', methods=['POST'])
-def edit(medication_comment_id):
+def delete(medication_comment_id):
     current_user_id = get_jwt_identity()
     data = request.get_json()
     comment_text = data.get('text')
