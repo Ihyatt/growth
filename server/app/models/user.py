@@ -37,10 +37,10 @@ class User(db.Model):
     audit_logs_as_admin = relationship('AuditLog', back_populates='admin', lazy=True)
     audit_logs_about_user = relationship('AuditLog', back_populates='audited_user', lazy=True)
 
-    forms_as_patient = relationship('PatientForm', back_populates='assigned_patient', lazy=True)
-    reviewed_forms = relationship('PatientForm', back_populates='form_reviewer', lazy=True)
+    forms_as_patient = relationship('AssignedForm', back_populates='assigned_patient', lazy=True)
+    reviewed_forms = relationship('AssignedForm', back_populates='form_reviewer', lazy=True)
 
-    forms_as_practitioner = relationship('PractitionerForm', back_populates='form_author', lazy=True)
+    forms_as_practitioner = relationship('FormTemplate', back_populates='form_author', lazy=True)
 
     reports_as_patient = relationship('Report', back_populates='reported_patient', lazy=True)
     reports_as_practitioner = relationship('Report', back_populates='report_reviewer', lazy=True)

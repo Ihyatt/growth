@@ -59,4 +59,3 @@ def delete_report():
     medication = Report.query.filter_by(report_id).first()
     report_id.is_active = False
     db.session.commit()
-    

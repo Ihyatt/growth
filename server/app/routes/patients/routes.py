@@ -1,4 +1,3 @@
-
 from flask import request, jsonify
 from app.routes.patients import patients_bp
 from app.models.user import User,Follow
@@ -45,4 +44,3 @@ def get_patient():
     patient_user =  User.query.filter_by(username=patient_username).first()
 
     return jsonify({"patient": patient_user.to_dict()})
-    

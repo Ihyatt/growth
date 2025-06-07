@@ -89,4 +89,3 @@ def delete():
     medication = Medication.query.filter_by(medication_id).first()
     medication.is_active = False
     db.session.commit()
-    

@@ -8,4 +8,3 @@ reports_bp = Blueprint('patients', __name__, url_prefix='/patients')
 reports_bp.register_blueprint(reports_bp)
 reports_bp.register_blueprint(patients_forms_bp)
 reports_bp.register_blueprint(medications_bp)
-

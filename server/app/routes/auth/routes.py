@@ -1,4 +1,3 @@
-
 from flask import request, jsonify
 from app.routes.auth import auth_bp
 from app.models.user import User
@@ -72,4 +71,3 @@ def register():
     except Exception as e:
         db.session.rollback()
         return jsonify(error="Registration failed: " + str(e)), 500
-
