@@ -45,21 +45,6 @@ def get_report_as_patient(patient_username, report_id):
         return jsonify(message="An internal server error occurred while patient attempting to get their report."), 500
 
 
-updated_rows = session.query(MyModel).filter(
-    MyModel.id == obj.id,
-    MyModel.version == obj.version
-).update({
-    'some_field': new_value,
-    'version': MyModel.version + 1
-})
-
-if updated_rows == 0:
-    # Version conflict! Someone else updated.
-    raise OptimisticLockException("Conflict detected")
-else:
-    session.commit()
-    
-
 @report_bp.route('/delete', methods=['POST'])
 @jwt_required()
 @roles_required([UserLevel.ADMIN, UserLevel.PRACTITIONER])

@@ -51,12 +51,12 @@ def search_practitioners():
                 return jsonify(message=f"Invalid 'status' parameter: {user_status_param}"), 400
             practitioners_query = practitioners_query.filter_by(approval_status=mapped_status)
 
-        profile_status_param = request.args.get('active')
+        profile_status_param = request.args.get('profile_status')
         if profile_status_param is not None:
-            mapped_profile_status = profile_status_map.get(str(profile_status_param).lower())
+            mapped_profile_status = profile_status_map.get(str(profile_status_param).upper())
             if mapped_profile_status is None:
-                 return jsonify(message=f"Invalid 'active' parameter: {profile_status_param}"), 400
-            practitioners_query = practitioners_query.filter_by(profile_active=mapped_profile_status) # Assuming 'profile_active' is the field name
+                 return jsonify(message=f"Invalid 'profile_status' parameter: {profile_status_param}"), 400
+            practitioners_query = practitioners_query.filter_by(profile_status=mapped_profile_status) 
 
         email_param = request.args.get('email')
         if email_param:
@@ -89,7 +89,7 @@ def search_practitioners():
 
 @admin_bp.route('/search-patients', methods=['GET'])
 @jwt_required()
-@roles_required([UserLevel.ADMIN]) # Only admins can search practitioners
+@roles_required([UserLevel.ADMIN])
 def search_patients():
     try:
         page = request.args.get('page', default=1, type=int)
@@ -99,7 +99,7 @@ def search_patients():
 
         profile_status_param = request.args.get('active')
         if profile_status_param is not None:
-            mapped_profile_status = profile_status_map.get(str(profile_status_param).lower())
+            mapped_profile_status = profile_status_map.get(str(profile_status_param).upper())
             if mapped_profile_status is None:
                  return jsonify(message=f"Invalid 'active' parameter: {profile_status_param}"), 400
             practitioners_query = practitioners_query.filter_by(profile_active=mapped_profile_status) # Assuming 'profile_active' is the field name
@@ -152,7 +152,7 @@ def search_practitioners():
 
         profile_status_param = request.args.get('active')
         if profile_status_param is not None:
-            mapped_profile_status = profile_status_map.get(str(profile_status_param).lower())
+            mapped_profile_status = profile_status_map.get(str(profile_status_param).upper())
             if mapped_profile_status is None:
                  return jsonify(message=f"Invalid 'active' parameter: {profile_status_param}"), 400
             practitioners_query = practitioners_query.filter_by(profile_active=mapped_profile_status)
