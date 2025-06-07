@@ -4,11 +4,9 @@ from app.models.user import User, Medication
 from app.database import db
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user, set_versioning_user
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app.utils.decorators import 
 
 
 @medication_bp.route('/<str:username>', methods=['GET'])
-@jwt_required
 def get_medications():
     patient_username = request.args.get('username')
     patient_user =  User.query.filter_by(username=patient_username).first()
@@ -20,7 +18,6 @@ def get_medications():
     })
 
 @medication_bp.route('<str:username>/<int:medication_id>', methods=['GET'])
-@jwt_required()
 def get_medication():
     medication_id = request.args.get('medication_id')
     medication =  Medication.query.filter_by(medication_id).first()
@@ -31,9 +28,6 @@ def get_medication():
 
 
 @medication_bp.route('<str:username>/add', methods=['POST'])
-@set_versioning_user
-@jwt_required()
-@enforce_elite_user
 def add():
     practitioner_id = get_jwt_identity()
     data = request.get_json()
@@ -58,8 +52,6 @@ def add():
 
 
 @medication_bp.route('<str:username>/medication/<int:medication_id>/edit', methods=['POST'])
-@set_versioning_user
-@enforce_elite_user
 def edit():
     practitioner_id = get_jwt_identity()
     data = request.get_json()
