@@ -11,7 +11,7 @@ from flask_jwt_extended import JWTManager
 
 from app.routes.auth.routes import auth_bp
 from app.routes.admin.routes import admin_bp
-from app.routes.practitioners.routes import practitioner_bp
+from app.routes.practitioner.routes import practitioner_bp
 from app.routes.patient.routes import patient_bp
 
 from app.config import Config

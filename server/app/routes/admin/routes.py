@@ -267,7 +267,7 @@ def deactivate_account(user_id):
 
 @admin_bp.route('/search-practitioners', methods=['GET'])
 @jwt_required()
-@roles_required([UserLevel.ADMIN]) # Only admins can search practitioners
+@roles_required([UserLevel.ADMIN])
 def search_practitioners():
     try:
         page = request.args.get('page', default=1, type=int)
@@ -316,14 +316,103 @@ def search_practitioners():
         db.session.rollback()
         return jsonify(error="An unexpected error occurred: " + str(e)),
 
-# get practitoners
 
-# get patients
 
-#get form templats
+@admin_bp.route('/search-patients', methods=['GET'])
+@jwt_required()
+@roles_required([UserLevel.ADMIN]) # Only admins can search practitioners
+def search_patients():
+    try:
+        page = request.args.get('page', default=1, type=int)
+        limit = request.args.get('limit', default=20, type=int)
 
-#get reports
+        practitioners_query = User.query.filter_by(user_level=UserLevel.PATIENT)
 
-# get medications
- # get assigned_forms
- #get care_team
+        profile_status_param = request.args.get('active')
+        if profile_status_param is not None:
+            mapped_profile_status = profile_status_map.get(str(profile_status_param).lower())
+            if mapped_profile_status is None:
+                 return jsonify(message=f"Invalid 'active' parameter: {profile_status_param}"), 400
+            practitioners_query = practitioners_query.filter_by(profile_active=mapped_profile_status) # Assuming 'profile_active' is the field name
+
+        email_param = request.args.get('email')
+        if email_param:
+            practitioners_query = practitioners_query.filter_by(email=email_param)
+
+        username_param = request.args.get('username')
+        if username_param:
+            practitioners_query = practitioners_query.filter_by(username=username_param)
+
+        users_pagination = practitioners_query.paginate(page=page, per_page=limit, error_out=False)
+
+
+        return jsonify({
+            "users": [user.to_dict() for user in users_pagination.items],
+            "total": users_pagination.total,
+            "page": users_pagination.page,
+            "pages": users_pagination.pages,
+            "has_next": users_pagination.has_next,
+            "has_prev": users_pagination.has_prev
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        logger.error(f"Error searching patients: {e}")
+        db.session.rollback()
+        return jsonify(error="An unexpected error occurred: " + str(e)),
+
+
+
+
+@admin_bp.route('/search-admins', methods=['GET'])
+@jwt_required()
+@roles_required([UserLevel.ADMIN])
+def search_practitioners():
+    try:
+        page = request.args.get('page', default=1, type=int)
+        limit = request.args.get('limit', default=20, type=int)
+
+        practitioners_query = User.query.filter_by(user_level=UserLevel.ADMIN)
+
+        user_status_param = request.args.get('status')
+        if user_status_param:
+            mapped_status = user_approval_status_map.get(user_status_param.upper())
+            if mapped_status is None:
+                return jsonify(message=f"Invalid 'status' parameter: {user_status_param}"), 400
+            practitioners_query = practitioners_query.filter_by(approval_status=mapped_status)
+
+        profile_status_param = request.args.get('active')
+        if profile_status_param is not None:
+            mapped_profile_status = profile_status_map.get(str(profile_status_param).lower())
+            if mapped_profile_status is None:
+                 return jsonify(message=f"Invalid 'active' parameter: {profile_status_param}"), 400
+            practitioners_query = practitioners_query.filter_by(profile_active=mapped_profile_status)
+
+        email_param = request.args.get('email')
+        if email_param:
+            practitioners_query = practitioners_query.filter_by(email=email_param)
+
+        username_param = request.args.get('username')
+        if username_param:
+            practitioners_query = practitioners_query.filter_by(username=username_param)
+
+        users_pagination = practitioners_query.paginate(page=page, per_page=limit, error_out=False)
+
+
+        return jsonify({
+            "users": [user.to_dict() for user in users_pagination.items],
+            "total": users_pagination.total,
+            "page": users_pagination.page,
+            "pages": users_pagination.pages,
+            "has_next": users_pagination.has_next,
+            "has_prev": users_pagination.has_prev
+        })
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        logger.error(f"Error searching practitioners: {e}")
+        db.session.rollback()
+        return jsonify(error="An unexpected error occurred: " + str(e)),
+
