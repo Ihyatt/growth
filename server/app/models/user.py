@@ -1,3 +1,5 @@
+
+import logging
 from datetime import datetime
 from typing import Dict, Any
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -5,6 +7,11 @@ from sqlalchemy.orm import relationship # relationship is already imported, good
 from sqlalchemy_continuum import make_versioned
 from app.database import db
 from app.models.constants.enums import UserLevel, UserApprovalStatus, ProfileStatus # Ensure these enums are correctly defined
+
+
+logger = logging.getLogger(__name__)
+
+
 
 make_versioned(user_cls='app.models.user.User') # Keep user_cls
 

@@ -1,3 +1,5 @@
+
+import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
 from sqlalchemy.orm import relationship, validates
@@ -5,6 +7,9 @@ from sqlalchemy_continuum import make_versioned
 
 from app.database import db
 from app.models.constants.enums import FormStatus
+
+logger = logging.getLogger(__name__)
+
 
 make_versioned(user_cls='app.models.user.User')
 
@@ -47,6 +52,7 @@ class AssignedForm(db.Model):
         if not isinstance(status, FormStatus):
             raise ValueError(f"Invalid status. Must be one of: {[s.name for s in FormStatus]}")
         return status
+    
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -59,7 +65,8 @@ class AssignedForm(db.Model):
             "reviewed_at": self.reviewed_at.isoformat() if self.reviewed_at else None,
             "reviewed_by": self.reviewed_by_id,
             "patient_name": getattr(self.assigned_patient, 'name', None),
-            "reviewer_name": getattr(self.form_reviewer, 'name', None)
+            "reviewer_name": getattr(self.form_reviewer, 'name', None),
+            "responses": []
         }
 
     def __repr__(self) -> str:

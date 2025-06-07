@@ -1,3 +1,5 @@
+
+import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
 
@@ -6,6 +8,10 @@ from sqlalchemy.orm import validates, relationship # Import relationship here
 from sqlalchemy_continuum import make_versioned
 from app.database import db
 from app.models.constants.enums import FormStatus # Ensure this enum is correctly defined
+
+
+logger = logging.getLogger(__name__)
+
 
 make_versioned(user_cls='app.models.user.User') # Keep user_cls if you're consistently using app.models.user.User
 

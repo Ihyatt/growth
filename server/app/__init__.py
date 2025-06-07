@@ -1,3 +1,6 @@
+
+import logging
+import os
 from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -16,12 +19,27 @@ from app.config import Config
 
 
 def create_app():
-
+    app = Flask(__name__)
     load_dotenv()
 
     jwt = JWTManager()
 
-    app = Flask(__name__)
+    
+    log_level = os.environ.get('FLASK_LOG_LEVEL', 'INFO').upper()
+    log_file_path = os.environ.get('FLASK_LOG_FILE', 'application.log')
+
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(), # Console output
+            logging.FileHandler(log_file_path) # File output
+        ]
+    )
+
+    app.logger.setLevel(log_level)
+    app.logger.info("Application starting up and logging configured.")
+
 
     CORS(app)
     

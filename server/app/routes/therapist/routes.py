@@ -1,33 +1,63 @@
 from flask import request, jsonify
 from app.routes.patient import therapist_bp
-from server.app.models.form_template import User, CareTeam, FormTemplate
+from server.app.models import User, CareTeam, FormTemplate
 from app.database import db
+from app.routes.helpers.utils import get_current_user_object
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user
 from flask_jwt_extended import get_jwt_identity
 
 
+logger = logging.getLogger(__name__)
+
+
 @therapist_bp.route('/search-patients', methods=['GET'])
 def search_patients(therapist_username):
-    current_user_id = get_jwt_identity()
-    page = request.args.get('page', default=1, type=int)
-    limit = request.args.get('limit', default=20, type=int)
+    try:
+        current_practitioner_user = get_current_user_object()
 
-    query = CareTeam.query
+        if not current_practitioner_user:
+            logger.error(f"Internal error: current_practitioner_user is None for '{therapist_username}'.")
+            return jsonify(message="Unauthorized: User profile invalid or not found."), 401
 
-    query = query.filter_by(practitioner_id=current_user_id, active=True)
+        page = request.args.get('page', default=1, type=int)
+        limit = request.args.get('limit', default=20, type=int)
 
-    query = query.order_by(CareTeam.created_at.desc())
-    
-    patients_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+        if page < 1 or limit < 1:
+            logger.warning(f"Invalid pagination parameters provided by '{current_practitioner_user.username}': page={page}, limit={limit}")
+            return jsonify(message="Invalid pagination parameters. 'page' and 'limit' must be positive integers."), 400
 
-    return jsonify({
-        "forms": [patients.to_dict() for patients in patients_pagination.items],
-        "total": patients_pagination.total,
-        "page": patients_pagination.page,
-        "pages": patients_pagination.pages,
-        "has_next": patients_pagination.has_next,
-        "has_prev": patients_pagination.has_prev,
-    })
+
+        practitioner_id_for_query = current_practitioner_user.id
+
+        query = CareTeam.query.filter_by(
+            practitioner_id=practitioner_id_for_query,
+            connected=True
+        ).options(db.joinedload(CareTeam.patient))
+
+        query = query.order_by(CareTeam.created_at.desc())
+
+        patients_pagination = query.paginate(page=page, per_page=limit, error_out=False)
+
+        patients_data = [care_team.to_dict() for care_team in patients_pagination.items]
+
+        logger.info(f"Therapist '{therapist_username}' successfully retrieved {len(patients_data)} patients (Page {page}/{patients_pagination.pages}).")
+
+
+        return jsonify({
+            "patients": patients_data,
+            "total_patients": patients_pagination.total, 
+            "current_page": patients_pagination.page,
+            "total_pages": patients_pagination.pages,
+            "has_next": patients_pagination.has_next,
+            "has_prev": patients_pagination.has_prev,
+        }), 200 
+
+    except Exception as e:
+        logger.exception(f"An unexpected error occurred during patient search for therapist '{therapist_username}'.")
+        return jsonify(message="An internal server error occurred while searching patients."), 500
+
+
+
 
 
 @therapist_bp.route('/search-form-templates', methods=['GET'])
@@ -58,6 +88,10 @@ def search_form_templates(therapist_username):
         "has_next": forms_pagination.has_next,
         "has_prev": forms_pagination.has_prev,
     })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(error="Query failed: " + str(e)), 500
+
 
 
 

@@ -1,7 +1,13 @@
+
+import logging
 from typing import Dict, Any
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
+
+
+logger = logging.getLogger(__name__)
+
 
 make_versioned(user_cls='app.models.user.User')
 

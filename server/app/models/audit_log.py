@@ -1,3 +1,5 @@
+import logging
+
 from datetime import datetime, timezone
 from sqlalchemy.dialects.postgresql import JSONB 
 from sqlalchemy.orm import relationship, validates
@@ -5,6 +7,8 @@ from sqlalchemy_continuum import make_versioned
 from app.database import db
 from app.models.constants.enums import AuditActionStatus
 from typing import Dict, Any
+
+logger = logging.getLogger(__name__)
 
 
 make_versioned(user_cls='app.models.user.User') #tracks user that inserts/updates/deletes
