@@ -9,7 +9,7 @@ from app.routes.patient.routes import patient_bp
 from app.routes.practitioner.routes import practitioner_bp
 
 
-admin_bp = Blueprint('admin', __name__, url_prefix='/admins')
+admin_bp = Blueprint('admin', __name__, url_prefix='/admins/<int:user_id>')
 admin_bp.register_blueprint(care_team_bp)
 admin_bp.register_blueprint(form_template_bp)
 admin_bp.register_blueprint(report_bp)

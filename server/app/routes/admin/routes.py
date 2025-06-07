@@ -33,64 +33,6 @@ profile_status_map = {
     'INACTIVE': ProfileStatus.INACTIVE,
 }
 
-
-@admin_bp.route('/search', methods=['GET'])
-def get_users():
-    try:
-        user_approval_status_map = {
-            'PENDING': UserApprovalStatus.PENDING,
-            'APPROVED': UserApprovalStatus.APPROVED,
-            'REJECTED': UserApprovalStatus.REJECTED, 
-        }
-
-        user_level_status_map = {
-            'PATIENT': UserLevel.PATIENT,
-            'PRACTITIONER': UserLevel.PRACTITIONER,
-            'ADMIN': UserLevel.ADMIN, 
-        }
-
-        profile_status_map = {
-            'ACTIVE': ProfileStatus.ACTIVE,
-            'INACTIVE': ProfileStatus.INACTIVE,
-        }
-
-        page = request.args.get('page', default=1, type=int)
-        limit = request.args.get('limit', default=20, type=int)
-        user_status_param = request.args.get('status')
-        profile_status_param = request.args.get('active')
-        email_param = request.args.get('email')
-        username_param = request.args.get('username')
-        user_level_param = request.args.get('user_level')
-        
-        query = User.query
-        query = query.filter_by(
-            approval_status=user_approval_status_map[user_status_param],
-            user_level=user_level_status_map[user_level_param],
-            profile_status=profile_status_map[profile_status_param],
-        )
-        
-        if email_param:
-            query = query.filter(User.email.ilike(f'%{email_param}%'))
-        
-        if username_param:
-            query = query.filter(User.username.ilike(f'%{username_param}%'))
-
-        users_pagination = query.paginate(page=page, per_page=limit, error_out=False)
-
-        return jsonify({
-            "users": [user.to_dict() for user in users_pagination.items],
-            "total": users_pagination.total,
-            "page": users_pagination.page,
-            "pages": users_pagination.pages,
-            "has_next": users_pagination.has_next,
-            "has_prev": users_pagination.has_prev
-        })
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify(error="Query failed: " + str(e)), 500
-
-
 @admin_bp.route('/approve-practioner/<int:user_id>', methods=['POST'])
 def approve_practioners(user_id):
     try:
