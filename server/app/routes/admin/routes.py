@@ -1,6 +1,6 @@
 
 from flask import request, jsonify
-from app.routes.admins.routes import admin_bp
+from app.routes.admin.routes import admin_bp
 from app.models.user import User
 from app.database import db
 from app.models.constants.enums import UserLevel,ApprovalStatus,ProfileStatus,AuditActionStatus
