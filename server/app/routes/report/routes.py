@@ -1,12 +1,12 @@
 from flask import request, jsonify
-from app.routes.reports import reports_bp
+from app.routes.report import report_bp
 from app.models.user import Report
 from app.database import db
 from server.app.utils.decorators import,set_versioning_user
 from flask_jwt_extended import get_jwt_identity
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user, set_versioning_user
 
-@reports_bp.route('/search', methods=['GET'])
+@report_bp.route('/search', methods=['GET'])
 @set_versioning_user
 @enforce_elite_user
 def get_patients_reports():
@@ -35,7 +35,7 @@ def get_patients_reports():
         "has_prev": reports_pagination.has_prev,
     })
 
-@reports_bp.route('<str:username>/report/<int:report_id>', methods=['GET'])
+@report_bp.route('<str:username>/report/<int:report_id>', methods=['GET'])
 @set_versioning_user
 @enforce_elite_user
 def get_report():
@@ -47,7 +47,7 @@ def get_report():
     return jsonify({"medication": report.to_dict()})
     
 
-@reports_bp.route('/<str:username>/report/<int:report_id>/delete', methods=['POST'])
+@report_bp.route('/<str:username>/report/<int:report_id>/delete', methods=['POST'])
 @set_versioning_user
 @enforce_elite_user
 def delete_report():

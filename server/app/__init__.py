@@ -7,9 +7,9 @@ from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 
 from app.routes.auth.routes import auth_bp
-from app.routes.admins.routes import admins_bp
-from app.routes.therapists.routes import therapists_bp
-from app.routes.patients.routes import patients_bp
+from app.routes.admin.routes import admin_bp
+from app.routes.therapist.routes import therapist_bp
+from app.routes.patient.routes import patient_bp
 
 from app.config import Config
 
@@ -28,9 +28,9 @@ def create_app():
     app.config.from_object(Config)
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(admins_bp)
-    app.register_blueprint(therapists_bp)
-    app.register_blueprint(patients_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(therapist_bp)
+    app.register_blueprint(patient_bp)
 
     database.init_app(app)
     Migrate(app, database.db)

@@ -45,8 +45,8 @@ class User(db.Model):
     reports_as_patient = relationship('Report', back_populates='reported_patient', lazy=True)
     reports_as_practitioner = relationship('Report', back_populates='report_reviewer', lazy=True)
 
-    follow_as_patient = relationship('Follow', back_populates='followed', lazy=True)
-    follow_as_practitioner = relationship('Follow', back_populates='follower', lazy=True)
+    care_team_as_patient = relationship('CareTeam', back_populates='patient_cared_for', lazy=True)
+    care_taem_as_practitioner = relationship('CareTeam', back_populates='practioner_caring_for', lazy=True)
 
     def set_password(self, password: str) -> None:
         if not password or len(password) < 8:

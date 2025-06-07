@@ -5,9 +5,9 @@ from app.database import db
 
 make_versioned(user_cls='app.models.user.User')
 
-class Follow(db.Model):
+class CareTeam(db.Model):
     __versioned__ = {}
-    __tablename__ = 'follows'
+    __tablename__ = 'care_teams'
 
     id = db.Column(db.Integer, primary_key=True)
     practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -31,13 +31,13 @@ class Follow(db.Model):
     practitioner = relationship(
         "User",
         foreign_keys=[practitioner_id],
-        backref=db.backref("follows_as_practitioner", lazy="select"),
+        backref=db.backref("care_team_practitioner", lazy="select"),
         lazy="joined"
     )
     patient = relationship(
         "User",
         foreign_keys=[patient_id],
-        backref=db.backref("follows_as_patient", lazy="select"),
+        backref=db.backref("care_team_as_patient", lazy="select"),
         lazy="joined"
     )
 
@@ -47,7 +47,7 @@ class Follow(db.Model):
 
     def __repr__(self) -> str:
         return (
-            f"<Follow(id={self.id}, "
+            f"<CareTeam(id={self.id}, "
             f"patient_id={self.patient_id}, "
             f"practitioner_id={self.practitioner_id}, "
             f"connected={self.connected})>"

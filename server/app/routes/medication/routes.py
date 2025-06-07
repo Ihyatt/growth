@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.routes.medications import medications_bp
+from app.routes.medication import medication_bp
 from app.models.user import User, Medication
 from app.database import db
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user, set_versioning_user
@@ -7,7 +7,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from app.utils.decorators import 
 
 
-@medications_bp.route('/<str:username>', methods=['GET'])
+@medication_bp.route('/<str:username>', methods=['GET'])
 @jwt_required
 def get_medications():
     patient_username = request.args.get('username')
@@ -19,7 +19,7 @@ def get_medications():
         "medications": [medication.to_dict() for medication in medications.items]
     })
 
-@medications_bp.route('<str:username>/<int:medication_id>', methods=['GET'])
+@medication_bp.route('<str:username>/<int:medication_id>', methods=['GET'])
 @jwt_required()
 def get_medication():
     medication_id = request.args.get('medication_id')
@@ -30,7 +30,7 @@ def get_medication():
     
 
 
-@medications_bp.route('<str:username>/add', methods=['POST'])
+@medication_bp.route('<str:username>/add', methods=['POST'])
 @set_versioning_user
 @jwt_required()
 @enforce_elite_user
@@ -57,7 +57,7 @@ def add():
     
 
 
-@medications_bp.route('<str:username>/medication/<int:medication_id>/edit', methods=['POST'])
+@medication_bp.route('<str:username>/medication/<int:medication_id>/edit', methods=['POST'])
 @set_versioning_user
 @enforce_elite_user
 def edit():
@@ -77,7 +77,7 @@ def edit():
     db.session.commit()
     
 
-@medications_bp.route('<str:username>/medication/<int:medication_id>/delete', methods=['POST'])
+@medication_bp.route('<str:username>/medication/<int:medication_id>/delete', methods=['POST'])
 @set_versioning_user
 @enforce_elite_user
 def delete():
