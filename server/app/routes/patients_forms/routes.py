@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.routes.forms import forms_bp
+from app.routes.patients_forms import patients_forms_bp
 from server.app.models.patient_form import UserForm, User, PractitionerForm
 from app.database import db
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -11,7 +11,7 @@ from server.app.utils.decorators import  set_versioning_user
 PATIENT APIS
 """   
      
-@forms_bp.route('/todo', methods=['POST'])
+@patients_forms_bp.route('/todo', methods=['POST'])
 @set_versioning_user
 @jwt_required()
 def get_user_forms():

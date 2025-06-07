@@ -7,9 +7,6 @@ from flask_jwt_extended import get_jwt_identity
 from app.models.constants.enums import FormStatus
 from server.app.utils.decorators import enforce_elite_user, enforce_elite_user, set_versioning_user
 
-"""
-PRACTITIONER APIS
-"""
 
 @forms_bp.route('/search', methods=['GET'])
 @enforce_elite_user
@@ -81,7 +78,7 @@ def get_practitoner_form(form_id):
      
      
     
-@forms_bp.route('/user-form/<int:form_id>', methods=['GET'])
+@forms_bp.route('/patient-form/<int:form_id>', methods=['GET'])
 @enforce_elite_user
 def get_patient_form():
     form_id = request.args.get('form_id')
@@ -114,9 +111,9 @@ def create():
 
 
 
-@forms_bp.route('/archive', methods=['POST'])
+@forms_bp.route('/archive/<int:form_id>', methods=['POST'])
 @enforce_elite_user
-def archive():
+def archive_form():
     form_id = request.args.get('form_id')
     form = PractitionerForm.query.filter_by(id=form_id).first()
     form.status = FormStatus.ARCHIVED

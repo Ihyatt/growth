@@ -67,14 +67,13 @@ def get_users():
         return jsonify(error="Query failed: " + str(e)), 500
 
 
-@admin_bp.route('/approve', methods=['POST'])
+@admin_bp.route('/approve/<int:user_id>', methods=['POST'])
 @set_versioning_user
 @enforce_role_admin
 def approve_practioners():
     try:
         admin_id = get_jwt_identity()
-        data = request.get_json()
-        user_id = data.get('userId')
+        user_id = request.args.get('user_id')
 
         if not user_id:
             return jsonify({"message": "User ID is required."}), 400
@@ -116,13 +115,12 @@ def approve_practioners():
         return jsonify({"message": f"Failed to approve user: {str(e)}"}), 
 
 
-@admin_bp.route('/reject', methods=['POST'])
+@admin_bp.route('/reject/<int:user_id>', methods=['POST'])
 @set_versioning_user
 @enforce_role_admin
 def reject_practioners():
     try:
-        data = request.get_json()
-        user_id = data.get('userId')
+        user_id = request.args.get('user_id')
 
         if not user_id:
             return jsonify({"message": "User ID is required."}), 400

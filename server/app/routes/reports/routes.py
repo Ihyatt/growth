@@ -35,7 +35,7 @@ def get_patients_reports():
         "has_prev": reports_pagination.has_prev,
     })
 
-@reports_bp.route('<str:username>/<int:report_id>', methods=['GET'])
+@reports_bp.route('<str:username>/report/<int:report_id>', methods=['GET'])
 @set_versioning_user
 @enforce_elite_user
 def get_report():
@@ -47,7 +47,7 @@ def get_report():
     return jsonify({"medication": report.to_dict()})
     
 
-@reports_bp.route('/<str:username>/<int:report_id>/delete', methods=['POST'])
+@reports_bp.route('/<str:username>/report/<int:report_id>/delete', methods=['POST'])
 @set_versioning_user
 @enforce_elite_user
 def delete_report():

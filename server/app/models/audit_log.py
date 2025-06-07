@@ -61,5 +61,3 @@ class AuditLog(db.Model):
             f"admin_id={self.admin_id} "
             f"audited_id={self.audited_id}>"
         )
-    
-    

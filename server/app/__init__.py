@@ -10,6 +10,7 @@ from app.routes.auth.routes import auth_bp
 from app.routes.admin.routes import admin_bp
 from app.routes.forms.routes import forms_bp
 from app.routes.reports.routes import patients_bp
+from app.routes.reports.routes import patients_forms_bp
 
 from app.config import Config
 
@@ -31,6 +32,9 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(patients_bp)
     app.register_blueprint(forms_bp)
+    app.register_blueprint(patients_forms_bp)
+
+
 
     database.init_app(app)
     Migrate(app, database.db)

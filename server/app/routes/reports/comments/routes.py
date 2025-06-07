@@ -22,19 +22,3 @@ def create():
     db.session.commit()
 
     return jsonify(new_comment.to_dict()), 201
-
-
-@medication_comments_bpcomments_bp.route('<int:comment_id>/edit', methods=['POST'])
-@jwt_required()
-def edit():
-    current_user_id = get_jwt_identity()
-    data = request.get_json()
-    comment_id = request.args.get('comment_id')
-    comment_text = data.get('text')
-
-
-    medication_comment = ReportComment.query.filter_by(comment_id).first()
-    medication_comment.text = comment_text
-    db.session.commit()
-
-    return jsonify({'success': 'success'}), 201

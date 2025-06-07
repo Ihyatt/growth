@@ -57,7 +57,7 @@ def add():
     
 
 
-@medications_bp.route('<str:username>/<int:medication_id>/edit', methods=['POST'])
+@medications_bp.route('<str:username>/medication/<int:medication_id>/edit', methods=['POST'])
 @set_versioning_user
 @enforce_elite_user
 def edit():
@@ -77,7 +77,7 @@ def edit():
     db.session.commit()
     
 
-@medications_bp.route('<str:username>/<int:medication_id>/delete', methods=['POST'])
+@medications_bp.route('<str:username>/medication/<int:medication_id>/delete', methods=['POST'])
 @set_versioning_user
 @enforce_elite_user
 def delete():
