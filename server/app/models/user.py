@@ -1,7 +1,10 @@
 
 import logging
+import uuid
+
 from datetime import datetime
 from typing import Dict, Any
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship # relationship is already imported, good.
 from sqlalchemy_continuum import make_versioned
@@ -19,21 +22,22 @@ class User(db.Model):
     __tablename__ = 'users'
     __versioned__ = {}
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, index=True, nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(512), nullable=False)
-    first_name = db.Column(db.String(80))
-    last_name = db.Column(db.String(80))
+    id = mapped_column(db.Integer, primary_key=True)
+    version = mapped_column(db.Integer, nullable=False, default=1)
+    username = mapped_column(db.String(80), unique=True, index=True, nullable=False)
+    email = mapped_column(db.String(255), unique=True, nullable=False)
+    password_hash = mapped_column(db.String(512), nullable=False)
+    first_name = mapped_column(db.String(80))
+    last_name = mapped_column(db.String(80))
 
-    user_level = db.Column(db.Enum(UserLevel), nullable=False, default=UserLevel.PATIENT)
-    approval_status = db.Column(db.Enum(UserApprovalStatus), nullable=False, default=UserApprovalStatus.PENDING)
-    profile_status = db.Column(db.Enum(ProfileStatus), nullable=False, default=ProfileStatus.ACTIVE)
+    user_level = mapped_column(db.Enum(UserLevel), nullable=False, default=UserLevel.PATIENT)
+    approval_status = mapped_column(db.Enum(UserApprovalStatus), nullable=False, default=UserApprovalStatus.PENDING)
+    profile_status = mapped_column(db.Enum(ProfileStatus), nullable=False, default=ProfileStatus.ACTIVE)
 
-    last_login_at = db.Column(db.DateTime(timezone=True)) # Use timezone=True
-    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False) # Use timezone=True
-    updated_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now(), onupdate=db.func.now(), nullable=False) # Use timezone=True
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    last_login_at = mapped_column(db.DateTime(timezone=True)) # Use timezone=True
+    created_at = mapped_column(db.DateTime(timezone=True), server_default=db.func.now(), nullable=False) # Use timezone=True
+    updated_at = mapped_column(db.DateTime(timezone=True), server_default=db.func.now(), onupdate=db.func.now(), nullable=False) # Use timezone=True
+    is_deleted = mapped_column(db.Boolean, default=False, nullable=False)
 
     # Relationships - updated to match common back_populates patterns
     # IMPORTANT: The 'back_populates' values MUST match the names of the

@@ -1,9 +1,13 @@
+import uuid
 
 import logging
 from datetime import datetime, timezone
 from typing import Dict, Any
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
 
 from app.database import db
 from app.models.constants.enums import FormStatus
@@ -18,17 +22,18 @@ class AssignedForm(db.Model):
     __versioned__ = {}
     __tablename__ = 'user_forms'
 
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    form_data = db.Column(db.Text, nullable=False)
-    form_template = db.Column(db.Integer, db.ForeignKey('form_templates.id'), nullable=False)
-    status = db.Column(db.Enum(FormStatus), nullable=False, default=FormStatus.TODO)
-    reviewed_at = db.Column(db.DateTime)
-    reviewed_by_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    id = mapped_column(db.Integer, primary_key=True)
+    version_id = mapped_column(db.Integer, nullable=False)
+    patient_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    form_data = mapped_column(db.Text, nullable=False)
+    form_template = mapped_column(db.Integer, db.ForeignKey('form_templates.id'), nullable=False)
+    status = mapped_column(db.Enum(FormStatus), nullable=False, default=FormStatus.TODO)
+    reviewed_at = mapped_column(db.DateTime)
+    reviewed_by_id = mapped_column(db.Integer, db.ForeignKey('users.id'))
+    is_deleted = mapped_column(db.Boolean, default=False, nullable=False)
 
-    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
+    created_at = mapped_column(db.DateTime, server_default=db.func.now(), nullable=False)
+    updated_at = mapped_column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
     # Relationships
     assigned_patient = relationship('User', foreign_keys=[patient_id], backref='forms_as_patient', lazy='select')

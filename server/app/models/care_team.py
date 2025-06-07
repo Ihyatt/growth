@@ -1,7 +1,10 @@
 
 import logging
+import uuid
+
 from datetime import datetime, timezone
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy_continuum import make_versioned
 from app.database import db
 
@@ -15,18 +18,19 @@ class CareTeam(db.Model):
     __versioned__ = {}
     __tablename__ = 'care_teams'
 
-    id = db.Column(db.Integer, primary_key=True)
-    practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    id = mapped_column(db.Integer, primary_key=True)
+    version = mapped_column(db.Integer, nullable=False, default=1)
+    practitioner_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    patient_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    connected = db.Column(db.Boolean, default=True, nullable=False)
+    connected = mapped_column(db.Boolean, default=True, nullable=False)
 
-    created_at = db.Column(
+    created_at = mapped_column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False
     )
-    updated_at = db.Column(
+    updated_at = mapped_column(
         db.DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),

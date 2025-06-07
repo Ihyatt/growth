@@ -1,9 +1,11 @@
 
 import logging
+import uuid
 from typing import Dict, Any
 from sqlalchemy.orm import validates
 from sqlalchemy_continuum import make_versioned
 from app.database import db
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 logger = logging.getLogger(__name__)
@@ -15,22 +17,29 @@ class Report(db.Model):
     __versioned__ = {}
     __tablename__ = 'reports'
 
-    id = db.Column(db.Integer, primary_key=True)
-    report_name = db.Column(db.String(255), nullable=False)
-    report_data = db.Column(db.Text, nullable=False)
-    file_format = db.Column(db.String(10), default='json')
+    id = mapped_column(db.Integer, primary_key=True)
+    version_id = mapped_column(db.Integer, nullable=False)
+    version = mapped_column(db.Integer, nullable=False, default=1)
+    report_name = mapped_column(db.String(255), nullable=False)
+    report_data = mapped_column(db.Text, nullable=False)
+    file_format = mapped_column(db.String(10), default='json')
 
-    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    patient_id = mapped_column(db.Integer, db.ForeignKey('users.id'))
+    practitioner_id = mapped_column(db.Integer, db.ForeignKey('users.id'))
 
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    is_deleted = mapped_column(db.Boolean, default=False, nullable=False)
 
-    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
-    updated_at = db.Column(
+    created_at = mapped_column(db.DateTime, server_default=db.func.now(), nullable=False)
+    updated_at = mapped_column(
         db.DateTime,
         server_default=db.func.now(),
         onupdate=db.func.now()
     )
+
+    __mapper_args__ = {
+        "version_id_col": version_id,
+        "version_id_generator": lambda version: uuid.uuid4().hex,
+    }
 
     # Relationships
     report_reviewer = db.relationship('User', foreign_keys=[practitioner_id], back_populates='reports_as_practitioner', lazy=True)
@@ -75,15 +84,15 @@ class ReportComment(db.Model):
     __versioned__ = {}
     __tablename__ = 'report_comments'
 
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text, nullable=False)
+    id = mapped_column(db.Integer, primary_key=True)
+    text = mapped_column(db.Text, nullable=False)
 
-    report_id = db.Column(db.Integer, db.ForeignKey('reports.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    report_id = mapped_column(db.Integer, db.ForeignKey('reports.id'), nullable=False)
+    user_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = mapped_column(db.DateTime, server_default=db.func.now())
+    updated_at = mapped_column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    is_deleted = mapped_column(db.Boolean, default=False, nullable=False)
 
     report = db.relationship('Report', back_populates='report_comments', lazy=True)
     report_comment_author = db.relationship('User', back_populates='reports_comments', lazy=True)

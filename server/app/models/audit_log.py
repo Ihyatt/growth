@@ -1,6 +1,8 @@
 import logging
+import uuid
 
 from datetime import datetime, timezone
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import JSONB 
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
@@ -17,21 +19,21 @@ class AuditLog(db.Model):
     __versioned__ = {} #creates historic record of update/insert/delete
     __tablename__ = 'audit_logs'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = mapped_column(db.Integer, primary_key=True)
+    version = mapped_column(db.Integer, nullable=False, default=1)
+    admin_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    audited_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    details = mapped_column(JSONB, nullable=True)
+    action_type = mapped_column(db.Enum(AuditActionStatus), nullable=False, default=AuditActionStatus.SET_TO_PENDING )
+    audited_model = mapped_column(db.String(120), nullable=False)
+    is_deleted = mapped_column(db.Boolean, default=False, nullable=False)
 
-    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    audited_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    details = db.Column(JSONB, nullable=True)
-    action_type = db.Column(db.Enum(AuditActionStatus), nullable=False, default=AuditActionStatus.SET_TO_PENDING )
-    audited_model = db.Column(db.String(120), nullable=False)
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
-
-    created_at = db.Column(
+    created_at = mapped_column(
         db.DateTime(timezone=True), 
         default=lambda: datetime.now(timezone.utc), 
         nullable=False
     )
-    updated_at = db.Column(
+    updated_at = mapped_column(
         db.DateTime(timezone=True), 
         default=lambda: datetime.now(timezone.utc), 
         onupdate=lambda: datetime.now(timezone.utc), 

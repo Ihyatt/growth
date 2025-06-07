@@ -44,18 +44,38 @@ def get_report_as_patient(patient_username, report_id):
         logger.exception(f"An unexpected error occurred during patient {patient_username} getting their report with id of {report_id}'.")
         return jsonify(message="An internal server error occurred while patient attempting to get their report."), 500
 
+
+updated_rows = session.query(MyModel).filter(
+    MyModel.id == obj.id,
+    MyModel.version == obj.version
+).update({
+    'some_field': new_value,
+    'version': MyModel.version + 1
+})
+
+if updated_rows == 0:
+    # Version conflict! Someone else updated.
+    raise OptimisticLockException("Conflict detected")
+else:
+    session.commit()
     
 
 @report_bp.route('/delete', methods=['POST'])
 @jwt_required()
 @roles_required([UserLevel.ADMIN, UserLevel.PRACTITIONER])
 @care_giver_or_admin_required(username_param_name='patient_username')
-def delete_report_as_practitioner(practitioner_username, patient_username, report_id):
-    report_id = request.args.get('report_id')
-    report = Report.query.filter_by(report_id).first()
-    report_id.is_active = False
-    db.session.commit()
+def delete_report_as_practitioner(patient_username, report_id):
+    try:
+        report_id = request.args.get('report_id')
+        report = Report.query.filter_by(report_id).first()
+        report_id.is_active = False
+        db.session.commit()
 
+    except Exception as e:
+        logger.exception(f"Unable to delete report for report_id {report_id} for {patient_username} '.")
+        return jsonify(message="An internal server error occurred while attempting to delete report."), 500
+
+   
 
 @report_bp.route('/create', methods=['POST'])
 def create():

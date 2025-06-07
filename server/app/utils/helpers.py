@@ -5,7 +5,7 @@ import logging
 from flask_jwt_extended import get_jwt_identity
 from app.models.user import User
 from app.database import db
-from app.models.audit_log import AuditLog
+from app.models.audit_log import AuditLog, User, CareTeam
 from app.models.constants.enums import AuditActionType, UserLevel
 
 from functools import wraps
@@ -135,7 +135,16 @@ def care_giver_or_admin_required(username_param_name: str):
                 return jsonify({"message": "Server error: Resource identifier missing."}), 500
 
 
-            if current_user.user_level == UserLevel.ADMIN or current_user.user_level == UserLevel.PRACTITIONER:
+            patient_user = User.query.filter_by(username=target_username).first()
+
+            if not patient_user:
+                logger.warning(f"Patient user '{target_username}' not found.")
+                return jsonify({"message": "User not found."}), 404
+
+            
+            patient_caregiver = CareTeam.query.filter_by(patient_id=patient_user.id, practitioner_id=current_user.id).first()
+
+            if current_user.user_level == UserLevel.ADMIN or (current_user.user_level == UserLevel.PRACTITIONER and patient_caregiver != None):
                 logger.debug(f"Access granted: {current_user.user_level} '{current_user.username}' accessing resource for '{target_username}'.")
                 return fn(*args, **kwargs)
 

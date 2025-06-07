@@ -1,8 +1,11 @@
 
 import logging
+import uuid
+
 from typing import Dict, Any
 from sqlalchemy.orm import relationship, validates
 from sqlalchemy_continuum import make_versioned
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from app.database import db
 
 
@@ -16,19 +19,20 @@ class Medication(db.Model):
     __versioned__ = {}
     __tablename__ = 'medications'
 
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    name = db.Column(db.String(120), nullable=False)
-    dosage = db.Column(db.String(120), nullable=False)
-    practitioner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ✅ fixed typo in "practioner_id"
-    frequency = db.Column(db.String(120))
-    start_date = db.Column(db.Date)
-    end_date = db.Column(db.Date)
-    instructions = db.Column(db.Text)
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
+    id = mapped_column(db.Integer, primary_key=True)
+    patient_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    version = mapped_column(db.Integer, nullable=False, default=1)
+    name = mapped_column(db.String(120), nullable=False)
+    dosage = mapped_column(db.String(120), nullable=False)
+    practitioner_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    frequency = mapped_column(db.String(120))
+    start_date = mapped_column(db.Date)
+    end_date = mapped_column(db.Date)
+    instructions = mapped_column(db.Text)
+    is_active = mapped_column(db.Boolean, default=True, nullable=False)
+    is_deleted = mapped_column(db.Boolean, default=False, nullable=False)
+    created_at = mapped_column(db.DateTime, server_default=db.func.now(), nullable=False)
+    updated_at = mapped_column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
 
     patient_owner = relationship('User', foreign_keys=[patient_id], backref='medications', lazy='select')
     practitioner = relationship('User', foreign_keys=[practitioner_id], backref='prescribed_medications', lazy='select')
@@ -69,15 +73,15 @@ class Medication(db.Model):
 class MedicationComment(db.Model):
     __tablename__ = 'medication_comments'
 
-    id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text, nullable=False)
+    id = mapped_column(db.Integer, primary_key=True)
+    text = mapped_column(db.Text, nullable=False)
 
-    medication_id = db.Column(db.Integer, db.ForeignKey('medications.id'), nullable=False)  # ✅ fixed table name
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ✅ fixed table name
+    medication_id = mapped_column(db.Integer, db.ForeignKey('medications.id'), nullable=False)  # ✅ fixed table name
+    user_id = mapped_column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # ✅ fixed table name
 
-    created_at = db.Column(db.DateTime, server_default=db.func.now(), nullable=False)
-    updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
-    is_deleted = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = mapped_column(db.DateTime, server_default=db.func.now(), nullable=False)
+    updated_at = mapped_column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now(), nullable=False)
+    is_deleted = mapped_column(db.Boolean, default=False, nullable=False)
 
     medication_comment_author = relationship('User', backref='medications_comments', lazy='select')
     medication = relationship('Medication', back_populates='medication_comments', lazy='select')
